@@ -63,8 +63,7 @@ const Navbar: React.FC = () => {
     { label: "Commerical", href: "/commerical" },
     { label: "New projects", href: "/newProjects" },
     { label: "Find agent", href: "/findAgent" },
-    { label: "Explore", href: "/explore" },
-    { label: "Mortgages", href: "/mortgages" },
+    { label: "Blog", href: "/blog" },
   ];
 
   //  nav items in mobile size 
@@ -86,20 +85,27 @@ const Navbar: React.FC = () => {
       
       {/* Desktop Navbar */}
       <section className="hidden md:block w-full px-8 text-gray-700 bg-white shadow-md">
-        <div className="flex justify-between py-5">
+        <div className="flex justify-between">
           
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-6 my-0">
             <Link key="AI" href="/" className="text-xl font-black text-gray-900">
-              AI<span className="text-indigo-600">.</span>
+              <Image
+                src="logo-en.svg"
+                alt="Profile"
+                width={100}
+                height={100}
+                className="rounded-full"
+              />
             </Link>
             <nav className="flex space-x-5 border-l pl-4 border-gray-200">
               {navItems.map(({ label, href }) => (
+                
                 <Link
                   key={label}
                   href={href}
-                  className="text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-200 py-5 mx-0 px-3"
                 >
-                  {label}
+                 {label}
                 </Link>
               ))}
             </nav>
