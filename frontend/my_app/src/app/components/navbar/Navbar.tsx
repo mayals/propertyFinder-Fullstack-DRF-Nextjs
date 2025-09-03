@@ -71,6 +71,9 @@ const Navbar: React.FC = () => {
     { label: "Buy", href: "/buy" },
     { label: "Rent", href: "/rent" },
     { label: "Commerical", href: "/commerical" },
+    { label: "New projects", href: "/newProjects" },
+    { label: "Find agent", href: "/findAgent" },
+    { label: "Blog", href: "/blog" },
   ];
 
   
@@ -158,18 +161,17 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* row down */}
-          <div className="mt-3 space-y-3">
-              <nav className="flex flex-row justify-around">
+          <div className="">
+              <nav className="flex text-wrap  gap-2 bg-gray-100 mx-0 my-0">
                 
                     {/* normal links type */}
-                    
                     {navMobItems.map(({ label, href }) => (
                       <Link
                         key={label}
                         href={href}
-                        className="text-gray-600 hover:text-gray-900 font-medium"
+                        className="text-gray-600 hover:text-gray-900 font-medium py-5 mx-0"
                       >
-                        {label}
+                      {label}
                       </Link>
                     ))}
                    
@@ -183,9 +185,7 @@ const Navbar: React.FC = () => {
                         >
                           More
                           <FiChevronDown
-                            className={`ml-1 transition-transform duration-300 ${
-                              activeMenu === "more" ? "rotate-180" : ""
-                            }`}
+                            className={`ml-1 transition-transform duration-300 ${ activeMenu === "more" ? "rotate-180" : "" }`}
                           />
                         </button>
 
@@ -193,6 +193,8 @@ const Navbar: React.FC = () => {
                           <div className="absolute right-0 mt-2 flex flex-col bg-white border rounded-md shadow-lg z-10 w-40">
                             <Link href="/projects" className="text-gray-600 hover:text-gray-900 px-3 py-2">New projects</Link>
                             <Link href="/findAgent" className="text-gray-600 hover:text-gray-900 px-3 py-2">Find agent</Link>
+                            <Link href="/explore" className="text-gray-600 hover:text-gray-900 px-3 py-2">Explore</Link>
+                            <Link href="/mortgages" className="text-gray-600 hover:text-gray-900 px-3 py-2">Mortgages</Link>
                             <Link href="/explore" className="text-gray-600 hover:text-gray-900 px-3 py-2">Explore</Link>
                             <Link href="/mortgages" className="text-gray-600 hover:text-gray-900 px-3 py-2">Mortgages</Link>
                           </div>
