@@ -15,18 +15,17 @@ export default function HomePage() {
 
 
 
+  useEffect(() => {
+      setActiveRadioButton("buy")     
+  }, []);
+
+
   // buy button - rent button - comercial button
   const handleactiveRadioButton = (buttonName: string) =>{
     setActiveRadioButton(buttonName)
   }
   
-  // useEffect(() => {
-  //   if (activeRadioButton === "buy" || activeRadioButton === "rent"){
-  //       setBuyrentAction("buyRent_action");
-  //   }else if(activeRadioButton === "commercial"){
-  //       setCommercialAction("commercial_action");
-  //   }
-  // }, [activeRadioButton]);
+  
 
 
 
@@ -74,72 +73,86 @@ export default function HomePage() {
         Find every home here
       </h1>
 
-      {/* Search container */}
+      {/* main container */}
       <div
         ref={containerRef}
         className="relative z-10 bg-black/20 backdrop-blur-sm px-2 py-5 rounded-[24px] mx-4 md:mx-10 lg:mx-[170px]"
       >
-        {/* Toggle buttons group */}
+
+        {/* Toggle Radio Button group -----buy-------rent------commercial-----*/}
         <div className="flex items-center justify-center max-w-xl mx-auto mb-4">
           
-          {/* buy */}
-          <input
-            type="radio"
-            name="options"
-            id="buy" 
-            onChange={() => handleactiveRadioButton("buy")}
-            checked={activeRadioButton === "buy"}
-          />
+          {/* buy ----- */}
           <label 
-            className="w-full border-l border-t border-b text-base font-medium rounded-l-2xl text-black bg-white hover:bg-gray-100 px-4 py-1"
-            htmlFor="rent">
-            Buy
+            className="text-center w-full border-l border-t border-b text-base font-medium rounded-l-2xl text-black bg-white hover:bg-gray-100 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] px-4 py-1 cursor-pointer"
+            htmlFor="buy">
+                <input
+                type="radio"
+                name="options"
+                id="buy" 
+                onChange={() => handleactiveRadioButton("buy")}
+                checked={activeRadioButton === "buy"}
+                className="hidden"   //  hides the blue circle
+                
+                />
+                Buy
           </label>
             
-          {/* rent */}
-          <input
-            type="radio"
-            name="options"
-            id="rent"
-            onChange={() => handleactiveRadioButton("rent")}
-            checked={activeRadioButton === "rent"}
-          />
+          {/* rent ------ */}
           <label 
-              className="w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-1"
+              className="text-center w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
               htmlFor="rent">
+              <input
+                type="radio"
+                name="options"
+                id="rent"
+                onChange={() => handleactiveRadioButton("rent")}
+                checked={activeRadioButton === "rent"}
+                className="hidden"   //  hides the blue circle
+              />
               Rent
           </label>
           
-          {/* commercial */}
-          <input
-            type="radio"
-            name="options"
-            id="commercial"
-            onChange={() => handleactiveRadioButton("commercial")}
-            checked={activeRadioButton === "commercial"}
-          />
+          {/* commercial ------ */}
           <label 
-              className="w-full border-t border-b border-r text-base font-medium rounded-r-2xl text-black bg-white hover:bg-gray-100 px-4 py-1"
+              className="text-center w-full border-t border-b border-r text-base font-medium rounded-r-2xl text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
               htmlFor="commercial">
+              <input
+                  type="radio"
+                  name="options"
+                  id="commercial"
+                  onChange={() => handleactiveRadioButton("commercial")}
+                  checked={activeRadioButton === "commercial"}
+                  className="hidden"   //  hides the blue circle
+              />
               Commercial
           </label>
         </div>
 
-        {/* Search input + dropdowns */}
+
+
+
+
+        {/* Search fields container   ---- */}
         <div className="flex items-center w-full max-w-4xl mx-auto bg-white rounded-[24px] shadow-md overflow-visible">
-          {/* Input field */}
+         
+         {/* search by word field */}
           <input
             type="text"
             placeholder="City, community or building"
             className="flex-1 px-4 py-3 text-gray-700 focus:outline-none"
           />
 
-          {/* Property type dropdown */}
+
+          {/* search by choose  */}
+          {/* Property type dropdown menu*/}
           <div className="relative">
+            
+            {/* Property type -- button */}
             <button
               onClick={() => toggleMenu("property_type")}
               aria-expanded={activeMenu === "property_type"}
-              className="flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
             >
               Property type
               <FiChevronDown
@@ -148,7 +161,7 @@ export default function HomePage() {
                 }`}
               />
             </button>
-
+            {/* Property type -- for  buy rent  -- menue */}
             {activeMenu === "property_type" && activeRadioButton !== "commercial" && (
               <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Apartment</li>
@@ -164,7 +177,7 @@ export default function HomePage() {
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Full Floor</li>
               </ul>
             )}
-
+            {/* Property type -- for  commercial  -- menu */}
             {activeMenu === "property_type" && activeRadioButton === "commercial" && (
               <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Office Space</li>
@@ -183,23 +196,41 @@ export default function HomePage() {
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Land</li>
               </ul>
             )}
-
           </div>
 
-          {/* Beds & Baths dropdown */}
+
+
+
+          {/* Beds & Baths  button ---  Area(sqm) button */}
           <div className="relative">
-            <button
-              onClick={() => toggleMenu("bed_bath")}
-              aria-expanded={activeMenu === "bed_bath"}
-              className="flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
-            >
-              Beds & Baths
-              <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "bed_bath" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+           { activeRadioButton !== "commercial" && 
+              (<button
+                onClick={() => toggleMenu("bed_bath")}
+                aria-expanded={activeMenu === "bed_bath"}
+                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+              >
+                Beds & Baths
+                <FiChevronDown
+                  className={`ml-1 transition-transform duration-300 ${
+                    activeMenu === "bed_bath" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>)
+            }
+            { activeRadioButton === "commercial" && 
+              (<button
+                onClick={() => toggleMenu("area-sqm")}
+                aria-expanded={activeMenu === "area-sqm"}
+                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+              >
+                Area(sqm)
+                <FiChevronDown
+                  className={`ml-1 transition-transform duration-300 ${
+                    activeMenu === "area-sqm" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>)
+            }
 
             {activeMenu === "bed_bath" && activeRadioButton !== "commercial" &&  (
               <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
@@ -223,6 +254,17 @@ export default function HomePage() {
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">5+</li>
               </ul>
             )}
+            
+             {activeMenu === "area-sqm" && activeRadioButton === "commercial" &&  (
+              <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Min Area</li>
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Max Area</li>
+              </ul>
+            )}
+
+
+
+
           </div>
 
           
@@ -232,7 +274,7 @@ export default function HomePage() {
           
           
           {/* Search button */}
-          <button className="px-6 py-3 rounded-r-3xl bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition">
+          <button className="cursor-pointer px-6 py-3 rounded-r-3xl bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition">
             Search
           </button>
         </div>
