@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     
     # My local apps
     'users.apps.UsersConfig',
+    'property.apps.PropertyConfig',
     
     # Third party apps
     # -----------------
