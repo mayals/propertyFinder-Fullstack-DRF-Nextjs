@@ -91,7 +91,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between">
           
           <div className="flex items-center space-x-6 my-0">
-            <Link key="AI" href="/" className="text-xl font-black text-gray-900">
+            <Link key="home" href="/" className="text-xl font-black text-gray-900">
               <Image
                 src="logo-en.svg"
                 alt="Profile"
