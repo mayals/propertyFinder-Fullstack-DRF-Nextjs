@@ -11,7 +11,8 @@ from django.contrib.auth.tokens import default_token_generator
 from proj.settings import DEFAULT_FROM_EMAIL
 from django.core.mail import send_mail
 
-from .models import ClientProfile, AdminProfile
+from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile,BrokerProfile,AgentProfile
+
 
 
 
@@ -22,20 +23,34 @@ from .models import ClientProfile, AdminProfile
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
             instance_user = instance 
-            # create ClientProfile instance
-            if instance_user.is_client==True:  
-               ClientProfile.objects.create(user=instance_user)  
-               instance_user.client_profile.id = instance_user.id
+            
             # create AdminProfile instance 
             if instance_user.is_superuser==True:  
-               AdminProfile.objects.create(user=instance_user)
-               instance_user.admin_profile.id = instance_user.id
-               
-              
-              
-              
-               
+                AdminProfile.objects.create(user=instance_user)
+                instance_user.admin_profile.id = instance_user.id
 
+            # create BuyerProfile instance
+            if instance_user.role == "buyer" :  
+                BuyerProfile.objects.create(user=instance_user)  
+                instance_user.buyer_profile.id = instance_user.id
+            
+            # create DeveloperProfile instance 
+            if instance_user.role == "developer" :  
+                DeveloperProfile.objects.create(user=instance_user)
+                instance_user.developer_profile.id = instance_user.id                 
+                
+            # create BrokerProfile instance 
+            if instance_user.role == "broker" :  
+                BrokerProfile.objects.create(user=instance_user)
+                instance_user.broker_profile.id = instance_user.id                                   
+            
+            # create AgentProfile instance 
+            if instance_user.role == "agent" :  
+                AgentProfile.objects.create(user=instance_user)
+                instance_user.agent_profile.id = instance_user.id
+                
+                
+                
 #signal-2 -- for confirm email for the user by send confirm link in email
 # sender   =   get_user_model()        -------- instance user from django.contrib.auth import get_user_model
 # receiver =   send_confirmation_email function  -------- function to send emailto user.email contain send_confirmation_email link          

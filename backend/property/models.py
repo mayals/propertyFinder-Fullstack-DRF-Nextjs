@@ -3,6 +3,8 @@ from django.db import models
 from django.conf import settings
 
 
+
+# Country model #######################
 class Country(models.Model):
     country_name = models.CharField(max_length=100)
     code = models.CharField(max_length=3, unique=True)  # ISO code like "SA", "AE"
@@ -106,10 +108,16 @@ class PropertyPurposeSubChoices(models.Model):
     class Meta:
        ordering = ['-created_at']
 
+    # Residential for buy
+    # Residential for rent
+    # Commercial for buy
+    # Commercial for rent
 
 
 
-# Country model #######################
+
+
+
 
 
 
@@ -223,10 +231,11 @@ class PropertyImage(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="property_images/")
+    images = models.ImageField(upload_to="property_images/%Y/%m/%d/", null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-
+    def __str__(self):
+        return str(self.images)
 
 
 

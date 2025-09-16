@@ -16,77 +16,47 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 # LOCAL
-from .models import  CustomUser, ClientProfile, AdminProfile, UserOTP
+from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile,BrokerProfile,AgentProfile,UserOTP
 from .utils import send_normal_email
 
 
 
 
 
-############################ Register USER  - contain validation - contain client profiles data ###########################
-# create User with Client
+############################ Register USER  - contain validation - contain buyer profiles data ###########################
+# create User with Buyer
 class RegisteUserProfileSerializer(serializers.ModelSerializer):
     email          = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
     first_name     = serializers.CharField(max_length=12, min_length=3, allow_blank=False, trim_whitespace=True)
     last_name      = serializers.CharField(max_length=12, min_length=3, allow_blank=False, trim_whitespace=True)
     password       = serializers.CharField(max_length=68, min_length=6, write_only=True)
     password2      = serializers.CharField(max_length=68, min_length=6, write_only=True)
-    client_profile = serializers.SerializerMethodField()
+    # profiles 
     admin_profile  = serializers.SerializerMethodField()
-    
+    buyer_profile  = serializers.SerializerMethodField()
+    developer_profile = serializers.SerializerMethodField()
+    broker_profile = serializers.SerializerMethodField()
+    agent_profile = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
         fields = [
             'id', 'email', 'first_name', 'last_name', 'password', 'password2',
-            'client_profile', 'admin_profile', 'is_verifiedEmail', 'is_superuser',
-            'is_client', 'is_active', 'is_staff', 'role'
+             'admin_profile','buyer_profile', 'developer_profile','broker_profile','agent_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
+            'is_superuser','role'     
         ]
         extra_kwargs = {
             'password' : {'write_only': True},
             'password2': {'write_only': True},
         }
         read_only_fields = [
-            'id', 'is_verifiedEmail', 'client_profile', 'admin_profile',
-            'is_superuser', 'is_client', 'is_active', 'is_staff', 'role'
+            'id', 'is_verifiedEmail','is_superuser', 'is_active', 'is_staff', 'role' 
+            'admin_profile', 'buyer_profile','developer_profile','broker_profile','agent_profile'     
         ]
     
-    def get_client_profile(self, obj):
-         # user object only has attribute 'client_profile' if the user is a client
-        if hasattr(obj, 'client_profile'):
-            try:
-                cp = obj.client_profile
-                return ClientProfileSerializer(cp).data
-            except ClientProfile.DoesNotExist:
-                return None
-        return None
-            
-        
-    def get_admin_profile(self, obj):
-        # user object only has attribute 'admin_profile' if the user is an admin
-        if obj.is_superuser and hasattr(obj, 'admin_profile'):
-            try:
-                ap = obj.admin_profile
-                return AdminProfileSerializer(ap).data
-            except AdminProfile.DoesNotExist:
-                return None
-        return None
-    
-    
-    def to_representation(self, instance):
-        """
-        Override the to_representation method to exclude admin_profile if it is None.
-        """
-        representation = super().to_representation(instance)
-        if representation['admin_profile'] is None:
-            representation.pop('admin_profile')  # Remove admin_profile from the response
-        if representation['client_profile'] is None:
-            representation.pop('client_profile')  # Remove client_profile from the response
-        return representation
-    
-     
+   
     def validate(self, attrs):
         print('Validating data:', attrs)
-        password = attrs.get('password')
+        password  = attrs.get('password')
         password2 = attrs.get('password2')
         
         # Check if passwords match
@@ -111,6 +81,7 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("The First Name field is required")
         return value
 
+
     def validate_last_name(self, value):
         """
         Validate that the last_name is not empty.
@@ -119,10 +90,14 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("The Last Name field is required")
         return value
      
+     
     def create(self, validated_data):
         print('Creating user with validated_data=', validated_data)
-        valid_client_profile_data = validated_data.pop('client_profile', None)
-        valid_admin_profile_data  = validated_data.pop('admin_profile', None)
+        valid_admin_profile_data     = validated_data.pop('admin_profile', None)
+        valid_buyer_profile_data     = validated_data.pop('buyer_profile', None)
+        valid_developer_profile_data = validated_data.pop('developer_profile', None)
+        valid_broker_profile_data    = validated_data.pop('broker_profile', None)
+        valid_agent_profile_data     = validated_data.pop('agent_profile', None)
         
         user = CustomUser.objects.create_user(
                                     email      =validated_data['email'],
@@ -131,14 +106,102 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
                                     last_name  =validated_data['last_name']                           
         )
         print("user=",user)
-        if valid_client_profile_data:
-            if user.is_client:
-                ClientProfile.objects.create(user=user, **valid_client_profile_data)
         if valid_admin_profile_data:
-            if user.is_superuser:
+            if user.role == "admin":
                 AdminProfile.objects.create(user=user, **valid_admin_profile_data)
+        
+        if valid_buyer_profile_data:
+            if user.role == "buyer":
+                BuyerProfile.objects.create(user=user, **valid_buyer_profile_data)
+        
+        if valid_developer_profile_data:
+            if user.role == "developer":
+                DeveloperProfile.objects.create(user=user, **valid_developer_profile_data)
+        
+        if valid_broker_profile_data:
+            if user.role == "broker":
+                BrokerProfile.objects.create(user=user, **valid_broker_profile_data)
+        
+        if valid_agent_profile_data:
+            if user.role == "agent":
+                AgentProfile.objects.create(user=user, **valid_agent_profile_data)
+     
         return user
 
+
+    def get_admin_profile(self, obj):
+        # user object only has attribute 'admin_profile' if the user is an admin
+        if obj.role == "admin" and hasattr(obj, 'admin_profile'):
+            try:
+                ap = obj.admin_profile
+                return AdminProfileSerializer(ap).data
+            except AdminProfile.DoesNotExist:
+                return None
+        return None
+    
+
+    def get_buyer_profile(self, obj):
+         # user object only has attribute 'buyer_profile' if the user is a buyer
+        if obj.role == "buyer" and hasattr(obj, 'buyer_profile'):
+            try:
+                cp = obj.buyer_profile
+                return BuyerProfileSerializer(cp).data
+            except BuyerProfile.DoesNotExist:
+                return None
+        return None
+    
+    def get_developer_profile(self, obj):
+         # user object only has attribute 'developer_profile' if the user is a developer
+        if obj.role == "developer" and hasattr(obj, 'developer_profile'):
+            try:
+                cp = obj.developer_profile
+                return DeveloperProfileSerializer(cp).data
+            except DeveloperProfile.DoesNotExist:
+                return None
+        return None 
+    
+            
+    def get_broker_profile(self, obj):
+         # user object only has attribute 'broker_profile' if the user is a broker
+        if obj.role == "broker" and hasattr(obj,'broker_profile'):
+            try:
+                cp = obj.broker_profile
+                return BrokerProfileSerializer(cp).data
+            except BrokerProfile.DoesNotExist:
+                return None
+        return None 
+        
+   
+    def get_agent_profile(self, obj):
+         # user object only has attribute 'agent_profile' if the user is a agent
+        if obj.role == "agent" and hasattr(obj,'agent_profile'):
+            try:
+                cp = obj.agent_profile
+                return AgentProfileSerializer(cp).data
+            except AgentProfile.DoesNotExist:
+                return None
+        return None 
+    
+    
+    
+    def to_representation(self, instance):
+        """
+        Override the to_representation method to exclude admin_profile if it is None.
+        """
+        representation = super().to_representation(instance)
+        if representation['admin_profile'] is None:
+            representation.pop('admin_profile')  # Remove admin_profile from the response
+        if representation['buyer_profile'] is None:
+            representation.pop('buyer_profile')  # Remove buyer_profile from the response
+        if representation['developer_profile'] is None:
+            representation.pop('developer_profile')  # Remove developer_profile from the response
+        if representation['broker_profile'] is None:
+            representation.pop('broker_profile')  # Remove broker_profile from the response
+        if representation['agent_profile'] is None:
+            representation.pop('agent_profile')  # Remove agent_profile from the response
+        return representation
+    
+     
 
 
 ########################### Confirm Email BY LINK ###########################
@@ -183,6 +246,8 @@ class LoginUserSerializer(serializers.Serializer):
 
         return user
 
+
+
 ############################ LOGIN USER - JWT Token Obtain  ###########################
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer): 
 
@@ -225,61 +290,133 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ['id', 'role','first_name', 'last_name','email','is_verifiedEmail','is_active','date_joined','last_login', 'profile','full_name','is_verifiedEmail']
-        read_only_fields = ['id','is_verifiedEmail', 'date_joined', 'last_login',
-                           'is_superuser', 'is_active', 'is_staff','is_client', 'is_employee','full_name'
-                           ]  
+        fields = ['id', 'role','first_name', 'last_name','email','is_active','date_joined','last_login', 'profile','full_name','is_verifiedEmail']
+        read_only_fields = [
+           'profile', 'full_name', 'id', 'is_verifiedEmail','is_superuser', 'is_active', 'is_staff', 'role' 
+           'admin_profile', 'buyer_profile','developer_profile','broker_profile','agent_profile'     
+        ]
 
     def get_full_name(self, obj):
         return f"{obj.first_name.title()} {obj.last_name.title()}"
    
+   
+   
     def get_profile(self, obj):  # obj is the user object
-        if obj.is_client:
-            try:  
-                # print(f"Fetching client profile for user: {obj.id}")
-                return ClientProfileSerializer(obj.client_profile).data 
-            except(ClientProfile.DoesNotExist):
-                print(f"Profile does not exist for user")
-                return None
-
         
-        if obj.is_superuser:
+        if obj.role == "admin" and hasattr(obj, 'admin_profile'):
             try:
-                # print(f"Fetching employee profile for user: {obj.id}")
+                print(f"Fetching Admin profile for user: {obj.first_name}")
                 return AdminProfileSerializer(obj.admin_profile).data
-            except(AdminProfile.DoesNotExist):
-                print(f"Profile does not exist for user: {obj.id}")
+            except AdminProfile.DoesNotExist:
                 return None
         
+        
+        if obj.role == "buyer" and hasattr(obj, 'buyer_profile'):
+            try:  
+                print(f"Fetching buyer profile for user: {obj.first_name}")
+                return BuyerProfileSerializer(obj.buyer_profile).data 
+            except(BuyerProfile.DoesNotExist):
+                print(f"Buyer Profile does not exist for user")
+                return None
+        
+        
+        if obj.role == "developer" and hasattr(obj, 'developer_profile'):
+            try:  
+                print(f"Fetching developer profile for user: {obj.first_name}")
+                return DeveloperProfileSerializer(obj.developer_profile).data 
+            except(DeveloperProfile.DoesNotExist):
+                print(f"Developer Profile does not exist for user")
+                return None
     
+    
+        if obj.role == "broker" and hasattr(obj,'broker_profile'):
+            try:  
+                print(f"Fetching broker profile for user: {obj.first_name}")
+                return BrokerProfileSerializer(obj.broker_profile).data 
+            except(BrokerProfile.DoesNotExist):
+                print(f"Broker Profile does not exist for user")
+                return None
+
+
+        if obj.role == "agent" and hasattr(obj,'agent_profile'):
+            try:  
+                print(f"Fetching agent profile for user: {obj.first_name}")
+                return AgentProfileSerializer(obj.agent_profile).data 
+            except(AgentProfile.DoesNotExist):
+                print(f"Agent Profile does not exist for user")
+                return None
 
 
 
-################################## Profiles -  Admin - Client ##########################
+################################## Profiles -  Admin - buyer ##########################
 # dminProfile
 class AdminProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdminProfile
         exclude = ['user']
-        
+    
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value          
 
-# ClientProfile
-class ClientProfileSerializer(serializers.ModelSerializer):
-
+# BuyerProfile
+class BuyerProfileSerializer(serializers.ModelSerializer):
+    
     class Meta:
-        model = ClientProfile
+        model = BuyerProfile
         exclude = ['user']
+        
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value  
 
-
-# ClientPublicProfile
-class ClientPublicProfileSerializer(ClientProfileSerializer):
+# BuyerPublicProfile
+class BuyerPublicProfileSerializer(BuyerProfileSerializer):
     """ Child class that inherit from it's parents and changing Meta class properities """
-    class Meta(ClientProfileSerializer.Meta):
+    class Meta(BuyerProfileSerializer.Meta):
         exclude = [
             "date_of_birth","phone_number",
             "address","city","state","country"
         ]
+    
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value  
+
+
+class DeveloperProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeveloperProfile
+        exclude = ['user']
+
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value  
+
+class BrokerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BrokerProfile
+        exclude = ['user']
+
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value  
+
+class AgentProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgentProfile
+        exclude = ['user']
+
+    def validate_phone_number(value):
+        if not value :
+            raise serializers.ValidationError("phone_number field is required")
+        return value  
 
 
 
@@ -287,39 +424,74 @@ class ClientPublicProfileSerializer(ClientProfileSerializer):
 
 ################################## detail user + detail profile ##########################
 class RetrieveUserSerializer(serializers.ModelSerializer):
-    client_profile = serializers.SerializerMethodField()
-    admin_profile = serializers.SerializerMethodField()
+    # profiles 
+    admin_profile     = serializers.SerializerMethodField()
+    buyer_profile     = serializers.SerializerMethodField()
+    developer_profile = serializers.SerializerMethodField()
+    broker_profile    = serializers.SerializerMethodField()
+    agent_profile     = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_instructor', 'is_active', 'is_verified', 'created_at', 'student_profile', 'instructor_profile']
-
-    def get_client_profile(self, obj):
-        try:
-            profile = obj.client_profile
-            return ClientProfileSerializer(profile).data
-        except ClientProfile.DoesNotExist:
-            return None
+        fields = [
+            'id', 'email', 'first_name', 'last_name', 'password', 'password2',
+            'buyer_profile', 'admin_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
+            'is_superuser','role'     
+        ]
 
     def get_admin_profile(self, obj):
-        try:
-            profile = obj.instructor_profile
-            return AdminProfileSerializer(profile).data
-        except AdminProfile.DoesNotExist:
-            return None
-
-
-
-
-
-
-###################################### Authentication-proccess  ####################################################
-
-######## User with user serializer ( user register ) ####################################################
-##################################### user Register (for  client and admin profile)###########################################333
-
+        # user object only has attribute 'admin_profile' if the user is an admin
+        if obj.role == "admin" and hasattr(obj, 'admin_profile'):
+            try:
+                ap = obj.admin_profile
+                return AdminProfileSerializer(ap).data
+            except AdminProfile.DoesNotExist:
+                return None
+        return None
     
 
+    def get_buyer_profile(self, obj):
+         # user object only has attribute 'buyer_profile' if the user is a buyer
+        if obj.role == "buyer" and hasattr(obj, 'buyer_profile'):
+            try:
+                cp = obj.buyer_profile
+                return BuyerProfileSerializer(cp).data
+            except BuyerProfile.DoesNotExist:
+                return None
+        return None
+    
+    def get_developer_profile(self, obj):
+         # user object only has attribute 'developer_profile' if the user is a developer
+        if obj.role == "developer" and hasattr(obj, 'developer_profile'):
+            try:
+                cp = obj.developer_profile
+                return DeveloperProfileSerializer(cp).data
+            except DeveloperProfile.DoesNotExist:
+                return None
+        return None 
+    
+            
+    def get_broker_profile(self, obj):
+         # user object only has attribute 'broker_profile' if the user is a broker
+        if obj.role == "broker" and hasattr(obj, 'broker_profile'):
+            try:
+                cp = obj.broker_profile
+                return BrokerProfileSerializer(cp).data
+            except BrokerProfile.DoesNotExist:
+                return None
+        return None 
+        
+   
+    def get_agent_profile(self, obj):
+         # user object only has attribute 'agent_profile' if the user is a agent
+        if obj.role == "agent" and hasattr(obj, 'agent_profile'):
+            try:
+                cp = obj.agent_profile
+                return AgentProfileSerializer(cp).data
+            except AgentProfile.DoesNotExist:
+                return None
+        return None 
+    
 
 
 
@@ -383,7 +555,7 @@ class LogoutSerializer(serializers.Serializer):
 
 
         
-#  we will use this user serializer in project reviews list page 
+#  we will use this user serializer in property reviews list page 
 class SimplifiedUserSerializer(serializers.ModelSerializer):
     profile   = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
@@ -403,7 +575,7 @@ class SimplifiedUserSerializer(serializers.ModelSerializer):
         
         
         
-##########  update user ptrofile BY REQUEST USER #######################
+##################  Update Profile fields + User fields    by    request user  #######################
 class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -424,22 +596,36 @@ class UpdateUserSerializer(serializers.ModelSerializer):
       
  
  
+class UpdateAdminProfileSerializer(serializers.ModelSerializer):
+    user = UpdateUserSerializer(required=True)
+    class Meta:
+        model = AdminProfile
+        fields = ['user','date_of_birth','gender','phone_number','country', 'address','profile_picture']  # replace 'other_profile_fields' with actual fields from EmployeeProfile model
 
-
-
-
-class UpdateClientProfileSerializer(serializers.ModelSerializer):
+    def update(self, instance, validated_data):   # Update AdminProfile fields + User fields
+        print('validated_data=',validated_data)
+        valid_user_data = validated_data.pop('user', None)
+        if valid_user_data:
+            user = instance.user
+            for attr, value in valid_user_data.items():
+                if attr in ['first_name','last_name']:
+                    setattr(user, attr, value)
+            user.save()
+        return super().update(instance, validated_data)
+    
+    
+class UpdateBuyerProfileSerializer(serializers.ModelSerializer):
     user = UpdateUserSerializer(required=True,many=False)
     class Meta:
-        model = ClientProfile
-        fields = ['user', 'date_of_birth','gender','phone_number','country', 'address','profile_picture']  # replace 'other_profile_fields' with actual fields from EmployeeProfile model
+        model = BuyerProfile
+        fields = ['user', 'date_of_birth','gender','phone_number','country', 'address','profile_picture'] 
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data): # Update BuyerProfile fields + User fields
         print('validated_data',validated_data)
-        user_data = validated_data.pop('user', None)
-        if user_data:
+        valid_user_data = validated_data.pop('user', None)
+        if valid_user_data:
             user = instance.user
-            for attr, value in user_data.items():
+            for attr, value in valid_user_data.items():
                 if attr in ['first_name', 'last_name']:
                     setattr(user, attr, value)
             user.save()
@@ -448,68 +634,62 @@ class UpdateClientProfileSerializer(serializers.ModelSerializer):
        
 
 
-class UpdateAdminProfileSerializer(serializers.ModelSerializer):
-    user = UpdateUserSerializer(required=True)
+class UpdateDeveloperProfileSerializer(serializers.ModelSerializer):
+    user = UpdateUserSerializer(required=True,many=False)
     class Meta:
-        model = AdminProfile
-        fields = ['user','date_of_birth','gender','phone_number','country', 'address','profile_picture']  # replace 'other_profile_fields' with actual fields from EmployeeProfile model
+        model = DeveloperProfile
+        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture'] 
 
-    def update(self, instance, validated_data): # Update AdminProfile fields + User fields
-        print('validated_data=',validated_data)
-        user_data = validated_data.pop('user', None)
-        # updae User fields -- not work because user data_data = None !
-        if user_data:
+    def update(self, instance, validated_data): # Update DeveloperProfile fields + User fields
+        print('validated_data',validated_data)
+        valid_user_data = validated_data.pop('user', None)
+        if valid_user_data:
             user = instance.user
-            for attr, value in user_data.items():
-                if attr in ['first_name','last_name']:
+            for attr, value in valid_user_data.items():
+                if attr in ['first_name', 'last_name']:
                     setattr(user, attr, value)
             user.save()
-        return super().update(instance, validated_data)
+        return super().update(instance, validated_data)       
+       
+       
+class UpdateBrokerProfileSerializer(serializers.ModelSerializer):
+    user = UpdateUserSerializer(required=True,many=False)
+    class Meta:
+        model = BrokerProfile
+        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture'] 
+
+    def update(self, instance, validated_data): # Update BrokerProfile fields + User fields
+        print('validated_data',validated_data)
+        valid_user_data = validated_data.pop('user', None)
+        if valid_user_data:
+            user = instance.user
+            for attr, value in valid_user_data.items():
+                if attr in ['first_name', 'last_name']:
+                    setattr(user, attr, value)
+            user.save()
+        return super().update(instance, validated_data)       
+       
+
+
+class UpdateAgentProfileSerializer(serializers.ModelSerializer):
+    user = UpdateUserSerializer(required=True,many=False)
+    class Meta:
+        model = AgentProfile
+        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture'] 
+
+    def update(self, instance, validated_data): # Update AgentProfile fields + User fields
+        print('validated_data',validated_data)
+        valid_user_data = validated_data.pop('user', None)
+        if valid_user_data:
+            user = instance.user
+            for attr, value in valid_user_data.items():
+                if attr in ['first_name', 'last_name']:
+                    setattr(user, attr, value)
+            user.save()
+        return super().update(instance, validated_data)       
+       
+
 ###########################################################################################################################
-
-
-
-
-
-class ClientProfileSerializer(serializers.ModelSerializer):
-    user = UpdateUserSerializer()
-   
-    class Meta:
-        model = ClientProfile 
-        exclude = ['user']
-    
-    def validate_phone_number(value):
-        if not value :
-            raise serializers.ValidationError("phone_number field is required")
-        return value
-    class Meta:
-        model = ClientProfile
-        fields = ['user', 'date_of_birth','gender','phone_number','country', 'address','profile_picture']  # replace 'other_profile_fields' with actual fields from EmployeeProfile model
-
-class AdminProfileSerializer(serializers.ModelSerializer):
-    user = UpdateUserSerializer() 
-    
-    
-    def validate_phone_number(value):
-        if not value :
-            raise serializers.ValidationError("phone_number field is required")
-        return value    
-    
-    class Meta:
-        model = AdminProfile
-        fields = ['user', 'date_of_birth','gender','phone_number','country', 'address','profile_picture']  # replace 'other_profile_fields' with actual fields from EmployeeProfile model
-    
-##################################################################          
-
-
-
-
-
-
-
-
-
-
 
 
 

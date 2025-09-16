@@ -31,16 +31,16 @@ urlpatterns = [
     path('user-detail/<str:id>/', views.DetailUserAPIView.as_view(), name='user-detail'),
     path('user-update/<str:id>/', views.UpdateUserAPIView.as_view(), name='user-update'),
     path('user-delete/<str:id>/', views.DeleteUserAPIView.as_view(), name='user-delete'),
-    # client
-    path('list-client/', views.ListClientAPIView.as_view(), name='list-client'),
+    # buyer
+    path('list-buyer/', views.ListBuyerAPIView.as_view(), name='list-buyer'),
 
  #  for request user only
     path('request-user/', views.DetailRequestUserAPIView.as_view(), name='request-user'),
-    path('request-user-profile/', views.RequestUserProfileAPIView.as_view(), name='request-user-profile'), # general any type of user client or admin 
-    path('update-request-user-profile/', views.UpdateRequestUserProfileAPIView.as_view(), name='update-request-user-profile'), # general any type of user client or admin 
+    path('request-user-profile/', views.RequestUserProfileAPIView.as_view(), name='request-user-profile'), # general any type of user buyer or admin 
+    path('update-request-user-profile/', views.UpdateRequestUserProfileAPIView.as_view(), name='update-request-user-profile'), # general any type of user buyer or admin 
 
     # path('update-admin-profile/', views.UpdateRequestAdminProfileAPIView.as_view(), name='update-user-profile'),
-    # path('update-client-profile/', views.UpdateRequestClientProfileAPIView.as_view(), name='update-user-profile'),
+    # path('update-buyer-profile/', views.UpdateRequestBuyerProfileAPIView.as_view(), name='update-user-profile'),
 
     
     # Forget-password

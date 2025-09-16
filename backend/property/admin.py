@@ -56,9 +56,9 @@ class PropertyAdmin(admin.ModelAdmin):
 
 @admin.register(PropertyImage)
 class PropertyImageAdmin(admin.ModelAdmin):
-    list_display  = ("id", "image", "property",)
-    list_filter   = ( "image", )
-    search_fields = ( "image", )
+    list_display  = ("id", "images", "property",)
+    list_filter   = ( "images", )
+    search_fields = ( "images", )
     
     
 

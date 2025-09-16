@@ -19,8 +19,8 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 # pagination
 from pagination.pagination import CustomPagination  
 # LOCAL
-from .models import CustomUser, ClientProfile, AdminProfile, UserOTP
-from .serializers import RegisteUserProfileSerializer, CustomUserSerializer,  LoginUserSerializer, LogoutSerializer, UpdateUserSerializer, AdminProfileSerializer, ClientProfileSerializer, UpdateClientProfileSerializer, UpdateAdminProfileSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ChangePasswordSerializer
+from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile,BrokerProfile,AgentProfile,UserOTP
+from .serializers import RegisteUserProfileSerializer, CustomUserSerializer,  LoginUserSerializer, LogoutSerializer, UpdateUserSerializer, AdminProfileSerializer, BuyerProfileSerializer, UpdateBuyerProfileSerializer, UpdateAdminProfileSerializer, DeveloperProfileSerializer, UpdateDeveloperProfileSerializer, BrokerProfileSerializer, UpdateBrokerProfileSerializer, AgentProfileSerializer, UpdateAgentProfileSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ChangePasswordSerializer
 from .utils import modifySendOTPToEmail
 from proj.settings import DEFAULT_FROM_EMAIL
 
@@ -32,7 +32,7 @@ from proj.settings import DEFAULT_FROM_EMAIL
 
 
 ###################################### Authentication-proccess  ####################################################333
-### Register a new user - client  +  send OTP to email  ###########
+### Register a new user - buyer  +  send OTP to email  ###########
 class UserProfileRegisterAPIView(views.APIView): 
     queryset = get_user_model().objects.all()
     serializer_class = RegisteUserProfileSerializer
@@ -340,16 +340,16 @@ class ListUserAPIView(views.APIView):
 
 
 
-# clients list 
-# path('list-client/', views.ListUserAPIView.as_view(), name='list-client'),
-class ListClientAPIView(views.APIView):
+# buyers list 
+# path('list-buyer/', views.ListUserAPIView.as_view(), name='list-buyer'),
+class ListBuyerAPIView(views.APIView):
     serializer_class   = CustomUserSerializer
     permission_classes = [permissions.IsAdminUser]
     pagination_class   = CustomPagination
     
     def get(self, request, format=None):
-        queryset = get_user_model().objects.filter(is_client=True)
-        print('client queryset=',queryset)
+        queryset = get_user_model().objects.filter(role="buyer")
+        print('buyer queryset=',queryset)
         #  with Apply pagination
         paginator = self.pagination_class()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
@@ -469,25 +469,51 @@ class DetailRequestUserAPIView(views.APIView):
   
     
 ##############################update profile by request.user only #############33333
-# only request user can update his profile(  general for client or admin) 
+# only request user can update his profile(  general for buyer or admin) 
 class UpdateRequestUserProfileAPIView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def put(self, request, *args, **kwargs):
         user = request.user
+        
         if request.user.is_superuser == True:
-                        try:
-                            instance_admin_profile = AdminProfile.objects.get(user=request.user)
-                            serializer = UpdateAdminProfileSerializer(instance_admin_profile, data=request.data, partial=True)
-                        except AdminProfile.DoesNotExist:
-                            return Response({'error': 'Admin Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
-        if request.user.is_client == True:
-                        try:
-                            instance_client_profile = ClientProfile.objects.get(user=request.user)
-                            serializer = UpdateClientProfileSerializer(instance_client_profile, data=request.data, partial=True)
-                        except ClientProfile.DoesNotExist:
-                            return Response({'error': 'Client Profile not found'}, status=status.HTTP_404_NOT_FOUND)                 
-                        
+            try:
+                instance_admin_profile = AdminProfile.objects.get(user=request.user)
+                serializer = UpdateAdminProfileSerializer(instance_admin_profile, data=request.data, partial=True)
+            except AdminProfile.DoesNotExist:
+                return Response({'error': 'Admin Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
+        
+        
+        if request.user.role == "buyer":
+            try:
+                instance_buyer_profile = BuyerProfile.objects.get(user=request.user)
+                serializer = UpdateBuyerProfileSerializer(instance_buyer_profile, data=request.data, partial=True)
+            except BuyerProfile.DoesNotExist:
+                return Response({'error': 'Buyer Profile not found'}, status=status.HTTP_404_NOT_FOUND)                 
+            
+            
+        if request.user.role == "developer" :
+            try:
+                instance_developer_profile = DeveloperProfile.objects.get(user=request.user)
+                serializer = UpdateDeveloperProfileSerializer(instance_developer_profile, data=request.data, partial=True)
+            except DeveloperProfile.DoesNotExist:
+                return Response({'error': 'Developer Profile not found'}, status=status.HTTP_404_NOT_FOUND)                                 
+        
+        
+        if request.user.role == "broker" :
+            try:
+                instance_broker_profile = DeveloperProfile.objects.get(user=request.user)
+                serializer = UpdateBrokerProfileSerializer(instance_broker_profile, data=request.data, partial=True)
+            except BrokerProfile.DoesNotExist:
+                return Response({'error': 'Broker Profile not found'}, status=status.HTTP_404_NOT_FOUND)                                 
+
+        if request.user.role == "agent" :
+            try:
+                instance_agent_profile = AgentProfile.objects.get(user=request.user)
+                serializer = UpdateAgentProfileSerializer(instance_agent_profile, data=request.data, partial=True)
+            except AgentProfile.DoesNotExist:
+                return Response({'error': 'Agent Profile not found'}, status=status.HTTP_404_NOT_FOUND)   
+        
         if serializer.is_valid():
             print("Serializer is valid")  # Debugging line
             self.perform_update(serializer,user)
@@ -495,6 +521,8 @@ class UpdateRequestUserProfileAPIView(views.APIView):
         
         print("Serializer errors:", serializer.errors)  # Debugging line
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+   
    
     def perform_update(self, serializer, user):
         first_name = self.request.data.get("first_name")
@@ -525,32 +553,98 @@ class RequestUserProfileAPIView(views.APIView):
         
         
         if user.is_superuser == True:
-                        try:
-                            instance_admin_profile = AdminProfile.objects.get(user=request.user)
-                            serializer = AdminProfileSerializer(instance_admin_profile)
-                            return Response(serializer.data, status=status.HTTP_200_OK)
-                        except AdminProfile.DoesNotExist:
-                            return Response({'error': 'Admin Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
+            try:
+                instance_admin_profile = AdminProfile.objects.get(user=request.user)
+                serializer = AdminProfileSerializer(instance_admin_profile)
+                data = serializer.data
+                data.update({
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "role": user.role,
+                })
+                return Response(data, status=status.HTTP_200_OK)
+            except AdminProfile.DoesNotExist:
+                return Response({'error': 'Admin Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
         
-        if request.user.is_client == True:
-                        try:
-                            instance_client_profile = ClientProfile.objects.get(user=request.user)
-                            serializer = ClientProfileSerializer(instance_client_profile)
-                            return Response(serializer.data, status=status.HTTP_200_OK)
-                        except ClientProfile.DoesNotExist:
-                            return Response({'error': 'Client Profile not found'}, status=status.HTTP_404_NOT_FOUND)                 
-                        
         
+        if request.user.role == "buyer" :
+            try:
+                instance_buyer_profile = BuyerProfile.objects.get(user=request.user)
+                serializer = BuyerProfileSerializer(instance_buyer_profile)
+                data = serializer.data
+                data.update({
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "role": user.role,
+                })
+                return Response(data, status=status.HTTP_200_OK)
+            except BuyerProfile.DoesNotExist:
+                return Response({'error': 'Buyer Profile not found'}, status=status.HTTP_404_NOT_FOUND)                 
+            
+            
+        if request.user.role == "developer" :
+            try:
+                instance_developer_profile = DeveloperProfile.objects.get(user=request.user)
+                serializer = DeveloperProfileSerializer(instance_developer_profile)
+                data = serializer.data
+                data.update({
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "role": user.role,
+                })
+                return Response(data, status=status.HTTP_200_OK)
+            except DeveloperProfile.DoesNotExist:
+                return Response({'error': 'Developer Profile not found'}, status=status.HTTP_404_NOT_FOUND)    
 
-# class UpdateRequestClientProfileAPIView(views.APIView):
-#     serializer_class = UpdateClientProfileSerializer
+            
+        if request.user.role == "broker" :
+            try:
+                instance_broker_profile = BrokerProfile.objects.get(user=request.user)
+                serializer = BrokerProfileSerializer(instance_broker_profile)
+                data = serializer.data
+                data.update({
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "role": user.role,
+                })
+                return Response(data, status=status.HTTP_200_OK)
+            except BrokerProfile.DoesNotExist:
+                return Response({'error': 'Broker Profile not found'}, status=status.HTTP_404_NOT_FOUND)    
+
+    
+        if request.user.role == "agent" :
+            try:
+                instance_agent_profile = AgentProfile.objects.get(user=request.user)
+                serializer = AgentProfileSerializer(instance_agent_profile)
+                data = serializer.data
+                data.update({
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "email": user.email,
+                        "role": user.role,
+                })
+                return Response(data, status=status.HTTP_200_OK)
+            except AgentProfile.DoesNotExist:
+                return Response({'error': 'Agent Profile not found'}, status=status.HTTP_404_NOT_FOUND) 
+    
+    
+    
+    
+    
+    
+# class UpdateRequestBuyerProfileAPIView(views.APIView):
+#     serializer_class = UpdateBuyerProfileSerializer
 #     permission_classes = [permissions.IsAuthenticated]
     
 #     def put(self, request, *args, **kwargs):
 #         user = request.user
 #         try:
-#             instance_profile = ClientProfile.objects.get(user=user)
-#         except ClientProfile.DoesNotExist:
+#             instance_profile = BuyerProfile.objects.get(user=user)
+#         except BuyerProfile.DoesNotExist:
 #             return response.Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)  
 #         serializer = self.serializer_class(instance_profile, data=request.data, partial=True)
 #         if serializer.is_valid():

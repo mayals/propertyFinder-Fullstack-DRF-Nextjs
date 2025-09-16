@@ -21,7 +21,7 @@ class CountrySerializer(serializers.ModelSerializer):
                                     style={'placeholder': 'ISO code name here...'},
                                     validators=[UniqueValidator(queryset=Country.objects.all())]
                                     )                   
-    # cities group(objects) belong to this country - comes from City table
+    # cities group(objects) belong to this country - comes from City table - read only field
     cities = serializers.SlugRelatedField(
                                     many=True,
                                     read_only=True,
@@ -96,13 +96,126 @@ class UpdateCitySerializer(serializers.ModelSerializer):
        
         
 # PropertyMainType ##################################################################
-
+class PropertyMainTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyMainType
+        fields = ['id', 'created_at', 'updated_at', 'maintype_name']
+        read_only_fields = ('id', 'created_at', 'updated_at',)
 
 
 
 # PropertySubTypes ##################################################################
+class PropertySubTypesSerializer(serializers.ModelSerializer):
+    # must select the primary key of main_type - main_type id - before insert subtype_name
+    main_type = serializers.PrimaryKeyRelatedField(
+                                        queryset=PropertyMainType.objects.all(),
+                                        help_text='Select a property main_type id for this sub type.'
+                                        )
+    subtype_name = serializers.CharField(required=True, 
+                                    max_length=100,
+                                    help_text='property sub type name must be unique.',
+                                    style={'placeholder': 'sub type name here...'},
+                                    validators=[UniqueValidator(queryset=PropertySubTypes.objects.all())]
+                                    )
+    class Meta:
+        model = PropertySubTypes
+        fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name']
+        read_only_fields = ('id', 'created_at', 'updated_at',)
+
+
 # PropertyPurposeSubChoices ##################################################################
+class PropertySubTypesSerializer(serializers.ModelSerializer):
+    # must select the primary key of main_type - main_type id - before insert subtype_name
+    main_type = serializers.PrimaryKeyRelatedField(
+                                        queryset=PropertyMainType.objects.all(),
+                                        help_text='Select a property main_type id for this sub type.'
+                                        )
+     
+    class Meta:
+        model = PropertyMainType
+        fields = ['id', 'created_at', 'updated_at', 'main_type', 'purpose_sub_choice_name' ]
+        read_only_fields = ('id', 'created_at', 'updated_at',)
+
+
+
+
+
 # Amenity ##################################################################
-# Property ##################################################################
+class AmenitySerializer(serializers.ModelSerializer):
+    
+    amenity_name  = serializers.CharField(required=True, 
+                                    max_length=100,
+                                    help_text='Amenity name must be unique.',
+                                    style={'placeholder': 'Amenity name here...'},
+                                    validators=[UniqueValidator(queryset=Amenity.objects.all())]
+                                    )
+    class Meta:
+            model = Amenity
+            fields = ['id', 'amenity_name']
+            read_only_fields = ('id', 'created_at', 'updated_at',)
+
+
+
+
+
 # PropertyImage ##################################################################
+class PropertyImageSerializer(serializers.ModelSerializer): 
+    # must select the primary key of property id - before insert an image for it
+    property = serializers.PrimaryKeyRelatedField(
+                                        queryset=property.objects.all(),
+                                        help_text='Select a property id for this image.'
+                                        )
+    class Meta:
+        model = PropertyImage
+        fields = ['id','property','images','uploaded_at']
+
+
+
+
+# Property ##################################################################
+class PropertySerializer(serializers.ModelSerializer):
+    title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Project.objects.all())])
+    images_Property  = PropertyImageSerializer(many=True,read_only=True)                                     
+    uploaded_images = serializers.ListField(child = serializers.ImageField(max_length = 1000000, allow_empty_file = False, use_url = False), write_only=True)
+     
+    class Meta:
+        model = Property
+        fields = ['id','owner','title','description','country','city','Area',
+                  'district','plot_number','land_number','address_detail',
+                  ' latitude','longitude','is_occupied','available_from',
+                  'psub_type','purpose','property_size',
+                  'bedrooms','bathrooms','plot_length','plot_width','street_width',
+                  'facade','property_age','amenities','price','currency','furnishing',
+                  'category']
+                  
+        read_only_fields = ['id', 'images_project', 'created_at', 'updated_at', 'ratings_count', 'average_ratings']
+        write_only_fields = ['uploaded_images', 'uploaded_images']                   
+    
+    def validate_title(self, value):
+        print('value in serializer=',value)
+        if value is None  or value == "" :
+            raise serializers.ValidationError("The Property's title is required") 
+        if Property.objects.filter(name=value).exists():
+            raise serializers.ValidationError("The Property's title must be unique")     
+        print('value of validated title =',value)
+        return value
+   
+    
+    def validate_uploaded_images(self, value):
+        allowed_extensions = ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'tiff']
+        if not value.name.split('.')[-1].lower() in allowed_extensions:
+            raise serializers.ValidationError("Invalid file extension. Allowed extensions are: bmp, gif, jpg, jpeg, png, webp, tiff.")
+        return value
+    
+    
+    def create(self,validated_data):
+        print('validated_data in serializer=',validated_data) 
+        uploaded_images = validated_data.pop('uploaded_images', [])
+        print('uploaded_images in serializer=',uploaded_images) 
+        property = Property.objects.create(**validated_data)
+        for image in uploaded_images:
+            PropertyImage.objects.create(property=property, images=image)
+        return property
+
+
 
