@@ -1,22 +1,23 @@
 "use client";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { updateRequestUserProfile } from "../../utils/auth";
+import { updateRequestUserProfile } from "../../../utils/auth";
 
 // react-toastify
-import notify from "../../common/useNotification"
+import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
-import { moveMessagePortToContext } from "worker_threads";
 
 
 
 
-export default function MyProfile() {
+
+export default function MyBuyerProfile() {
     const { user, loading } = useAuth();
-    console.log('MyProfile-useAuth-user=', user)
+    
     const router = useRouter();
     
     const [firstName, setFirstName] = useState('');
@@ -29,7 +30,7 @@ export default function MyProfile() {
     const [address, setAddress] = useState('');
     
     // Profile Image for current user
-    const [ppicture, setPpicture] = useState<string | File | null>(null);
+    const [ppicture, setPpicture] = useState<string | null>(null);
     // const [preview, setPreview]   = useState<string | null>(null);
     
     
@@ -41,10 +42,11 @@ export default function MyProfile() {
       if (!loading && !user) {
           router.push("/login");
       }
+      
       if (!loading && user){
-          setFirstName(user.user.first_name);
-          setLastName(user.user.last_name);
-          setRole(user.user.role);
+          setFirstName(user.first_name);
+          setLastName(user.last_name);
+          setRole(user.role);
           setGender(user.gender);
           setDob(user.date_of_birth);
           setPhone(user.phone_number || "");
@@ -52,27 +54,43 @@ export default function MyProfile() {
           setAddress(user.address || "");
           setPpicture(user.profile_picture || null);
         
-          console.log('firstName=', firstName)
-          console.log('lastName=', lastName)
-          console.log('gender=', gender)
-          console.log('dob=', dob)
-          console.log('phone=', phone)
-          console.log('country=', country)
-          console.log('address=', address)
-          console.log('ppicture=', ppicture)
-      }
-      }, [user, loading, router]); // Add dependencies here
+          console.log('MyAdminProfile-useAuth-user=', user)
+          // console.log('user=', user)
+          // console.log('user.first_name=', user.first_name)
+          // console.log('firstName=', firstName)
+          // console.log('lastName=', lastName)
+          // console.log('gender=', gender)
+          // console.log('dob=', dob)
+          // console.log('phone=', phone)
+          // console.log('country=', country)
+          // console.log('address=', address)
+          // console.log('ppicture=', ppicture)
+        }
+    }, [user, loading, router]); // Add dependencies here
 
     
-
+    if (loading) { 
+          return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+    }
         
     return (
         <>
             <section className="my-4 bg-gray-100 flex items-center">
                 <div className="lg:w-3/4 w-[95%] mx-auto bg-white shadow-2xl rounded-2xl p-6">
-                    
+                    <div className="flex place-content-end">
+                      <Link href="/editMyProfile/buyer"
+                         className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
+                        <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                                stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                            </svg>
+                        </span>
+                        <span className="hidden md:inline-block">Edit</span>
+                    </Link>
+                    </div>
                     <h1 className="text-center text-2xl text-gray-900">
-                        <span className="text-[#c75a00] text-2xl">{user?.user?.first_name}
+                        <span className="text-[#c75a00] text-2xl">{user?.first_name}
                         <span>&apos;s</span>&nbsp;</span>Profile
                     </h1>
                      <ToastContainer position="top-center" autoClose={3000} />
@@ -90,12 +108,12 @@ export default function MyProfile() {
                               src={
                                 ppicture 
                                   ? `http://127.0.0.1:8000${ppicture}` 
-                                  : "/default-avatar.png" // put a default image in /public
+                                  : "/profile_default.svg"               // put a default image in /public
                               }
-                              alt="Profile Picture"
+                              alt="Buyer Profile Picture"
                               width={300}
                               height={300}
-                              className="rounded-full object-cover"
+                              className="rounded-full"
                             />
                             
                             <div className="text-xl mt-3 text-gray-600 flex items-center justify-center gap-2">
@@ -126,11 +144,11 @@ export default function MyProfile() {
                                 )}
                                 {/* Name */}
                                 <span>
-                                  {user?.user?.first_name} {user?.user?.last_name}
+                                  {user?.first_name} {user?.last_name}
                                 </span>
                             </div>
                             <h2 className="bg-green-500 text-white p-1 rounded-b-lg">
-                                {user?.user?.role}
+                                {user?.role}
                             </h2>
                       
                             {/* <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">All-in-one platform</p>
@@ -149,73 +167,73 @@ export default function MyProfile() {
                                   </svg>
                                   First Name
                                 </dt>
-                                <dd className="mt-2">{user?.user?.first_name}</dd>
+                                <dd className="mt-2">{user?.first_name}</dd>
                               </div>
                             
-                               <div className="relative pl-9">
+                              <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Last Name
                                 </dt>
-                                <dd className="mt-2">{user?.user?.last_name}</dd>
+                                <dd className="mt-2">{user?.last_name}</dd>
                               </div>
 
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Date of birth
                                 </dt>
-                                <dd className="mt-2">{user?.date_of_birth}</dd>
+                                <dd className="mt-2">{user?.date_of_birth || "Not provided"}</dd>
                               </div>
                             
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Email Address
                                 </dt>
-                                <dd className="mt-2">{user?.user?.email}</dd>
+                                <dd className="mt-2">{user?.email}</dd>
                               </div>
                             
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Phone Number
                                 </dt>
-                                <dd className="mt-2">{user?.phone_number}</dd>
+                                <dd className="mt-2">{user?.phone_number || "Not provided"}</dd>
                               </div>
                             
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Country
                                 </dt>
-                                <dd className="mt-2">{user?.country}</dd>
+                                <dd className="mt-2">{user?.country|| "Not provided"}</dd>
                               </div>
                             
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Address
                                 </dt>
-                                <dd className="mt-2">{user?.address}</dd>
+                                <dd className="mt-2">{user?.address|| "Not provided"}</dd>
                               </div>
                             
-                              <div className="relative pl-9">
+                              {/* <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Reporting
                                 </dt>
@@ -225,12 +243,12 @@ export default function MyProfile() {
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"></path>
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
                                   Mobile app
                                 </dt>
                                 <dd className="mt-2">Nulla est saepe accusamus nostrum est est. Fugit voluptatum omnis quidem voluptatem.</dd>
-                              </div>
+                              </div> */}
                             
                           </dl>
                         </div>

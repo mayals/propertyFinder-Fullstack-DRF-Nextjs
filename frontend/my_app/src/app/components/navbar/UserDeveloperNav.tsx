@@ -13,7 +13,7 @@ import { useAuth } from "../../context/AuthContext";
 
 
 
-const UserNav = ({user}) => {
+const UserDeveloperNav = ({user}) => {
     
     const { setUser } = useAuth();
     const router = useRouter();
@@ -156,4 +156,4 @@ const UserNav = ({user}) => {
     )
 }
 
-export default UserNav;
+export default UserDeveloperNav;

@@ -38,15 +38,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     
     const hideNavbar = 
       pathname === "/login" ||
-      pathname === "/register" || 
+      pathname === "/register/buyer" || 
       pathname === "/forgotPassword" ||
       pathname === "/noteCheckEmail" ||
       pathname === "/notePasswordResetComplete" ||
       pathname === "/changePassword" ||
       pathname.startsWith("/setNewPassword/");  // for the dynamic path "/setNewPassword/[uid]/[token]""
-      
-
-    return (
+      pathname.startsWith("/users/confirm-email/"); 
+      console.log("/users/confirm-email/", pathname.startsWith("/users/confirm-email/"))
+    
+    
+      return (
 
       <html lang="en">
         <body className={poetsenOne.className}>

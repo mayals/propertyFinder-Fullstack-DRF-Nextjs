@@ -13,14 +13,15 @@ import { useAuth } from "../../context/AuthContext";
 
 
 
-const UserNav = ({user}) => {
+const UserBuyerNav = ({user}) => {
     
-    const { setUser } = useAuth();
+    const {setUser , loading } = useAuth();
     const router = useRouter();
-    // const loginModal = useLoginModal();
-    // const signupModal = useSignupModal();
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null);
+    // const loginModal = useLoginModal();
+    // const signupModal = useSignupModal();
+    
 
 
     const handleLogout = async () => {
@@ -53,46 +54,35 @@ const UserNav = ({user}) => {
     
     
     return (
-        <div className="p-2 relative inline-block rounded-full" ref={dropdownRef}>
+        <div className="z-100 p-2 relative inline-block rounded-full" ref={dropdownRef}>
+            
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center"
+                className="flex items-center cursor-pointer"
             >
-                        <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
-
-                       
-                                {/* <Image
-                                    src={`http://127.0.0.1:8000${user?.profile_picture}`}
-                                    alt="Profile"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full"
-                                />
-                            ) : (  */}
-                               <Image
-                                    src={
-                                    user 
-                                        ? `http://127.0.0.1:8000${user?.profile_picture}` 
-                                        : "/profile_default.svg" // put a default image in /public
-                                    }
-                                    alt="Profile Picture"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full object-cover"
-                                />
-                       
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                
+                { !loading && user && (
+                    <Image
+                        src={`http://127.0.0.1:8000${user?.profile_picture}`}
+                        alt="Buyer Profile"
+                        width={40}
+                        height={40}
+                        className="rounded-full bg-black"
+                    />
+                )}          
             </button>
 
-            {isOpen && (
+            {!loading && isOpen && (
                 <div className="w-[220px] absolute top-[60px] right-0 bg-white border rounded-xl shadow-md flex flex-col cursor-pointer">
                     {user ? (
                         <>
                             <MenuLink
-                                label='My Admin profile'
+                                label='My Buyer profile'
                                 onClick={() => {
-                                    router.push('/myProfile/admin');
+                                    router.push('/myProfile/buyer');
                                     setIsOpen(false);
                                 }}
                             />
@@ -156,4 +146,4 @@ const UserNav = ({user}) => {
     )
 }
 
-export default UserNav;
+export default UserBuyerNav;

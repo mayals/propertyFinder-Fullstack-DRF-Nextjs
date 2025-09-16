@@ -13,7 +13,7 @@ import { useAuth } from "../../context/AuthContext";
 
 
 
-const UserNav = ({user}) => {
+const UserBrokerNav = ({user}) => {
     
     const { setUser } = useAuth();
     const router = useRouter();
@@ -90,9 +90,9 @@ const UserNav = ({user}) => {
                     {user ? (
                         <>
                             <MenuLink
-                                label='My Admin profile'
+                                label='My broker profile'
                                 onClick={() => {
-                                    router.push('/myProfile/admin');
+                                    router.push('/myProfile/broker');
                                     setIsOpen(false);
                                 }}
                             />
@@ -156,4 +156,4 @@ const UserNav = ({user}) => {
     )
 }
 
-export default UserNav;
+export default UserBrokerNav;

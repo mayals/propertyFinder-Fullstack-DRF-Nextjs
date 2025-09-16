@@ -29,7 +29,6 @@ export default function LoginPage() {
         // setIsSubmitting(true);
         setErrorConfirmEmailMsg('');
 
-
         //  check email field is not empty
         if (email === "" ) {
           notify("Please enter the Email!","warning");
@@ -43,12 +42,9 @@ export default function LoginPage() {
           return;
         }
 
-
         // data inserted in fields
         console.log('email=', email);
         console.log('password=', password);
-
-         
 
         // axios api
         // login success
@@ -79,10 +75,6 @@ export default function LoginPage() {
                 }
              
  
-                
-                
-                
-          
         // login error  
         } catch (error) {
             // error come from backend
@@ -223,7 +215,7 @@ export default function LoginPage() {
 
             <div className="p-4 text-gray-600 text-xl">
                 <p>Don&apos;t have an account? 
-                    <Link href="/register">
+                    <Link href="/register/buyer">
                         <span className="no-underline text-blue-700 hover:underline hover:text-blue-600"> Sign Up</span>
                     </Link>
                 </p>

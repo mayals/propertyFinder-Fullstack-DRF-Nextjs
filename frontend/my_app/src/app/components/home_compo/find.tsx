@@ -2,7 +2,6 @@
 // src/app/components/home_compo/find.tsx
 
 "use client";
-import { Elsie } from "next/font/google";
 import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 

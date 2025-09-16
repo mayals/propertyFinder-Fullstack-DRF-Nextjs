@@ -11,6 +11,8 @@ import notify from "../../../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 
+
+
 export default function ConfirmEmailPage() {
   const params = useParams();
   const uid = params?.uid;
@@ -48,7 +50,7 @@ export default function ConfirmEmailPage() {
         });
 
     }
-  }, [uid, token]);
+  }, [uid, token, router]);
 
 
   

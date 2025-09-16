@@ -3,23 +3,24 @@
 "use client"
 import React from "react";
 import { useState } from "react";
-import { registerUser } from "../../utils/auth";
+import { registerUser } from "../../../utils/auth";
 import Link from 'next/link';
 // react-toastify
-import notify from "../../common/useNotification"
+import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 import { useRouter } from 'next/navigation'
 
 
-export default function RegisterPage() {
+export default function BuyerRegister() {
 
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName]   = useState("")
     const [email, setEmail]         = useState("")
     const [password, setPassword]   = useState("")
     const [password2, setPassword2] = useState("")
-   
+    const [role, setRole] = useState("buyer")
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
@@ -75,14 +76,14 @@ export default function RegisterPage() {
           console.log('email=', email);
           console.log('password=', password);
           console.log('password2=', password2);
-          
+          console.log('role=', role);
           
 
 
           // axios api
           try { 
                 // axios -success
-                await registerUser(firstName, lastName, email, password, password2)
+                await registerUser(firstName, lastName, email, password, password2,role)
                 notify("Thanks for signing up. Please check your email — a confirmation link has been sent.", "success");
           
                 // ✅ Delay for 3 seconds before redirecting
@@ -117,7 +118,7 @@ export default function RegisterPage() {
       <>
       <section className="min-h-screen bg-[#F2F2F2] flex flex-col justify-center items-center px-4 py-8">
           <div className="text-gray-600 font-bold text-2xl sm:text-3xl my-3 text-center">
-            Registration
+           Buyer Registration
           </div>
 
           <ToastContainer position="top-center" />

@@ -1,21 +1,21 @@
 "use client";
 
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { updateRequestUserProfile } from "../../utils/auth";
+import { updateRequestUserProfile } from "../../../utils/auth";
 
 // react-toastify
-import notify from "../../common/useNotification"
+import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 
 
 
-export default function EditProfile() {
+export default function EditBuyerProfile() {
     const { user, loading } = useAuth();
     const router = useRouter();
 
@@ -46,8 +46,8 @@ export default function EditProfile() {
         }
 
         if (!loading && user){
-            setFirstName(user.user.first_name);
-            setLastName(user.user.last_name);
+            setFirstName(user.first_name);
+            setLastName(user.last_name);
             setGender(user.gender);
             setDob(user.date_of_birth);
             setPhone(user.phone_number || "");
@@ -136,18 +136,13 @@ export default function EditProfile() {
     };
 
 
-
-
-
-
-
     //////  SUBMIT ////////////
     ///////////////  after submit button clicked
     const handleSubmit = async (e) => {
           e.preventDefault();
           // //////////////////////  validate fields ////////////////////////
           
-          if(!user){
+          if (!loading && !user){
             router.push('/login');
           }
           if (!firstName) {      // if (firstName === "" || firstName === null) {
@@ -222,31 +217,29 @@ export default function EditProfile() {
           
                 // ✅ Delay for 3 seconds before redirecting
                 setTimeout(() => {
-                    router.push('/myProfile');
+                    router.push('/myProfile/buyer');
                 }, 5000); // 5000 milliseconds = 5 seconds
           
 
-          } catch (error) {
+          } catch (error: any) {
               console.log('updateRequestUserProfile error =', error);
 
               if (
-                error &&
-                error[0].includes("The phone number entered is not valid.")
-                ) {
-                  console.log('yes include "The phone number entered is not valid."')
-                  notify("The phone number entered is not valid.", "error");
-                  return;
-              
-              }else{
-                  // Show all validation errors come from backend serializer error filds message
-                  Object.entries(error).forEach(([field, messages]) => {
-                    if (Array.isArray(messages)) {
-                      messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
-                    } else {
-                      notify(`${field}: ${messages}`, "error");
-                    }
-                  });            
+                error?.phone_number &&
+                Array.isArray(error.phone_number) &&
+                error.phone_number[0].includes("The phone number entered is not valid.")
+              ) {
+                notify("The phone number entered is not valid.", "error");
+              } else {
+                Object.entries(error).forEach(([field, messages]) => {
+                  if (Array.isArray(messages)) {
+                    messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
+                  } else {
+                    notify(`${field}: ${messages}`, "error");
+                  }
+                });
               }
+         
 
               // ✅ If backend sent a message, use that
               // if (error.response.data.detail) {
@@ -321,7 +314,7 @@ export default function EditProfile() {
                           <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                           </svg>
-                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Edit Profile</span>
+                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Edit Buyer Profile</span>
                         </div>
                       </li>
                     </ol>
@@ -330,7 +323,7 @@ export default function EditProfile() {
                   <hr className="text-gray-300"></hr>
                 
                   <h1 className="text-3xl mb-2 dark:text-white mt-8">Edit 
-                    <span className="text-[#c75a00] text-2xl">&nbsp;{user?.user?.first_name}
+                    <span className="text-[#c75a00] text-2xl">&nbsp;{user?.first_name}
                       <span>&apos;s</span>&nbsp;</span>&nbsp;Profile
                   </h1>
                   <p className="text-gray-500 mb-6 dark:text-gray-400">Create or update your profile</p>

@@ -13,14 +13,16 @@ import { useAuth } from "../../context/AuthContext";
 
 
 
-const UserNav = ({user}) => {
+const UserAdminNav = ({user}) => {
     
-    const { setUser } = useAuth();
+    const {setUser , loading } = useAuth();
     const router = useRouter();
-    // const loginModal = useLoginModal();
-    // const signupModal = useSignupModal();
     const [isOpen, setIsOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null);
+    
+    // const loginModal = useLoginModal();
+    // const signupModal = useSignupModal();
+    
 
 
     const handleLogout = async () => {
@@ -49,45 +51,43 @@ const UserNav = ({user}) => {
     }, []);
 
     
-    
+    const handleclickIsOpen = () =>{
+        setIsOpen(!isOpen)
+        console.log("click")
+        // console.log("isOpen=",isOpen)
+    }
     
     
     return (
-        <div className="p-2 relative inline-block rounded-full" ref={dropdownRef}>
+        <div className="z-100 p-2 relative inline-block rounded-full" ref={dropdownRef}>
+            
+            
             <button 
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center"
+                onClick={handleclickIsOpen}
+                className="flex items-center cursor-pointer"
             >
-                        <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                        </svg>
+                <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
 
-                       
-                                {/* <Image
-                                    src={`http://127.0.0.1:8000${user?.profile_picture}`}
-                                    alt="Profile"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full"
-                                />
-                            ) : (  */}
-                               <Image
-                                    src={
-                                    user 
-                                        ? `http://127.0.0.1:8000${user?.profile_picture}` 
-                                        : "/profile_default.svg" // put a default image in /public
-                                    }
-                                    alt="Profile Picture"
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full object-cover"
-                                />
-                       
+                { !loading && user && (
+                    <Image
+                        src={`http://127.0.0.1:8000${user?.profile_picture}`}
+                        alt="Admin Profile"
+                        width={40}
+                        height={40}
+                        className="rounded-full bg-black"
+                    />
+                )}          
             </button>
 
+
+
             {isOpen && (
+                
                 <div className="w-[220px] absolute top-[60px] right-0 bg-white border rounded-xl shadow-md flex flex-col cursor-pointer">
-                    {user ? (
+                
+                    { !loading && user && (
                         <>
                             <MenuLink
                                 label='My Admin profile'
@@ -98,36 +98,36 @@ const UserNav = ({user}) => {
                             />
 
                             <MenuLink
-                                label='My dashboard'
+                                label='My Admin dashboard'
                                 onClick={() => {
                                     router.push('/myDashboard');
                                     setIsOpen(false);
                                 }}
                             />
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My properties'
                                 onClick={() => {
                                     router.push('/myProperties');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My favorites'
                                 onClick={() => {
                                     router.push('/myFavorites');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My reservations'
                                 onClick={() => { 
                                     router.push('/myReservations');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
                             
                             <MenuLink
                                 label='Inbox'
@@ -147,8 +147,6 @@ const UserNav = ({user}) => {
 
                             
                         </>
-                    ) : (
-                        null
                     )}
                 </div>
             )}
@@ -156,4 +154,4 @@ const UserNav = ({user}) => {
     )
 }
 
-export default UserNav;
+export default UserAdminNav;

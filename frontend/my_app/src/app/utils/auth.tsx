@@ -13,21 +13,21 @@ import { useAuth } from "../context/AuthContext";
 
 
 // register //////////////////////////////////////////////////////////
-export const registerUser = async(first_name, last_name, email, password, password2) => {
+export const registerUser = async(first_name, last_name, email, password, password2,role) => {
         console.log('auth-first_name=', first_name);
         console.log('auth-last_name=', last_name);
         console.log('auth-email=', email);
         console.log('auth-password=', password);
         console.log('auth-password2=', password2);
+        console.log('auth-role=', role);
     try {
         const response = await axios.post(`${API_URL}/users/register/`,
-            {first_name,last_name,email,password,password2},
+            {first_name,last_name,email,password,password2,role},
             {
-                withCredentials:false, // avoid sending cookies
+                withCredentials:false,                   // avoid sending cookies
                 headers: {
-                    Authorization: undefined, // explicitly remove auth headers if present
+                    Authorization: undefined,            // explicitly remove auth headers if present
                 },
-
             },        
         )
         console.log(response.data)
@@ -165,9 +165,9 @@ export const updateRequestUserProfile = async (formData) => {
 
 
     } catch (e: any) {
-        console.log("updateRequestUserProfile-e.response.data=", e.response.data);
-        throw new Error(e.response.data);
-  }
+    console.log("updateRequestUserProfile-e.response.data=", e.response.data);
+    throw e.response?.data || { detail: "Unknown error occurred" }; 
+    }
     
 }
 

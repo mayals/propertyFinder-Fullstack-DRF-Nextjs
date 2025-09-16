@@ -8,7 +8,12 @@ import Image from 'next/image';
 import { FiChevronDown } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { logoutUser } from "../../utils/auth";
-import UserNav from "./UserNav"
+// dynamic navs section  
+import UserAdminNav from "./UserAdminNav";
+import UserBuyerNav from "./UserBuyerNav";
+import UserDeveloperNav from "./UserDeveloperNav";
+import UserBrokerNav from "./UserBrokerNav";
+import UserAgentNav from "./UserAgentNav";
 
 
 
@@ -56,7 +61,7 @@ const Navbar: React.FC = () => {
 
 
   
-  //  nav items in desktop size 
+  //  nav items in desktop size -- for anonymose user 
   const navItems = [
     { label: "Buy", href: "/buy" },
     { label: "Rent", href: "/rent" },
@@ -66,7 +71,7 @@ const Navbar: React.FC = () => {
     { label: "Blog", href: "/blog" },
   ];
 
-  //  nav items in mobile size 
+  //  nav items in mobile size -- for anonymous user 
   const navMobItems = [
     { label: "Buy", href: "/buy" },
     { label: "Rent", href: "/rent" },
@@ -91,15 +96,17 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between">
           
           <div className="flex items-center space-x-6 my-0">
+            {/* logo */}
             <Link key="home" href="/" className="text-xl font-black text-gray-900">
               <Image
                 src="logo-en.svg"
-                alt="Profile"
+                alt="Property-finder-logo"
                 width={100}
                 height={100}
                 className="rounded-full"
               />
             </Link>
+            {/* nav items in desktop size -- for anonymose user  */}
             <nav className="flex space-x-5 border-l pl-4 border-gray-200">
               {navItems.map(({ label, href }) => (
                 
@@ -108,24 +115,37 @@ const Navbar: React.FC = () => {
                   href={href}
                   className="text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-200 py-5 mx-0 px-3"
                 >
-                 {label}
+                  {label}
                 </Link>
               ))}
             </nav>
+
           </div>
 
           {/* dynamic login button( authenticated user|unuthenticated user ) */}
+          {/* UserBuyerNav   or  UserAdminNav  UserDeveloperNav */}
           <div className="flex items-center space-x-6">
-          {/* <p>profile: {user?.profile_picture}</p> 
-          <p>name: {user?.user?.first_name}</p>  */}
-              {!user ? (
-                          <Link href="/login" className="text-gray-600 hover:text-gray-900 font-medium">
-                            Login
-                          </Link>
-                        ) : (
-                          <UserNav user={user}/>       
-              )} 
+              {user ? (
+                user.role === "admin" ? (
+                  <UserAdminNav user={user} />
+                ) : user.role === "buyer" ? (
+                  <UserBuyerNav user={user} />
+                ) : user.role === "developer"? (
+                  <UserDeveloperNav user={user} />
+                ) : user.role === "broker" ? (
+                  <UserBrokerNav user={user} />
+                ) : user.role === "agent" ? (
+                  <UserAgentNav user={user} />
+                ) : null
+              ) : (
+                <Link href="/login" className="text-gray-600 hover:text-gray-900 font-medium">
+                  Login
+                </Link>
+              )}
           </div>
+
+
+
 
         </div>
       </section>
@@ -219,7 +239,7 @@ const Navbar: React.FC = () => {
 
                         {activeMenu === "user_nav" && (
                           <div className="absolute right-0 mt-2 flex flex-col bg-white border rounded-md shadow-lg z-10 w-40">
-                            <Link href="/myProfile" className="text-gray-600 hover:text-gray-900 px-3 py-2">My profile</Link>
+                            <Link href="/myProfile/admin" className="text-gray-600 hover:text-gray-900 px-3 py-2">My Admin profile</Link>
                             <Link href="/myDashboard" className="text-gray-600 hover:text-gray-900 px-3 py-2">My dashboard</Link>
                             <Link href="/myProperties" className="text-gray-600 hover:text-gray-900 px-3 py-2">My properties</Link>
                             <Link href="/myFavorites" className="text-gray-600 hover:text-gray-900 px-3 py-2">My favorites</Link>
