@@ -2,7 +2,7 @@
 import axiosInstance from "../lib/axios";
 import axios from "axios";
 const API_URL = "http://127.0.0.1:8000";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, } from "../context/AuthContext";
 
 
 
@@ -149,27 +149,21 @@ export const getUserInfo = async () => {
 //When uploading files in React with Axios, you must use FormData and not JSON.
 export const updateRequestUserProfile = async (formData) => {
     try {
-        const response = await axiosInstance.put(
-            "/users/update-request-user-profile/",  // endpoint 
-            formData, // When uploading files MUST be FormData and not JSON.
+            const response = await axiosInstance.put(
+            "/users/update-request-user-profile/",                   // endpoint 
+            formData,
             {
-                withCredentials: true, // include cookies if needed
-               
-                headers: {
-                    "Content-Type": "multipart/form-data", // IMPORTANT
-                },
-            }                
-        );
-        console.log("updateRequestUserProfile-response.data=",response.data);
-        return response.data;
-
-
+                withCredentials: true,                               // include cookies if needed
+                headers: { "Content-Type": "multipart/form-data" },  
+            }
+            );
+            console.log("updateRequestUserProfile-response.data=", response.data);
+            return response.data;
     } catch (e: any) {
-    console.log("updateRequestUserProfile-e.response.data=", e.response.data);
-    throw e.response?.data || { detail: "Unknown error occurred" }; 
+            console.log("updateRequestUserProfile-e.response.data=", e.response?.data);
+            throw e.response?.data || { detail: "Unknown error occurred" };
     }
-    
-}
+};
 
 
 
