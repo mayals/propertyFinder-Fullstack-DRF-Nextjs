@@ -30,13 +30,12 @@ export default function EditAdminProfile() {
     const [address, setAddress] = useState('');
     
     // Profile Image Upload
-    const [ppicture, setPpicture] = useState<string | File | null>(null);
-    const [preview, setPreview]   = useState<string | null>(null);
+    // preview - url
+    const [preview, setPreview]   = useState<string | null>(null); // preview only - string url 
+    //  actual -  file 
+    const [ppicture, setPpicture] = useState<File | null>(null);  // actual file _ file
     
 
-
-
-    // If no user, redirect to /login
     useEffect(() => {
         console.log("EditProfile-loading=",loading)
         console.log("EditProfile-user=",user)
@@ -53,16 +52,24 @@ export default function EditAdminProfile() {
             setPhone(user.phone_number || "");
             setCountry(user.country || "");
             setAddress(user.address || "");
-            setPpicture(user.profile_picture || null);
-
-            console.log('firstName=', firstName)
-            console.log('lastName=', lastName)
-            console.log('gender=', gender)
-            console.log('dob=', dob)
-            console.log('phone=', phone)
-            console.log('country=', country)
-            console.log('address=', address)
-            console.log('ppicture=', ppicture)
+            
+            // set the preview picture as url string
+            if (user.profile_picture) {
+              const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";       
+              setPreview(`${backendURL}${user.profile_picture}`);
+            } else {
+              setPreview(null);
+            }
+            
+            // console.log('firstName=', firstName)
+            // console.log('lastName=', lastName)
+            // console.log('gender=', gender)
+            // console.log('dob=', dob)
+            // console.log('phone=', phone)
+            // console.log('country=', country)
+            // console.log('address=', address)
+            // console.log('preview=', preview)
+            
         }
     }, [user, loading, router]);
     
@@ -76,10 +83,6 @@ export default function EditAdminProfile() {
        return null; // Redirect handled already
     }
  
-
-   
-   
-
 
 
     //  onChange
@@ -119,19 +122,13 @@ export default function EditAdminProfile() {
       setAddress(event.target.value)
       console.log('onChange address=', event.target.value)
     }
-
-    // onChange profile_picture field 
-    const onChangePpicture = (event: React.ChangeEvent<HTMLInputElement>) => {
-       // to be ready to submit to backend 
-        const file = event.target.files?.[0];
-        if (file) {
-            setPpicture(file);
-            console.log('onChange onChangePpicture=', event.target.files?.[0])
-
-        // Create a temporary preview URL (only client-side)
-        const objectUrl = URL.createObjectURL(file);
-        setPreview(objectUrl);
-        console.log('preview=', objectUrl)
+    // onChange ppicture field -- actual file for submitting -- must be file 
+    // onChange previewe field -- preview image -- must be url string
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+              const file = e.target.files[0];
+              setPpicture(file);                             // actual file for submitting -- must be file 
+              setPreview(URL.createObjectURL(file));         // preview image -- must be url string
         }
     };
 
@@ -182,7 +179,6 @@ export default function EditAdminProfile() {
             return;
           }
 
-
           // Create FormData object
           // When uploading files in React with Axios, you must use FormData and not JSON.
           const formData = new FormData();
@@ -193,9 +189,11 @@ export default function EditAdminProfile() {
           formData.append("phone_number", phone);
           formData.append("country", country);
           formData.append("address", address);
-          formData.append("profile_picture", ppicture);
-          
-         
+          // Only append if it's a File
+          if (ppicture instanceof File) {
+            formData.append("profile_picture", ppicture);
+          }
+                    
           // Log the values using the get method
           console.log('formData.first_name=', formData.get('first_name'));
           console.log('formData.last_name=', formData.get('last_name'));
@@ -213,12 +211,12 @@ export default function EditAdminProfile() {
           try { 
                 // axios -success
                 await updateRequestUserProfile(formData)
-                notify("Thanks for update your profile.", "success");
+                notify("Profile updated successfully!", "success");
           
                 // ✅ Delay for 3 seconds before redirecting
                 setTimeout(() => {
                     router.push('/myProfile/admin');
-                }, 5000); // 5000 milliseconds = 5 seconds
+                }, 3000); // 3000 milliseconds = 3 seconds
           
 
           } catch (error: any) {
@@ -239,52 +237,9 @@ export default function EditAdminProfile() {
                   }
                 });
               }
-         
-
-              // ✅ If backend sent a message, use that
-              // if (error.response.data.detail) {
-              //   const message=error.response.data.detail
-              //   // notify(error.response.data.detail, "warning");
-              //   notify(message, "warning");
-              
-              // } else if (error.response?.data) {
-              //   // backend may send { field: ["msg"] }
-              //   const firstKey = Object.keys(error.response.data)[0];
-              //   const firstMessage = error.response.data[firstKey];
-              //   notify(firstMessage, "warning");
-              
-              // } else {
-              //   notify("Error updating profile!", "warning");
-              // }
           }
     }
 
-    
-        
-
-    
-
-    // const [formData, setFormData] = useState({
-    //     firstName: "",
-    //     lastName: "",
-    //     gender: "",
-    //     dob: "",
-    //     phone: "",
-    //     country: "",
-    //     address: "",
-    // });
-
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    //     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // };
-
-    // const handleSubmit = (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     console.log("Form submitted:", formData);
-    //     // TODO: send to backend
-    // };
-        
-        
     return (
         <>
           <section className="py-10 min-h-screen bg-gray-100  flex items-center">
@@ -326,7 +281,7 @@ export default function EditAdminProfile() {
                     <span className="text-[#c75a00] text-2xl">&nbsp;{user?.first_name}
                       <span>&apos;s</span>&nbsp;</span>&nbsp;Profile
                   </h1>
-                  <p className="text-gray-500 mb-6 dark:text-gray-400">Create or update your profile</p>
+                  <h2 className="text-xl font-semibold">Edit Admin Profile</h2>
                     
                     
                   
@@ -339,34 +294,19 @@ export default function EditAdminProfile() {
                       {/* Profile Image Upload */}
                       <div className="justify-items-center">
                           <div className="relative w-36 h-36 bg-gray-200 overflow-hidden flex items-center justify-center">
-                                  {preview ? (
+                                <div className="space-y-2"> 
+                                  {preview && (
                                       // If user selected a new file → show preview
                                       <Image
                                           src={preview}
                                           alt="Profile Preview"
                                           fill
-                                          className="object-cover"
+                                          className="w-24 h-24 object-cover"
                                       />
-                                  ) : typeof ppicture === "string" ? (
-                                      // If it's a URL from backend → show that
-                                      <Image
-                                          src={`http://127.0.0.1:8000${ppicture}`}
-                                          alt="Profile Picture"
-                                          fill
-                                          className="object-cover"
-                                      />
-                                  ) : (
-                                      // Default avatar if nothing selected
-                                      <svg
-                                          className="w-20 h-20 text-gray-400"
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                      >
-                                        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
-                                      </svg>
                                   )}
-
-                                  {/* Upload Button */}
+                                   {/* <input type="file" accept="image/*" onChange={handleFileChange} /> */}
+                                </div>
+                                 {/* Upload Button */}
                                   <label
                                     htmlFor="upload_profile"
                                     className="absolute -bottom-1 -right-1 bg-blue-500 hover:bg-blue-600 
@@ -387,14 +327,12 @@ export default function EditAdminProfile() {
                                     id="upload_profile"
                                     accept="image/*"
                                     className="hidden"
-                                    onChange={onChangePpicture}
+                                    onChange={handleFileChange}
                                   />
-                          </div>
-                              
-                          <h2 className="mt-3 font-semibold text-gray-700 dark:text-gray-300">
-                              Upload Profile Image
-                          </h2>
-                      </div>
+                            </div>      
+                       </div>              
+                                  
+                         
 
                       {/* firstName + lastName fields  */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

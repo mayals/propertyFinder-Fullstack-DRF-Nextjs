@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
             {/* logo */}
             <Link key="home" href="/" className="text-xl font-black text-gray-900">
               <Image
-                src="logo-en.svg"
+                src="/logo-en.svg"
                 alt="Property-finder-logo"
                 width={100}
                 height={100}
