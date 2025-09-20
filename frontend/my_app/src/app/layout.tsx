@@ -38,13 +38,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     
     const hideNavbar = 
       pathname === "/login" ||
-      pathname === "/register/buyer" || 
+      // pathname === "/register/buyer" || 
       pathname === "/forgotPassword" ||
       pathname === "/noteCheckEmail" ||
       pathname === "/notePasswordResetComplete" ||
       pathname === "/changePassword" ||
-      pathname.startsWith("/setNewPassword/");  // for the dynamic path "/setNewPassword/[uid]/[token]""
-      pathname.startsWith("/users/confirm-email/"); 
+      pathname.startsWith("/setNewPassword/") ||      // for the dynamic path "/setNewPassword/[uid]/[token]"
+      pathname.startsWith("/users/confirm-email/") ||  // for the dynamic path "/users/confirm-email/[uid]/[token]"
+      pathname.startsWith("/register") ||             // for the dynamic path "/register/[role]"
+      
       console.log("/users/confirm-email/", pathname.startsWith("/users/confirm-email/"))
     
     
