@@ -32,7 +32,7 @@ from proj.settings import DEFAULT_FROM_EMAIL
 
 
 ###################################### Authentication-proccess  ####################################################333
-### Register a new user - buyer  +  send OTP to email  ###########
+### (Register a new user +  send OTP to email) - for any type or roles :  buyer - developer - broker - agent  ###########
 class UserProfileRegisterAPIView(views.APIView): 
     queryset = get_user_model().objects.all()
     serializer_class = RegisteUserProfileSerializer

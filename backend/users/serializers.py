@@ -24,7 +24,8 @@ from .utils import send_normal_email
 
 
 ############################ Register USER  - contain validation - contain buyer profiles data ###########################
-# create User with Buyer
+### (Register a new user +  send OTP to email) - for any type or roles :  buyer - developer - broker - agent  ###########
+
 class RegisteUserProfileSerializer(serializers.ModelSerializer):
     email          = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
     first_name     = serializers.CharField(max_length=12, min_length=3, allow_blank=False, trim_whitespace=True)
@@ -202,6 +203,10 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
         return representation
     
      
+
+
+
+
 
 
 ########################### Confirm Email BY LINK ###########################

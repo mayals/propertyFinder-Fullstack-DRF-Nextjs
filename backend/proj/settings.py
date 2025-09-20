@@ -13,7 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+# https://pypi.org/project/environs/#install
+from environs import env  
 
+env.read_env()       # read .env file, if it exists
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -24,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x)2bgp+xrht7$i2-zb#!*siv8(c@yigqq)g(2g=njvdg)v8fic'
+SECRET_KEY = env('SECRET_KEY')
+# SECRET_KEY = 'django-insecure-x)2bgp+xrht7$i2-zb#!*siv8(c@yigqq)g(2g=njvdg)v8fic'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -97,12 +101,37 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
+
+
 DATABASES = {
+    # Development
+    # 'default': {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": BASE_DIR / "db.sqlite3",
+    # }
+
+    # DEVELOPMENT
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE'  : 'django.db.backends.postgresql_psycopg2',
+        'NAME'    : os.getenv('DB_NAME'),
+        'USER'    : os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST'    : os.getenv('DB_HOST'),
+        'PORT'    : os.getenv('DB_PORT'),
     }
+    
+ #PRODUCTION
+    # 'default': dj_database_url.config(
+    #     default=os.getenv('DATABASE_URL'), 
+    #     conn_max_age=600    
+    #     )
 }
+
+
+
+
 
 
 # Password validation
