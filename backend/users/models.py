@@ -20,12 +20,14 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+        
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("role", CustomUser.RoleType.ADMIN)
+        extra_fields.setdefault("role", CustomUser.RoleType.ADMIN)  # 👈 force admin role
 
-        return self.create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)    
+       
         
         
         
@@ -87,46 +89,8 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
         verbose_name_plural = 'CustomUser'
 
     
-    # def save(self, *args, **kwargs):
-    #     # Only assign defaults if this is a new user and role is not set
-    #     # UUIDField(default=uuid.uuid4) — the id is set before the save() method runs
-        
-    #     if self._state.adding:  # Check if this is a new user # New user
-            
-    #         if self.is_superuser:
-    #             self.role = "admin"
-    #             self.is_buyer = False
-    #             self.is_developer = False
-    #             self.is_broker = False
-    #             self.is_agent = False
-            
-    #         elif not self.role:  # Only assign if role is not set
-    #             if self.is_buyer:
-    #                 self.role = "buyer"
-    #                 self.is_developer = False
-    #                 self.is_broker = False
-    #                 self.is_agent = False
-                    
-    #             if self.is_developer:     # company that build the properties
-    #                 self.role = "developer"
-    #                 self.is_buyer = False
-    #                 self.is_broker = False
-    #                 self.is_agent = False
-        
-    #             if self.is_broker:         # company that sell the property
-    #                 self.role = "broker"
-    #                 self.is_buyer = False
-    #                 self.is_developer = False
-    #                 self.is_agent = False
-                    
-    #             if self.is_agent:           # agent(person) belong company
-    #                 self.role = "agent"
-    #                 self.is_buyer = False
-    #                 self.is_developer = False
-    #                 self.is_broker = False
-             
-    #     super().save(*args, **kwargs)
-        
+   
+    
     
     @property
     def profile_picture(self):

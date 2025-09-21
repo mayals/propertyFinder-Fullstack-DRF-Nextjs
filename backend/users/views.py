@@ -502,7 +502,7 @@ class UpdateRequestUserProfileAPIView(views.APIView):
         
         if request.user.role == "broker" :
             try:
-                instance_broker_profile = DeveloperProfile.objects.get(user=request.user)
+                instance_broker_profile = BrokerProfile.objects.get(user=request.user)
                 serializer = UpdateBrokerProfileSerializer(instance_broker_profile, data=request.data, partial=True)
             except BrokerProfile.DoesNotExist:
                 return Response({'error': 'Broker Profile not found'}, status=status.HTTP_404_NOT_FOUND)                                 

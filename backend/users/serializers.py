@@ -42,15 +42,16 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'id', 'email', 'first_name', 'last_name', 'password', 'password2',
+            'role',   # 👈 keep role here so frontend can send it
              'admin_profile','buyer_profile', 'developer_profile','broker_profile','agent_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
-            'is_superuser','role'     
+            'is_superuser'     
         ]
         extra_kwargs = {
             'password' : {'write_only': True},
             'password2': {'write_only': True},
         }
         read_only_fields = [
-            'id', 'is_verifiedEmail','is_superuser', 'is_active', 'is_staff', 'role' 
+            'id', 'is_verifiedEmail','is_superuser', 'is_active', 'is_staff',
             'admin_profile', 'buyer_profile','developer_profile','broker_profile','agent_profile'     
         ]
     
@@ -100,11 +101,15 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
         valid_broker_profile_data    = validated_data.pop('broker_profile', None)
         valid_agent_profile_data     = validated_data.pop('agent_profile', None)
         
+        # 👇 use role from validated_data (default = buyer if not sent)
+        role = validated_data.get('role', CustomUser.RoleType.BUYER)
+        
         user = CustomUser.objects.create_user(
-                                    email      =validated_data['email'],
-                                    password   =validated_data['password'],
-                                    first_name =validated_data['first_name'],
-                                    last_name  =validated_data['last_name']                           
+                        email      = validated_data['email'],
+                        password   = validated_data['password'],
+                        first_name = validated_data['first_name'],
+                        last_name  = validated_data['last_name'],
+                        role       = validated_data.get('role', CustomUser.RoleType.BUYER)  # 👈 come from frontend register page
         )
         print("user=",user)
         if valid_admin_profile_data:
@@ -661,7 +666,8 @@ class UpdateBrokerProfileSerializer(serializers.ModelSerializer):
     user = UpdateUserSerializer(required=True,many=False)
     class Meta:
         model = BrokerProfile
-        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture'] 
+        fields = ['user', 'broker_name','phone_number','country', 'address','profile_picture','contact_email',
+                  'bio', 'website', 'twitter'] 
 
     def update(self, instance, validated_data): # Update BrokerProfile fields + User fields
         print('validated_data',validated_data)

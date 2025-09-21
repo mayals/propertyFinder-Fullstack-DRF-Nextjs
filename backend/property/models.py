@@ -160,7 +160,7 @@ class Property(models.Model):
     ]
 
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    owner       = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="properties" )# can be Admin, Broker, or Developer 
+    owner       = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="properties" )# can be Admin, Broker, agent or Developer 
     title       = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
      
