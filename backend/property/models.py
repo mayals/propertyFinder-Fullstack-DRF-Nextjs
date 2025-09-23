@@ -6,7 +6,7 @@ from django.conf import settings
 
 # Country model #######################
 class Country(models.Model):
-    country_name = models.CharField(max_length=100)
+    country_name = models.CharField(max_length=100, unique=True, blank=False, null=True)
     code = models.CharField(max_length=3, unique=True)  # ISO code like "SA", "AE"
 
     def __str__(self):
@@ -16,7 +16,7 @@ class Country(models.Model):
 
 # City model #######################
 class City(models.Model):
-    city_name = models.CharField(max_length=100)
+    city_name = models.CharField(max_length=100, unique=True, blank=False, null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
 
 

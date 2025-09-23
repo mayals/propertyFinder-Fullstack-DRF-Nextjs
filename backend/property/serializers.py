@@ -30,8 +30,27 @@ class CountrySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Country
-        fields = ['id', 'country_name', 'code']
+        fields = ['id', 'country_name', 'code', 'cities']
         read_only_fields = ('id','cities', )
+
+    
+    
+    def validate_country_name(self, value):
+        if not value:
+            raise serializers.ValidationError("Country name is required.")
+        if Country.objects.filter(country_name=value).exists():
+            raise serializers.ValidationError("This Country is already added.")
+        return value
+        
+
+    def validate_code(self, value):
+        """
+        Validate that the code is not empty.
+        """
+        if not value:
+            raise serializers.ValidationError("The Country code is required")
+        return value
+
 
 
 
@@ -60,23 +79,44 @@ class UpdateCountrySerializer(serializers.ModelSerializer):
 
 # City ##################################################################
 class CitySerializer(serializers.ModelSerializer):
-    # must select the primary key of country - Country id - before insert city_name
     country = serializers.PrimaryKeyRelatedField(
-                                        queryset=Country.objects.all(),
-                                        help_text='Select a Country id for this city.'
-                                        )
-    city_name  = serializers.CharField(required=True, 
-                                    max_length=100,
-                                    help_text='City name must be unique.',
-                                    style={'placeholder': 'City name here...'},
-                                    validators=[UniqueValidator(queryset=City.objects.all())]
-                                    )
-    
+        queryset=Country.objects.all(),
+        help_text='Select a Country id for this city.'
+    )
+    city_name = serializers.CharField(
+        required=True,
+        max_length=100,
+        help_text='City name must be unique.',
+        style={'placeholder': 'City name here...'},
+        validators=[UniqueValidator(queryset=City.objects.all())]
+    )
+
     class Meta:
         model = City
         fields = ['id', 'city_name', 'country']
         read_only_fields = ('id',)
-        
+
+    def validate(self, attrs):
+        """Validate uniqueness of city within the selected country."""
+        city_name = attrs.get("city_name")
+        country = attrs.get("country")
+
+        if not city_name:
+            raise serializers.ValidationError({"city_name": "City name is required."})
+        if not country:
+            raise serializers.ValidationError({"country": "The selected Country is required."})
+
+        # Check if this city already exists under the same country
+        if City.objects.filter(city_name__iexact=city_name, country=country).exists():
+            raise serializers.ValidationError({
+                "city_name": f"The city '{city_name}' already exists in {country.country_name}."
+            })
+        return attrs
+
+
+       
+
+
 
 
 class UpdateCitySerializer(serializers.ModelSerializer):
@@ -162,7 +202,7 @@ class AmenitySerializer(serializers.ModelSerializer):
 class PropertyImageSerializer(serializers.ModelSerializer): 
     # must select the primary key of property id - before insert an image for it
     property = serializers.PrimaryKeyRelatedField(
-                                        queryset=property.objects.all(),
+                                        queryset=Property.objects.all(),
                                         help_text='Select a property id for this image.'
                                         )
     class Meta:
@@ -174,7 +214,7 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 
 # Property ##################################################################
 class PropertySerializer(serializers.ModelSerializer):
-    title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Project.objects.all())])
+    title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Property.objects.all())])
     images_Property  = PropertyImageSerializer(many=True,read_only=True)                                     
     uploaded_images = serializers.ListField(child = serializers.ImageField(max_length = 1000000, allow_empty_file = False, use_url = False), write_only=True)
      

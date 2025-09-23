@@ -21,19 +21,19 @@ urlpatterns = [
 
     # PropertyMainType
     path('create-main-type/', views.CreateMainTypeAPIView.as_view(), name='create-main-type'),
-    path('list-main-type/', views.ListMainTypeAPIViewAPIView.as_view(), name='list-main-type'),
+    path('list-main-type/', views.ListMainTypeAPIView.as_view(), name='list-main-type'),
     path('update-main-type/<str:id>/', views.UpdateMainTypeAPIView.as_view(), name='update-main-type'), 
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
     # PropertySubTypes
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
-    path('list-sub-types/', views.ListSubTypesAPIViewAPIView.as_view(), name='list-sub-types'),
+    path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
 
     # PropertyPurposeSubChoices
     path('create-purpose-sub-choices/', views.CreatePurposeSubChoicesAPIView.as_view(), name='create-purpose-sub-choices'),
-    path('list-purpose-sub-choices/', views.ListPurposeSubChoicesAPIViewAPIView.as_view(), name='list-purpose-sub-choices'),
+    path('list-purpose-sub-choices/', views.ListPurposeSubChoicesAPIView.as_view(), name='list-purpose-sub-choices'),
     path('update-purpose-sub-choices/<str:id>/', views.UpdatePurposeSubChoicesAPIView.as_view(), name='update-purpose-sub-choices'), 
     path('delete-purpose-sub-choices/<str:id>/', views.DeletePurposeSubChoicesAPIView.as_view(), name='delete-purpose-sub-choices'),
 
