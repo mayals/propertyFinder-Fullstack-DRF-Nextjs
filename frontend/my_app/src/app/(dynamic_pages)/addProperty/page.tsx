@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -24,21 +24,12 @@ export default function EditAdminProfile() {
     
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');  
+    const [gender, setGender] = useState('');
+    const [dob, setDob] = useState('');
+    const [phone, setPhone] = useState('');
+    const [country, setCountry] = useState('');
+    const [address, setAddress] = useState('');
     
-    const [brokerName, setBrokerName] = useState('');
-    
-    const [bio, setBio] = useState('');
-    
-    const [website,setWebsite]            = useState('');
-    const [twitter, setTwitter]           = useState('');
-    
-    const [contactEmail, setContactEmail] = useState('');
-    const [phone, setPhone]               = useState('');
-    
-    const [country, setCountry]           = useState('');
-    const [address, setAddress]           = useState('');
-    
-
     // Profile Image Upload
     // preview - url
     const [preview, setPreview]   = useState<string | null>(null); // preview only - string url 
@@ -57,11 +48,8 @@ export default function EditAdminProfile() {
         if (!loading && user){
             setFirstName(user.first_name);
             setLastName(user.last_name);
-            setBrokerName(user.brokerName || "");
-            setBio(user.bio || "");
-            setWebsite(user.website || "")
-            setTwitter(user.twitter || "")
-            setContactEmail(user.contactEmail)
+            setGender(user.gender);
+            setDob(user.date_of_birth);
             setPhone(user.phone_number || "");
             setCountry(user.country || "");
             setAddress(user.address || "");
@@ -98,7 +86,7 @@ export default function EditAdminProfile() {
  
 
 
-    // onChange
+    //  onChange
     ///////////////  FORM FIELDS  --- parse data from form field  
     // onChange firstName field
     const onChangeFirstName = (event) => {
@@ -111,48 +99,30 @@ export default function EditAdminProfile() {
       console.log('onChange lastName=', event.target.value)
     }
     // onChange gender field
-    const onChangeBrokerName = (event) => {
-      setBrokerName(event.target.value)
-      console.log("onChange BrokerName =", event.target.value)
+    const onChangeGender = (event) => {
+      setGender(event.target.value)
+      console.log("onChange gender selected =", event.target.value)
     }
-    // onChange Bio field
-    const onChangeBio = (event) => {
-      setBio(event.target.value)
-      console.log('onChange bio=', event.target.value)
-    }
-    // onChange website field
-    const onChangeWebsite = (event) => {
-      setWebsite(event.target.value)
-      console.log('onChange website=', event.target.value)
-    }
-    // onChange twitter field
-    const onChangeTwitter = (event) => {
-      setTwitter(event.target.value)
-      console.log('onChange twitter=', event.target.value)
-    }
-    // onChange contactEmail field
-    const onChangeContactEmail = (event) => {
-      setContactEmail(event.target.value)
-      console.log('onChange ContactEmail=', event.target.value)
+    // onChange date_of_birth field
+    const onChangeDob = (event) => {
+      setDob(event.target.value)
+      console.log('onChange dob=', event.target.value)
     }
     // onChange phone_number field
     const onChangePhone = (event) => {
       setPhone(event.target.value)
       console.log('onChange phone=', event.target.value)
     }
-
+    // onChange country field
+    const onChangeCountry = (event) => {
+      setCountry(event.target.value)
+      console.log('onChange country=', event.target.value)
+    }
     // onChange address field
     const onChangeAddress = (event) => {
       setAddress(event.target.value)
       console.log('onChange address=', event.target.value)
     }
-
-    //  onChangeCountry field 
-    const onChangeCountry = (event) => {
-      setCountry(event.target.value)
-      console.log('onChange country=', event.target.value)
-    }
-
     // onChange ppicture field -- actual file for submitting -- must be file 
     // onChange previewe field -- preview image -- must be url string
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,34 +154,19 @@ export default function EditAdminProfile() {
             // setIsSubmitting(false);
             return;
           }
-          //  check brokerName field is not empty
-          if (!brokerName) {
+          //  check gender field is not empty
+          if (!gender) {
             notify("Please enter gender !","warning");
             return;
           }
-          //  check bio is not empty
-          if (!bio) {
-            notify("Please enter bio !","warning");
-            return;
-          }
-          //  check website is not empty
-          if (!website) {
-            notify("Please enter website !","warning");
-            return;
-          }
-          //  check contactEmail is not empty
-          if (!contactEmail) {
-            notify("Please enter contact Email !","warning");
-            return;
-          }
-          //  check twitter field is not empty
-          if (!twitter) {
-            notify("Please enter twitter !","warning");
+          //  check date of birth is not empty
+          if (!dob) {
+            notify("Please enter date of birth !","warning");
             return;
           }
           //  check phone is not empty
           if (!phone) {
-            notify("Please enter contact phone !","warning");
+            notify("Please enter phone !","warning");
             return;
           }
           //  check country is not empty
@@ -230,11 +185,8 @@ export default function EditAdminProfile() {
           const formData = new FormData();
           formData.append("first_name", firstName );
           formData.append("last_name", lastName);
-          formData.append("broker_name", brokerName);
-          formData.append("bio", bio);
-          formData.append("contact_email", contactEmail);
-          formData.append("website", website);
-          formData.append("twitter", twitter);
+          formData.append("gender", gender);
+          formData.append("date_of_birth", dob);
           formData.append("phone_number", phone);
           formData.append("country", country);
           formData.append("address", address);
@@ -246,11 +198,8 @@ export default function EditAdminProfile() {
           // Log the values using the get method
           console.log('formData.first_name=', formData.get('first_name'));
           console.log('formData.last_name=', formData.get('last_name'));
-          console.log('formData.broker_name=', formData.get('broker_name'));
-          console.log('formData.bio=', formData.get('bio'));
-          console.log('formData.website=', formData.get('website'));
-          console.log('formData.twitter=', formData.get('twitter'));
-          console.log('formData.contact_email=', formData.get('contact_email'));
+          console.log('formData.gender=', formData.get('gender'));
+          console.log('formData.date_of_birth=', formData.get('date_of_birth'));
           console.log('formData.phone_number=', formData.get('phone_number'));
           console.log('formData.country=', formData.get('country'));
           console.log('formData.address=', formData.get('address'));
@@ -278,7 +227,7 @@ export default function EditAdminProfile() {
                 
                 // ✅ Delay for 3 seconds before redirecting
                 setTimeout(() => {
-                    router.push('/myProfile/broker');
+                    router.push('/myProfile/admin');
                 }, 3000); // 3000 milliseconds = 3 seconds
           
 
@@ -332,7 +281,7 @@ export default function EditAdminProfile() {
                           <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                           </svg>
-                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Edit Broker Profile</span>
+                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Edit Admin Profile</span>
                         </div>
                       </li>
                     </ol>
@@ -420,37 +369,33 @@ export default function EditAdminProfile() {
                           />
                           </div>
                       </div>
-                      
-                      {/*  broker name  */}
-                      <div className="grid grid-cols-1 md:grid-cols-1 gap-4 ">
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Broker Name (Commerical Name)</label>
-                          <input
-                              name="brokerName"
-                              value={brokerName}
-                              onChange={onChangeBrokerName}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Broker Name"
-                          />
-                          </div>
-                      </div>
 
-                      {/*  bio   */}
-                      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                      {/* Gender + DOB  fields */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Bio</label>
-                          <textarea
-                              name="bio"
-                              value={bio}
-                              onChange={onChangeBio}
+                          <label className="block text-sm font-medium dark:text-gray-300">Gender</label>
+                          <select
+                              name="gender"
+                              value={gender}
+                              onChange={onChangeGender}
+                              className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+                          >
+                              <option value="">Select Gender</option>
+                              <option>Male</option>
+                              <option>Female</option>
+                          </select>
+                          </div>
+                          <div>
+                          <label className="block text-sm font-medium dark:text-gray-300">Date of Birth</label>
+                          <input
+                              type="date"
+                              name="dob"
+                              value={dob}
+                              onChange={onChangeDob}
                               className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Bio"
                           />
                           </div>
                       </div>
-                      
-                      
-                      
 
                       {/* Phone + Country  fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -476,43 +421,9 @@ export default function EditAdminProfile() {
                           </div>
                       </div>
 
-                      {/* firstName + lastName fields  */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Website</label>
-                          <input
-                              name="website"
-                              value={website}
-                              onChange={onChangeWebsite}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Website"
-                          />
-                          </div>
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Twitter</label>
-                          <input
-                              name="Twitter"
-                              value={twitter}
-                              onChange={onChangeTwitter}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Twitter"
-                          />
-                          </div>
-                      </div>
-                      {/* contact email field */}
-                      <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Contact Email</label>
-                          <input
-                          name="contactEmail"
-                          value={contactEmail}
-                          onChange={onChangeContactEmail}
-                          className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          placeholder="Contact Email"
-                          />
-                      </div>
                       {/* Address field */}
                       <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Contact Address</label>
+                          <label className="block text-sm font-medium dark:text-gray-300">Address</label>
                           <input
                           name="address"
                           value={address}

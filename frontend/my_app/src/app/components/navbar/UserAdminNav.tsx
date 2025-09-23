@@ -73,7 +73,7 @@ const UserAdminNav = ({user}) => {
                 { !loading && user && (
                     <Image
                         src={`http://127.0.0.1:8000${user?.profile_picture}`}
-                        alt="Admin Profile"
+                        alt="Admin Profile picture"
                         width={40}
                         height={40}
                         className="rounded-full bg-black"

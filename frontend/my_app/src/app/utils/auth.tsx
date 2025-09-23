@@ -13,7 +13,7 @@ import { useAuth, } from "../context/AuthContext";
 
 
 // register //////////////////////////////////////////////////////////
-export const registerUser = async(first_name, last_name, email, password, password2,role) => {
+export const registerUser = async(first_name, last_name, email, password, password2, role) => {
         console.log('auth-first_name=', first_name);
         console.log('auth-last_name=', last_name);
         console.log('auth-email=', email);

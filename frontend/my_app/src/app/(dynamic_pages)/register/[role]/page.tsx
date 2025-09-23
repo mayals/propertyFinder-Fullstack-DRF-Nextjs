@@ -10,6 +10,7 @@ import notify from "../../../common/useNotification"
 
 export default function RegisterPage() {
   const { role } = useParams<{ role: string }>(); // 👈 get role from URL
+  console.log("RegisterPage-role=",role)
   const router = useRouter();
 
   const [firstName, setFirstName] = useState("");

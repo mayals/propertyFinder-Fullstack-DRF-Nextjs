@@ -11,7 +11,7 @@ export default function RolesLinksPage() {
         </h2>
         <p className="text-gray-600 mt-2 text-lg">
           Share one of these registration links with people who want to join us.  
-          <div className="text-[#ea3934]"> (Only one choice allowed)</div>
+          <p className="text-[#ea3934]"> (Only one choice allowed)</p>
         </p>
       </div>
 
