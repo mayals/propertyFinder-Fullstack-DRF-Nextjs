@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer
-from .models import Country
+from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer
+from .models import Country,PropertyMainType
 from rest_framework import  response, permissions, status, generics
 from rest_framework.response import Response
 
@@ -82,7 +82,15 @@ class CreateMainTypeAPIView(APIView):
     
     
 class ListMainTypeAPIView(APIView):
-    pass 
+    serializer_class   = PropertyMainTypeSerializer
+    permission_classes = [permissions.AllowAny]
+    def get(self,request):
+       queryset = PropertyMainType.objects.all() 
+       serializer = self.serializer_class(queryset,many=True)
+       return Response(serializer.data,status=status.HTTP_200_OK) 
+
+
+
 class UpdateMainTypeAPIView(APIView):
     pass 
 class DeleteMainTypeAPIView(APIView):
@@ -91,7 +99,19 @@ class DeleteMainTypeAPIView(APIView):
    
 # PropertySubTypes
 class CreateSubTypesAPIView(APIView):
-    pass  
+    serializer_class   = PropertySubTypesSerializer
+    permission_classes = [permissions.IsAdminUser]
+    # pagination_class = CustomPagination
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
+
+
 class ListSubTypesAPIView(APIView):
     pass 
 class UpdateSubTypesAPIView(APIView):

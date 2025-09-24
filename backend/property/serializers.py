@@ -137,10 +137,11 @@ class UpdateCitySerializer(serializers.ModelSerializer):
         
 # PropertyMainType ##################################################################
 class PropertyMainTypeSerializer(serializers.ModelSerializer):
+    maintype_label = serializers.CharField(source='get_maintype_name_display', read_only=True)
     class Meta:
         model = PropertyMainType
-        fields = ['id', 'created_at', 'updated_at', 'maintype_name']
-        read_only_fields = ('id', 'created_at', 'updated_at',)
+        fields = ['id', 'created_at', 'updated_at', 'maintype_name', 'maintype_label']
+        read_only_fields = ('id', 'created_at', 'updated_at', 'maintype_label',)
 
 
 
@@ -163,18 +164,21 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at',)
 
 
+
+
+
 # PropertyPurposeSubChoices ##################################################################
-class PropertySubTypesSerializer(serializers.ModelSerializer):
-    # must select the primary key of main_type - main_type id - before insert subtype_name
-    main_type = serializers.PrimaryKeyRelatedField(
-                                        queryset=PropertyMainType.objects.all(),
-                                        help_text='Select a property main_type id for this sub type.'
-                                        )
+# class PropertyPurposeSubChoicesSerializer(serializers.ModelSerializer):
+#     # must select the primary key of main_type - main_type id - before insert subtype_name
+#     main_type = serializers.PrimaryKeyRelatedField(
+#                                         queryset=PropertyMainType.objects.all(),
+#                                         help_text='Select a property main_type id for this sub type.'
+#                                         )
      
-    class Meta:
-        model = PropertyMainType
-        fields = ['id', 'created_at', 'updated_at', 'main_type', 'purpose_sub_choice_name' ]
-        read_only_fields = ('id', 'created_at', 'updated_at',)
+#     class Meta:
+#         model = PropertyMainType
+#         fields = ['id', 'created_at', 'updated_at', 'main_type', 'purpose_sub_choice_name' ]
+#         read_only_fields = ('id', 'created_at', 'updated_at',)
 
 
 

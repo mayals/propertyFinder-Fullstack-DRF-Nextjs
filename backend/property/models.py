@@ -94,7 +94,7 @@ class PropertySubTypes(models.Model):
    
 
 
-# Property sub type model ########################
+#  PropertyPurposeSubChoices model ########################
 class PropertyPurposeSubChoices(models.Model):
     PROPERTY_PURPOSE_CHOICES = [
         ("buy", "Buy"),
