@@ -67,8 +67,6 @@ export const getCountriesList = async() => {
 }
     
 
-
-
 // addCity //
 export const addCity = async(selectedCountry, cityName) => {
         console.log('addCity-selectedCountry =', selectedCountry );
@@ -77,7 +75,7 @@ export const addCity = async(selectedCountry, cityName) => {
         const response = await axiosInstance.post(
             "/property/create-city/",                  // endpoint
             {
-                country:selectedCountry,               // data --"uuid-of-selected-country",
+                country:selectedCountry,               // data --"id of selected country",
                 city_name:cityName                     // data --"city name",
             },                 
             {
@@ -134,4 +132,60 @@ export const addMainType = async(maintypeName) => {
 
 
 
+// getMainTypesList //
+export const getMainTypesList = async() => {
+    try {
+        const response = await axios.get(
+            `${API_URL}/property/list-main-type/`,        // endpoint 
+            { withCredentials:true },                  //  sending cookies          
+        )
+        console.log("getMainTypesList-response.data=",response.data);
+        return response.data;
+
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getMainTypesList-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+    
+
+
+
+// addSubType //
+export const addSubType = async(selectedMaintype, subTypeName) => {
+        console.log('addSubType-selectedMaintype =', selectedMaintype );
+        console.log('addSubType-subTypeName=', subTypeName);
+    try {
+        const response = await axiosInstance.post(
+            "/property/create-sub-types/",                  // endpoint
+            {
+                main_type   :selectedMaintype,               // data --"id of selected main type",
+                subtype_name:subTypeName                     // data --"sub type name",
+            },                 
+            {
+                 withCredentials:true                       // sending cookies   
+            },                         
+        )
+        console.log("addSubType-response.data=",response.data)
+        return response.data;
+    
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('addSubType-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+}
+    
 
