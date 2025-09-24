@@ -103,3 +103,35 @@ export const addCity = async(selectedCountry, cityName) => {
 
 
 
+// addMainTypeName //
+export const addMainType = async(maintypeName) => {
+        console.log('addMainType-maintypeName =', maintypeName );
+    try {
+        const response = await axiosInstance.post(
+            "/property/create-main-type/",             // endpoint
+            {
+                maintype_name:maintypeName,               // data --"maintypeName",
+            },                 
+            {
+                 withCredentials:true                  // sending cookies   
+            },                         
+        )
+        console.log("addMainType-response.data=",response.data)
+        return response.data;
+    
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('addMainType-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+}
+    
+
+
+
+
