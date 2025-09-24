@@ -29,29 +29,32 @@ class City(models.Model):
 
 # Property main type model ###############3
 class PropertyMainType(models.Model):
-    
     PROPERTY_MAIN_TYPE_CHOICES = [
         ("residential_type", "Residential"),
         ("commercial_type", "Commercial"),
     ]
-   
-    id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    maintype_name   = models.CharField(max_length=20, choices=PROPERTY_MAIN_TYPE_CHOICES, unique=True ,blank=False)
-    created_at      = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at      = models.DateTimeField(auto_now=True, null=True)
-        
+
+    maintype_name = models.CharField(
+        max_length=20,
+        choices=PROPERTY_MAIN_TYPE_CHOICES,
+        unique=True,
+        blank=False
+    )
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     def __str__(self):
         return self.maintype_name
+
     class Meta:
-       ordering = ['-created_at']
-       
+        ordering = ['-created_at']
+
 
         
         
         
 # Property sub type model ########################
 class PropertySubTypes(models.Model):
-    id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subtype_name = models.CharField(max_length=100, blank=False, null=False, unique=True)
     main_type    = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='subtypes')
     created_at   = models.DateTimeField(auto_now_add=True, null=True)
@@ -97,7 +100,6 @@ class PropertyPurposeSubChoices(models.Model):
         ("buy", "Buy"),
         ("rent", "Rent"),
     ]
-    id                      = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     purpose_sub_choice_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES,unique=True)
     main_type               = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
     created_at              = models.DateTimeField(auto_now_add=True, null=True)
@@ -229,7 +231,6 @@ class PropertyImage(models.Model):
     """
     Multiple images per property
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
     images = models.ImageField(upload_to="property_images/%Y/%m/%d/", null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)

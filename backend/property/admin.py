@@ -33,7 +33,7 @@ class CountryAdmin(admin.ModelAdmin):
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
     list_display  = ("id", "city_name", "country")
-    list_filter   = ( "city_name", )
+    list_filter   = ( "city_name", "country")
     search_fields = ( "city_name", )
 
 
