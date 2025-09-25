@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer
+from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer,PropertyPurposeSerializer
 from .models import Country,PropertyMainType
 from rest_framework import  response, permissions, status, generics
 from rest_framework.response import Response
@@ -120,14 +120,25 @@ class DeleteSubTypesAPIView(APIView):
     pass 
 
 
-# PropertyPurposeSubChoices
-class CreatePurposeSubChoicesAPIView(APIView):
-    pass  
-class ListPurposeSubChoicesAPIView(APIView):
+# PropertyPurpose
+class CreatePurposeAPIView(APIView):
+    serializer_class   = PropertyPurposeSerializer
+    permission_classes = [permissions.IsAdminUser]
+    # pagination_class = CustomPagination
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    
+     
+class ListPurposeAPIView(APIView):
     pass 
-class UpdatePurposeSubChoicesAPIView(APIView):
+class UpdatePurposeAPIView(APIView):
     pass 
-class DeletePurposeSubChoicesAPIView(APIView):
+class DeletePurposeAPIView(APIView):
     pass
 
 

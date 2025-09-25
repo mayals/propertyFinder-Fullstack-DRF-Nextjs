@@ -94,21 +94,22 @@ class PropertySubTypes(models.Model):
    
 
 
-#  PropertyPurposeSubChoices model ########################
-class PropertyPurposeSubChoices(models.Model):
+# Property sub type model ########################
+class PropertyPurpose(models.Model):
     PROPERTY_PURPOSE_CHOICES = [
         ("buy", "Buy"),
         ("rent", "Rent"),
     ]
-    purpose_sub_choice_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES,unique=True)
-    main_type               = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
-    created_at              = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at              = models.DateTimeField(auto_now=True, null=True)
+    purpose_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES)
+    main_type    = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
+    created_at   = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at   = models.DateTimeField(auto_now=True, null=True)
     
     def __str__(self):
-        return f'{self.main_type} for {self.purpose_sub_choice_name}'   
+        return f'{self.main_type} for {self.purpose_name}'   
     class Meta:
        ordering = ['-created_at']
+       unique_together = ['purpose_name', 'main_type']
 
     # Residential for buy
     # Residential for rent
@@ -186,7 +187,7 @@ class Property(models.Model):
     # Property details
     pmain_type   = models.ForeignKey(PropertyMainType,on_delete=models.CASCADE, null=True, related_name='properties')
     psub_type    = models.ForeignKey(PropertySubTypes,on_delete=models.CASCADE, null=True, related_name='properties')  # e.g., Apartment, Villa, Office
-    purpose     = models.ForeignKey(PropertyPurposeSubChoices,on_delete=models.CASCADE, null=True, related_name='properties')
+    purpose     = models.ForeignKey(PropertyPurpose,on_delete=models.CASCADE, null=True, related_name='properties')
     
     property_size = models.DecimalField(max_digits=10, decimal_places=2, help_text="Size in sqm")
     bedrooms = models.IntegerField(blank=True, null=True)

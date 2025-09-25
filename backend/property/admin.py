@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  PropertyMainType,PropertySubTypes,PropertyPurposeSubChoices,Country,City,Amenity,Property,PropertyImage
+from .models import  PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage
 
 @admin.register(PropertyMainType)
 class PropertyMainTypeAdmin(admin.ModelAdmin):
@@ -16,11 +16,10 @@ class PropertySubTypesAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(PropertyPurposeSubChoices)
-class PropertyPurposeSubChoicesAdmin(admin.ModelAdmin):
-    list_display  = ("id", "purpose_sub_choice_name", "main_type")
-    list_filter   = ( "purpose_sub_choice_name",)
-    search_fields = ( "purpose_sub_choice_name",)
+@admin.register(PropertyPurpose)
+class PropertyPurposeAdmin(admin.ModelAdmin):
+    list_display  = ("id", "main_type" , "purpose_name" ,)
+    search_fields = ( "purpose_name",)
     
     
 @admin.register(Country)

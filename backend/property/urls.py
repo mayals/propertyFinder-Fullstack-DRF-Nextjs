@@ -31,11 +31,11 @@ urlpatterns = [
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
 
-    # PropertyPurposeSubChoices
-    path('create-purpose-sub-choices/', views.CreatePurposeSubChoicesAPIView.as_view(), name='create-purpose-sub-choices'),
-    path('list-purpose-sub-choices/', views.ListPurposeSubChoicesAPIView.as_view(), name='list-purpose-sub-choices'),
-    path('update-purpose-sub-choices/<str:id>/', views.UpdatePurposeSubChoicesAPIView.as_view(), name='update-purpose-sub-choices'), 
-    path('delete-purpose-sub-choices/<str:id>/', views.DeletePurposeSubChoicesAPIView.as_view(), name='delete-purpose-sub-choices'),
+    # PropertyPurpose
+    path('create-purpose/', views.CreatePurposeAPIView.as_view(), name='create-purpose'),
+    path('list-purposes/', views.ListPurposeAPIView.as_view(), name='list-purpose'),
+    path('update-purpose/<str:id>/', views.UpdatePurposeAPIView.as_view(), name='update-purpose'), 
+    path('delete-purpose/<str:id>/', views.DeletePurposeAPIView.as_view(), name='delete-purpose'),
 
     # Amenity
     path('create-amenity/', views.CreateAmenityAPIView.as_view(), name='create-amenity'),
