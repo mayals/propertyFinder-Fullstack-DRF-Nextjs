@@ -380,9 +380,9 @@ export default function EditAdminProfile() {
                               onChange={onChangeGender}
                               className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
                           >
-                              <option value="">Select Gender</option>
-                              <option>Male</option>
-                              <option>Female</option>
+                              <option value="">-- Select Gender --</option>
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
                           </select>
                           </div>
                           <div>

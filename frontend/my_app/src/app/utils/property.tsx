@@ -179,7 +179,7 @@ export const addSubType = async(selectedMaintype, subTypeName) => {
     } catch (e) {
         if (e) {
             // Throw full error object for the component to handle
-            console.log('addSubType-e=',e)
+            console.log('addCity-e=',e)
             throw e;
         
         } else {
@@ -189,3 +189,35 @@ export const addSubType = async(selectedMaintype, subTypeName) => {
 }
     
 
+
+
+
+// addPurpose //
+export const addPurpose = async(selectedMaintype, purposeName) => {
+        console.log('addPurpose-selectedMaintype =', selectedMaintype );
+        console.log('addPurpose-purposeName=', purposeName);
+    try {
+        const response = await axiosInstance.post(
+            "/property/create-purpose/",                  // endpoint
+            {
+                main_type   :selectedMaintype,          // data --id of selected property "main type",
+                purpose_name:purposeName                // data --"purpose_name",
+            },                 
+            {
+                 withCredentials:true                  // sending cookies   
+            },                         
+        )
+        console.log("addPurpose-response.data=",response.data)
+        return response.data;
+    
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('addPurpose-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+}

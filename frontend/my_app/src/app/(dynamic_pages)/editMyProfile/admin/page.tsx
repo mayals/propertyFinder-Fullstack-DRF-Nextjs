@@ -373,27 +373,28 @@ export default function EditAdminProfile() {
                       {/* Gender + DOB  fields */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Gender</label>
-                          <select
-                              name="gender"
-                              value={gender}
-                              onChange={onChangeGender}
-                              className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          >
-                              <option value="">Select Gender</option>
-                              <option>Male</option>
-                              <option>Female</option>
-                          </select>
+                            <label className="block text-sm font-medium dark:text-gray-300">Gender</label>
+                            <select
+                                name="gender"
+                                value={gender}
+                                onChange={onChangeGender}
+                                className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+                            >
+                                <option value="">-- Select Gender --</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
                           </div>
+
                           <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Date of Birth</label>
-                          <input
-                              type="date"
-                              name="dob"
-                              value={dob}
-                              onChange={onChangeDob}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          />
+                            <label className="block text-sm font-medium dark:text-gray-300">Date of Birth</label>
+                            <input
+                                type="date"
+                                name="dob"
+                                value={dob}
+                                onChange={onChangeDob}
+                                className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+                            />
                           </div>
                       </div>
 

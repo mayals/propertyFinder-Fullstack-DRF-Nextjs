@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getMainTypesList} from "../../utils/property";
-import { addSubType} from "../../utils/property";
+import { getMainTypesList, addPurpose } from "../../utils/property";
+
 
 import axiosInstance from "../../lib/axios";
 
@@ -19,18 +19,18 @@ import { ToastContainer, toast } from 'react-toastify';
 
 
 
-export default function AddSubType() {
+export default function AddPurpose() {
     const { user, loading } = useAuth();
     const router = useRouter();
    
     const [mainTypesList,setMainTypesList] = useState([]);
-    const [selectedMaintype,setSelectedMainType] = useState('');   // main_type
-    const [subTypeName,setSubTypeName] = useState('')              // subtype_name
+    const [selectedMaintype,setSelectedMainType] = useState('');   // 'main_type'
+    const [purposeName,setPurposeName] = useState('')              // 'purpose_name'
    
     
     useEffect(() => {
-        console.log("AddSubType-loading=",loading)
-        console.log("AddSubType-user=",user)
+        console.log("AddPurpose-loading=",loading)
+        console.log("AddPurpose-user=",user)
         
         if (!loading && !user) {
             router.push("/login");
@@ -72,9 +72,9 @@ export default function AddSubType() {
         console.log("onChangeSelectedMainType id =", e.target.value);
     };
 
-    const onChangeSubTypeName = (e) => {
-        setSubTypeName(e.target.value)
-        console.log('onChangeSubTypeName =', e.target.value)
+    const onChangePurposeName = (e) => {
+        setPurposeName(e.target.value)
+        console.log('onChangePurposeName =', e.target.value)
     }
     
 
@@ -105,18 +105,18 @@ export default function AddSubType() {
             notify("Please select the main type !","warning");
             return;
         }
-        if (!subTypeName) {     
-            notify("Please enter the sub type !","warning");
+        if (!purposeName) {     
+            notify("Please select the purpose !","warning");
             return;
         }
        
-        // addCity - axios //
+        // addPurpose - axios //
         try { 
-              await addSubType(selectedMaintype, subTypeName)
-              notify("The sub type name has been add successfully", "success");
+              await addPurpose(selectedMaintype, purposeName)
+              notify("The purpose name has been add successfully", "success");
 
         }catch (error: any) {
-            console.log("addSubType error =", error);
+            console.log("addPurpose error =", error);
             if (error.response && error.response.data) {
                     const errors = error.response.data;
 
@@ -179,7 +179,7 @@ export default function AddSubType() {
                   <form onSubmit={handleSubmit} className="space-y-12">
                     <ToastContainer position="top-center" autoClose={3000} />
                       
-                        {/* Select a Country from a dynamic counrty list */}
+                        {/* Select a - main type -  from a dynamic main type list */}
                         <div className="md:w-full">
                             <div>
                                 <label className="block text-sm font-medium">Main Type</label>
@@ -197,17 +197,23 @@ export default function AddSubType() {
                                 </select>
                             </div>
                         </div>
+                        
+                        <br></br><br></br><br></br>
 
+                        {/* Select a - Purpose - from the list */}
                         <div className="md:w-full">
                             <div>
-                                <label className="block text-sm font-medium">Sub Type Name</label>
-                                <input
-                                    name="subTypeName"
-                                    value={subTypeName}
-                                    onChange={onChangeSubTypeName}
-                                    className="mt-2 p-3 w-full border rounded-lg"
-                                    placeholder="Sub Type Name"
-                                />
+                                <label className="block text-sm font-medium dark:text-gray-300">Purpose</label>
+                                    <select
+                                        name="purposeName"
+                                        value={purposeName}
+                                        onChange={onChangePurposeName}
+                                        className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+                                    >
+                                          <option value="">-- Select Purpose --</option>
+                                          <option value="buy" >Buy</option>
+                                          <option value="rent">Rent</option>
+                                    </select>
                             </div>
                         </div>
 
@@ -216,7 +222,7 @@ export default function AddSubType() {
                             type="submit"
                             className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md"
                         >
-                          Add Sub Type
+                          Add Purpose
                         </button>
                   </form>
               </div>
