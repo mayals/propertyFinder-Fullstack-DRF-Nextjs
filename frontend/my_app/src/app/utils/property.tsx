@@ -221,3 +221,35 @@ export const addPurpose = async(selectedMaintype, purposeName) => {
         }
     }
 }
+
+
+
+
+// addAmenity //
+export const addAmenity = async(amenityName) => {
+        console.log('addAmenity-countryName =', amenityName );
+    try {
+        const response = await axiosInstance.post(
+            "/property/create-amenity/",                  // endpoint
+            {
+                amenity_name:amenityName ,                // data
+            },
+            {                          
+                withCredentials:true,                     //  sending cookies
+            },        
+        )
+        console.log("addAmenity-response.data=",response.data)
+        return response.data;
+    
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('addAmenity-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
