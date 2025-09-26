@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer,PropertyPurposeSerializer,AmenitySerializer
-from .models import Country,PropertyMainType
+from .models import Country, PropertyMainType, PropertyPurpose, Amenity
 from rest_framework import  response, permissions, status, generics
 from rest_framework.response import Response
 
@@ -135,7 +135,14 @@ class CreatePurposeAPIView(APIView):
     
      
 class ListPurposeAPIView(APIView):
-    pass 
+    serializer_class = PropertyPurposeSerializer
+    permission_classes = [permissions.AllowAny]
+    def get(self,request):
+       queryset = PropertyPurpose.objects.all() 
+       serializer = self.serializer_class(queryset,many=True)
+       return Response(serializer.data,status=status.HTTP_200_OK)
+  
+  
 class UpdatePurposeAPIView(APIView):
     pass 
 class DeletePurposeAPIView(APIView):
@@ -158,7 +165,14 @@ class CreateAmenityAPIView(APIView):
     
       
 class ListAmenityAPIView(APIView):
-    pass 
+    serializer_class = AmenitySerializer
+    permission_classes = [permissions.AllowAny]
+    def get(self,request):
+       queryset = Amenity.objects.all() 
+       serializer = self.serializer_class(queryset,many=True)
+       return Response(serializer.data,status=status.HTTP_200_OK)
+
+
 class UpdateAmenityAPIView(APIView):
     pass 
 class DeleteAmenityAPIView(APIView):
