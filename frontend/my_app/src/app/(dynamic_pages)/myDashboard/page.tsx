@@ -108,7 +108,7 @@ export default function MyDashboard() {
             <br></br><br></br>
 
 
-            <h2 className="text-center py-3 mt-8 text-2xl">Property Managment</h2>
+            <h2 className="text-center py-3 mt-8 text-2xl">Property Form Managment</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 
                 {user.role === "admin" && (
@@ -205,20 +205,43 @@ export default function MyDashboard() {
                                 fill="currentColor"
                                 viewBox="0 0 24 24"
                             >
-                                <svg  version="1.1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>list-outline-badged</title> <rect x="15" y="12" width="9" height="2"></rect><rect x="15" y="16" width="9" height="2" ></rect><rect x="15" y="20" width="9" height="2" className="clr-i-outline--badged clr-i-outline-path-3--badged"></rect><rect x="15" y="24" width="9" height="2" ></rect><rect x="11" y="8" width="2" height="2" ></rect><rect x="11" y="12" width="2" height="2" className="clr-i-outline--badged clr-i-outline-path-6--badged"></rect><rect x="11" y="16" width="2" height="2" ></rect><rect x="11" y="20" width="2" height="2" ></rect><rect x="11" y="24" width="2" height="2" ></rect><path d="M15,8v2h8.66a7.45,7.45,0,0,1-.89-2Z" ></path><path d="M28,13.22V32H8V4H22.78a7.45,7.45,0,0,1,.88-2H8A2,2,0,0,0,6,4V32a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V13.5A7.49,7.49,0,0,1,28,13.22Z"></path><circle cx="30" cy="6" r="5" ></circle> <rect x="0" y="0" width="36" height="36" fill-opacity="0"></rect> </g></svg>
+                                <svg  version="1.1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>list-outline-badged</title> <rect x="15" y="12" width="9" height="2"></rect><rect x="15" y="16" width="9" height="2" ></rect><rect x="15" y="20" width="9" height="2" className="clr-i-outline--badged clr-i-outline-path-3--badged"></rect><rect x="15" y="24" width="9" height="2" ></rect><rect x="11" y="8" width="2" height="2" ></rect><rect x="11" y="12" width="2" height="2" className="clr-i-outline--badged clr-i-outline-path-6--badged"></rect><rect x="11" y="16" width="2" height="2" ></rect><rect x="11" y="20" width="2" height="2" ></rect><rect x="11" y="24" width="2" height="2" ></rect><path d="M15,8v2h8.66a7.45,7.45,0,0,1-.89-2Z" ></path><path d="M28,13.22V32H8V4H22.78a7.45,7.45,0,0,1,.88-2H8A2,2,0,0,0,6,4V32a2,2,0,0,0,2,2H28a2,2,0,0,0,2-2V13.5A7.49,7.49,0,0,1,28,13.22Z"></path><circle cx="30" cy="6" r="5" ></circle> <rect x="0" y="0" width="36" height="36" fillOpacity="0"></rect> </g></svg>
                             </svg>
                             <h3 className="mt-4 text-xl">Add Amenity</h3>
                             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                                 Add Amenity for a property.
                             </p>
                     </Link>
-
-
-
-
                 </>
                 )}
-            </div>    
+            </div>
+
+
+            <h2 className="text-center py-3 mt-8 text-2xl">Add Property</h2>
+            <div className="">
+                
+                {(user.role === "admin"  ||  user.role === "developer" ||  user.role === "broker" || user.role === "agent" ) &&(
+                <>
+                    <Link
+                        href="/addProperty"
+                        className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg"
+                    >
+                        <svg
+                            className="text-center h-40 w-40 text-[#ef5e4e] transition group-hover:scale-105"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="add-company-16px" transform="translate(0.5 0.5)"> <path id="add-company-16px-2" data-name="add-company-16px" d="M12,15.5V13H9.5a.5.5,0,1,1,0-1H12V9.5a.5.5,0,1,1,1,0V12h2.5a.5.5,0,1,1,0,1H13v2.5a.5.5,0,0,1-1,0ZM6.7,16H0V1.5A1.525,1.525,0,0,1,1.545,0h7.21A1.526,1.526,0,0,1,10.3,1.5v6a.515.515,0,0,1-1.03,0v-6A.508.508,0,0,0,8.755,1H1.545a.509.509,0,0,0-.516.5V15H3.09V11.5a.509.509,0,0,1,.516-.5H6.7a.508.508,0,0,1,.515.5V15H8.755a.5.5,0,1,1,0,1ZM4.12,15H6.18V12H4.12ZM6.18,9V7H8.24V9ZM2.06,9V7H4.12V9ZM6.18,5V3H8.24V5ZM2.06,5V3H4.12V5Z" stroke="rgba(0,0,0,0)" strokeMiterlimit="10" strokeWidth="1"></path> </g> </g></svg>
+                        </svg>
+                        <h3 className="text-center text-xl">Add Property</h3>
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                            Add new property.
+                        </p>
+                    </Link>  
+                </>
+                )}
+            </div>
+
         </>
         
       

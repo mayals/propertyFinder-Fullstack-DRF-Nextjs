@@ -6,443 +6,561 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { updateRequestUserProfile } from "../../../utils/auth";
-import axiosInstance from "../../../lib/axios";
+import { getMainTypesList, getCountriesList, getPurposeList, getAmenitiesList  } from "../../utils/property";
+// import {  getSubTypesList , getCityList , addProperty } from "../../utils/property";
 
+
+import axiosInstance from "../../lib/axios";
+
+import Loading from "../../components/loading/Loading";
 // react-toastify
-import notify from "../../../common/useNotification"
+import notify from "../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 
 
 
-export default function EditAdminProfile() {
-    const { user, setUser, loading } = useAuth();
+export default function AddProperty() {
+    const { user, loading } = useAuth();
     const router = useRouter();
+   
+    // models.ForeignKey --- current user  -- from useAuth()
+    const [owner,setOwner] = useState("")    // "owner"
+    
+    // models.CharField
+    const [title,setTitle] = useState("")                   // "title"
+    const [area,setArea] = useState("")                     // "Area"
+    const [district,setDistrict] = useState("")             // "district"
+    const [plotNumber ,setPlotNumber ] = useState("")       // "plot_number"
+    const [landNumber,setLandNumber] = useState("")         // "land_number" 
+    const [addressDetail,setAddressDetail] = useState("")   // "address_detail"
+    const [currency,setCurrency] = useState("")            // "currency"
+    // FACADE_CHOICES = [("north", "North"), ("south", "South"), ("east", "East"), ("west", "West"),]
+    const [facade,setFacade] = useState("")                // "facade" 
+    // FURNISHING_CHOICES = [("furnished", "Furnished"),("unfurnished", "Unfurnished"),("partly", "Partly Furnished"),]
+    const [furnishing,setFurnishing ] = useState("")    // "furnishing"
+    
+    // models.BooleanField
+    const [isOccupied,setIsOccupied] = useState("")     // "is_occupied"
 
-    // const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');  
-    const [gender, setGender] = useState('');
-    const [dob, setDob] = useState('');
-    const [phone, setPhone] = useState('');
-    const [country, setCountry] = useState('');
-    const [address, setAddress] = useState('');
-    
-    // Profile Image Upload
-    // preview - url
-    const [preview, setPreview]   = useState<string | null>(null); // preview only - string url 
-    //  actual -  file 
-    const [ppicture, setPpicture] = useState<File | null>(null);  // actual file _ file
-    
 
+    // models.TextField
+    const [description,setDescription] = useState("")    // "description"
+
+    
+    //  models.IntegerField
+    const [bedrooms,setBedrooms] = useState("")         // "bedrooms"
+    const [bathrooms,setBathrooms] = useState("")       // "bathrooms"
+    const [propertyAge,setPropertyAge] = useState("")   // "property_age"
+
+
+    // models.DecimalField
+    const [latitude,setLatitude] = useState("")           // "latitude"
+    const [longitude,setLongitude] = useState("")         // "longitude"
+    const [propertySize,setPropertySize] = useState("")   // "property_size"
+    const [plotLength,setPlotLength] = useState("")       // "plot_length"  
+    const [plotWidth,setPlotWidth] = useState("")         // "plot_width"
+    const [streetWidth,setStreetWidth] = useState("")     // "street_width"
+    const [price,setPrice] = useState("")   // "price"
+
+
+    // models.DateField
+    const [availableFrom,setAvailableFrom] = useState("")        // "available_from" 
+    
+    
+    // models.ForeignKey
+    const [countryList,setCountryList] = useState([]);           
+    const [country,setCountry] = useState("")                     // "country"
+    const [cityList,setCityList] = useState([]);                   
+    const [city,setCity] = useState("")                           // "city"
+    
+    const [mainTypesList,setMainTypeList] = useState([]);
+    const [mainType,setMainType] = useState("")                    // "pmain_type"
+    const [subTypeList,setSubTypeList] = useState([]);
+    const [subType,setSubType] = useState("")                      // "psub_type"
+    
+    const [purposeList,setPurposeList] = useState([]);
+    const [purpose,setPurpose] = useState("")                      // "purpose"
+
+    
+    // models.ManyToManyField
+    const [amenitiesList,setAmenitiesList] = useState([]);
+    const [amenities,setAmenities] = useState("")                  // "amenities"
+
+  
+       
+   
+    
     useEffect(() => {
-        console.log("EditProfile-loading=",loading)
-        console.log("EditProfile-user=",user)
+        console.log("AddProperty-loading=",loading)
+        console.log("AddProperty-user=",user)
         
         if (!loading && !user) {
             router.push("/login");
         }
 
-        if (!loading && user){
-            setFirstName(user.first_name);
-            setLastName(user.last_name);
-            setGender(user.gender);
-            setDob(user.date_of_birth);
-            setPhone(user.phone_number || "");
-            setCountry(user.country || "");
-            setAddress(user.address || "");
-            
-            // set the preview picture as url string
-            if (user.profile_picture) {
-              const backendURL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000";       
-              setPreview(`${backendURL}${user.profile_picture}`);
-            } else {
-              setPreview(null);
-            }
-            
-            // console.log('firstName=', firstName)
-            // console.log('lastName=', lastName)
-            // console.log('gender=', gender)
-            // console.log('dob=', dob)
-            // console.log('phone=', phone)
-            // console.log('country=', country)
-            // console.log('address=', address)
-            // console.log('preview=', preview)
-            
-        }
+        if (!loading && user && ( user.role === "buyer") ){
+                      console.log('role=', user.role)
+                      toast.error( "You have no permission to reach this page"); 
+                      router.push("/myDashboard");
+        }    
     }, [user, loading, router]);
     
     
+
+    useEffect(() => {
+        // getCountriesList
+        const fetchCountryList = async () => {
+                try {
+                    const data = await getCountriesList();
+                    setCountryList(data);             // ✅ save country list
+                    notify("The Main Types List is now get successfully", "success");
+                
+                } catch (error: any) {
+                    notify("Failed to get country List", "error");
+                    console.log("getCountryList-error =", error);
+                }
+        };
+        fetchCountryList();
+
+        // getMainTypesList
+        const fetchMainTypesList = async () => {
+                try {
+                    const data = await getMainTypesList();
+                    setMainTypeList(data);             // ✅ save the main type list
+                    notify("The Main Types List is now get successfully", "success");
+                
+                } catch (error: any) {
+                    notify("Failed to get Main Types List", "error");
+                    console.log("getMainTypesList-error =", error);
+                }
+        };
+        fetchMainTypesList();
+    
+        
+        // getPurposeList
+        const fetchPurposeList = async () => {
+                try {
+                    const data = await getPurposeList();
+                    setPurposeList(data);             // ✅ save purpose list
+                    notify("The purpose List is now get successfully", "success");
+                
+                } catch (error: any) {
+                    notify("Failed to get Purpose List", "error");
+                    console.log("getPurposeList-error =", error);
+                }
+        };
+        fetchPurposeList();
+
+
+        // getAmenitiesList
+        const fetchAmenitiesList = async () => {
+                try {
+                    const data = await getAmenitiesList();
+                    setAmenitiesList(data);             // ✅ save Amenities List
+                    notify("The Amenities List is now get successfully", "success");
+                
+                } catch (error: any) {
+                    notify("Failed to get Amenities List", "error");
+                    console.log("getAmenitiesList-error =", error);
+                }
+        };
+        fetchAmenitiesList ();
+    
+    }, []);
+
+    
+
+    // get country- CityList
+    // useEffect(() => { 
+    //     // getCityList
+    //     const fetchCityList = async (country) => {
+    //             try {
+    //                 const data = await getCityList(country);
+    //                 setCityList(data);             // ✅ save city list
+    //                 notify("The Main Types List is now get successfully", "success");
+                
+    //             } catch (error: any) {
+    //                 notify("Failed to get Main Types List", "error");
+    //                 console.log("getMainTypesList-error =", error);
+    //             }
+    //     };
+    //     fetchCityList(country);
+
+    // }, [country]);
+    
+    
+    // get mainType - SubTypeList
+    useEffect(() => {     
+        // getSubTypeList
+        const fetchSubTypeList = async (mainType) => {
+                try {
+                    const data = await getSubTypesList(mainType);
+                    setSubTypeList(data);             // ✅ save city list
+                    notify("The Main Types List is now get successfully", "success");
+                
+                } catch (error: any) {
+                    notify("Failed to get Main Types List", "error");
+                    console.log("getMainTypesList-error =", error);
+                }
+        };
+        fetchSubTypeList(mainType);
+
+    }, [mainType]);
+
+
+
+
+
+
+
+    //  onChange
+    ///////////////  FORM FIELDS  --- parse data from form field  
+    const onChangeTitle = (e) => {
+        setTitle(e.target.value);     // this will be country.id
+        console.log("onChangeTitle =", e.target.value);
+    };
+    const onChangeArea = (e) => {
+        setArea(e.target.value)
+        console.log('onChangeArea =', e.target.value)
+    };
+    const onChangeDistrict = (e) => {
+        setDistrict(e.target.value);    
+        console.log("onChangeDistrict =", e.target.value);
+    };
+    const onChangePlotNumber = (e) => {
+        setPlotNumber(e.target.value)
+        console.log('onChangePlotNumber =', e.target.value)
+    };
+    const onChangeLandNumber = (e) => {
+        setLandNumber(e.target.value);     
+        console.log("onChangeLandNumber =", e.target.value);
+    };
+    const onChangeAddressDetail = (e) => {
+        setAddressDetail(e.target.value)
+        console.log('onChangeAddressDetail =', e.target.value)
+    };
+    const onChangeCurrency = (e) => {
+        setCurrency(e.target.value);    
+        console.log("onChangeCurrency =", e.target.value);
+    };
+    const onChangeFacade = (e) => {
+        setFacade(e.target.value)
+        console.log('onChangeFacade =', e.target.value)
+    };
+    const onChangeFurnishing = (e) => {
+        setFurnishing(e.target.value);     
+        console.log("onChangeFurnishing =", e.target.value);
+    };
+    const onChangeIsOccupied = (e) => {
+        setIsOccupied(e.target.value)
+        console.log('onChangeIsOccupied =', e.target.value)
+    };
+    const onChangeDescription = (e) => {
+        setDescription(e.target.value)
+        console.log('onChangeDescription =', e.target.value)
+    };
+    const onChangeBedrooms = (e) => {
+        setBedrooms(e.target.value)
+        console.log('onChangeBedrooms =', e.target.value)
+    };
+    const onChangeBathrooms= (e) => {
+        setBathrooms(e.target.value)
+        console.log('onChangeBathrooms =', e.target.value)
+    };
+    const onChangePropertyAge= (e) => {
+        setPropertyAge(e.target.value)
+        console.log('onChangePropertyAge =', e.target.value)
+    };
+    const onChangeLatitude= (e) => {
+        setLatitude(e.target.value)
+        console.log('onChangeLatitude =', e.target.value)
+    };
+    const onChangeLongitude= (e) => {
+        setLongitude(e.target.value)
+        console.log('onChangeLongitude =', e.target.value)
+    };
+    const onChangePropertySize= (e) => {
+        setPropertySize(e.target.value)
+        console.log('onChangePropertySize =', e.target.value)
+    };
+    const onChangePlotLength= (e) => {
+        setPlotLength(e.target.value)
+        console.log('onChangePlotLength =', e.target.value)
+    };
+    const onChangePlotWidth= (e) => {
+        setPlotWidth(e.target.value)
+        console.log('onChangePlotWidth =', e.target.value)
+    };
+    const onChangeStreetWidth= (e) => {
+        setStreetWidth(e.target.value)
+        console.log('onChangeStreetWidth =', e.target.value)
+    };
+    const onChangePrice= (e) => {
+        setPrice(e.target.value)
+        console.log('onChangePrice =', e.target.value)
+    };
+    const onChangeAvailableFrom= (e) => {
+        setAvailableFrom(e.target.value)
+        console.log('onChangeAvailableFrom =', e.target.value)
+    };
+    const onChangeCountry= (e) => {
+        setCountry(e.target.value)
+        console.log('onChangeCountry =', e.target.value)
+    };
+    const onChangeCity= (e) => {
+        setCity(e.target.value)
+        console.log('onChangeCity =', e.target.value)
+    };
+    const onChangeMainType= (e) => {
+        setMainType(e.target.value)
+        console.log('onChangeMainType =', e.target.value)
+    };
+    const onChangeSubType= (e) => {
+        setSubType(e.target.value)
+        console.log('onChangeSubType =', e.target.value)
+    };
+    const onChangePurpose= (e) => {
+        setPurpose(e.target.value)
+        console.log('onChangePurpose =', e.target.value)
+    };
+    const onChangeAmenities= (e) => {
+        setAmenities(e.target.value)
+        console.log('onChangeAmenities =', e.target.value)
+    };
+
+
+
     if (loading) {
-       return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
     }
 
     // While checking auth, avoid flicker
     if (!user) {
        return null; // Redirect handled already
     }
- 
 
-
-    //  onChange
-    ///////////////  FORM FIELDS  --- parse data from form field  
-    // onChange firstName field
-    const onChangeFirstName = (event) => {
-      setFirstName(event.target.value)
-      console.log('onChange firstName=', event.target.value)
-    }
-    // onChange lastName field
-    const onChangeLastName = (event) => {
-      setLastName(event.target.value)
-      console.log('onChange lastName=', event.target.value)
-    }
-    // onChange gender field
-    const onChangeGender = (event) => {
-      setGender(event.target.value)
-      console.log("onChange gender selected =", event.target.value)
-    }
-    // onChange date_of_birth field
-    const onChangeDob = (event) => {
-      setDob(event.target.value)
-      console.log('onChange dob=', event.target.value)
-    }
-    // onChange phone_number field
-    const onChangePhone = (event) => {
-      setPhone(event.target.value)
-      console.log('onChange phone=', event.target.value)
-    }
-    // onChange country field
-    const onChangeCountry = (event) => {
-      setCountry(event.target.value)
-      console.log('onChange country=', event.target.value)
-    }
-    // onChange address field
-    const onChangeAddress = (event) => {
-      setAddress(event.target.value)
-      console.log('onChange address=', event.target.value)
-    }
-    // onChange ppicture field -- actual file for submitting -- must be file 
-    // onChange previewe field -- preview image -- must be url string
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-              const file = e.target.files[0];
-              setPpicture(file);                             // actual file for submitting -- must be file 
-              setPreview(URL.createObjectURL(file));         // preview image -- must be url string
-        }
-    };
 
 
     //////  SUBMIT ////////////
-    ///////////////  after submit button clicked
     const handleSubmit = async (e) => {
-          e.preventDefault();
-          // //////////////////////  validate fields ////////////////////////
-          
-          if (!loading && !user){
+        e.preventDefault();
+        
+        if (!loading && !user){
             router.push('/login');
-          }
-          if (!firstName) {      // if (firstName === "" || firstName === null) {
-            notify("Please enter the First Name !","warning");
-            // setIsSubmitting(false);
-            return;
-          }
-          //  check lastName field is not empty
-          if (!lastName) {
-            notify("Please enter the Last Name !","warning");
-            // setIsSubmitting(false);
-            return;
-          }
-          //  check gender field is not empty
-          if (!gender) {
-            notify("Please enter gender !","warning");
-            return;
-          }
-          //  check date of birth is not empty
-          if (!dob) {
-            notify("Please enter date of birth !","warning");
-            return;
-          }
-          //  check phone is not empty
-          if (!phone) {
-            notify("Please enter phone !","warning");
-            return;
-          }
-          //  check country is not empty
-          if (!country) {
-            notify("Please enter country !","warning");
-            return;
-          }
-          //  check address is not empty
-          if (!address) {
-            notify("Please enter address !","warning");
-            return;
-          }
+        }
 
-          // Create FormData object
-          // When uploading files in React with Axios, you must use FormData and not JSON.
-          const formData = new FormData();
-          formData.append("first_name", firstName );
-          formData.append("last_name", lastName);
-          formData.append("gender", gender);
-          formData.append("date_of_birth", dob);
-          formData.append("phone_number", phone);
-          formData.append("country", country);
-          formData.append("address", address);
-          // Only append if it's a File
-          if (ppicture instanceof File) {
-            formData.append("profile_picture", ppicture);
-          }
-                    
-          // Log the values using the get method
-          console.log('formData.first_name=', formData.get('first_name'));
-          console.log('formData.last_name=', formData.get('last_name'));
-          console.log('formData.gender=', formData.get('gender'));
-          console.log('formData.date_of_birth=', formData.get('date_of_birth'));
-          console.log('formData.phone_number=', formData.get('phone_number'));
-          console.log('formData.country=', formData.get('country'));
-          console.log('formData.address=', formData.get('address'));
-          console.log('formData.profile_picture=', formData.get('profile_picture'));
-          
-    
-    
-          // axios api
-          //When uploading files in React with Axios, you must use FormData and not JSON
-          try { 
-                // axios -success
-                // 1. Update backend
-                await updateRequestUserProfile(formData)
+        if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade
+           || !furnishing || !isOccupied || !description || !latitude || !propertyAge|| !longitude || !propertySize || !plotLength 
+           || !plotWidth || !streetWidth || !price || !availableFrom || !country || !city || !mainType
+           || !subType || !purpose || !amenities){
+                    notify("Please fill the form fields !","warning");
+                    return;
+        }
+       
+
+        // Create FormData object
+        // When uploading files in React with Axios, you must use FormData and not JSON.
+        const formData = new FormData();
+        formData.append("title", title );
+        formData.append("Area", area );
+        formData.append("district", district);
+        formData.append("plot_number", plotNumber );
+        formData.append("land_number", landNumber);
+        formData.append("address_detail", addressDetail);
+        formData.append("currency", currency);
+        formData.append("facade", facade );
+        formData.append("furnishing", furnishing );
+        formData.append("is_occupied", isOccupied);
+        formData.append("property_age", propertyAge); 
+        formData.append("description  ", description  );
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
+        formData.append("property_size", propertySize);     
+        formData.append("plot_length", plotLength  );
+        formData.append("plot_width", plotWidth);
+        formData.append("street_width", streetWidth);
+        formData.append("price", price);
+        formData.append("available_from", availableFrom);
+        formData.append("country", country);
+        formData.append("city", city);
+        formData.append("pmain_type", mainType);
+        formData.append("psub_type", subType);
+        formData.append("purpose", purpose);
+        formData.append("amenities", amenities);
+
+        // // Only append if it's a File
+        // if (ppicture instanceof File) {
+        // formData.append("profile_picture", ppicture);
+        // }
                 
-                 // 2. Refetch user profile
-                const { data: updatedUser } = await axiosInstance.get(
-                  "/users/request-user-profile/",       // endpoint
-                  { withCredentials: true }             // include cookies
-                );
+        // Log the values using the get method
+        // console.log('formData.first_name=', formData.get('first_name'));
+        
+        
 
-                // 3. Update AuthContext
-                setUser(updatedUser);
-                
-                notify("Profile updated successfully!", "success");
-                
-                // ✅ Delay for 3 seconds before redirecting
-                setTimeout(() => {
-                    router.push('/myProfile/admin');
-                }, 3000); // 3000 milliseconds = 3 seconds
-          
 
-          } catch (error: any) {
-              console.log('updateRequestUserProfile error =', error);
 
-              if (
-                error?.phone_number &&
-                Array.isArray(error.phone_number) &&
-                error.phone_number[0].includes("The phone number entered is not valid.")
-              ) {
-                notify("The phone number entered is not valid.", "error");
-              } else {
-                Object.entries(error).forEach(([field, messages]) => {
-                  if (Array.isArray(messages)) {
-                    messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
-                  } else {
-                    notify(`${field}: ${messages}`, "error");
-                  }
-                });
-              }
-          }
+        // addProperty - axios //
+        // try { 
+        //       await addProperty(formData)
+        //       notify("The Property has been add successfully", "success");
+
+        // }catch (error: any) {
+        //     console.log("addPurpose error =", error);
+        //     if (error.response && error.response.data) {
+        //             const errors = error.response.data;
+
+        //             Object.entries(errors).forEach(([field, messages]) => {
+        //             if (Array.isArray(messages)) {
+        //                 messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
+        //             } else {
+        //                 notify(`${field}: ${messages}`, "error");
+        //             }
+        //             });
+
+        //     } else {
+        //             notify("Something went wrong, please try again.", "error");
+        //     }
+        // }
     }
+
 
     return (
         <>
-          <section className="py-10 min-h-screen bg-gray-100  flex items-center">
+        <section className="py-1 min-h-screen bg-gray-100  flex items-center ">
+              
+            <nav className="flex pb-1" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                    <li className="inline-flex items-center">
+                    <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                        </svg>
+                        Home
+                    </Link>
+                    </li>
+                    <li>
+                    <div className="flex items-center">
+                        <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <a href="/myDashboard" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">My Dashboard</a>
+                    </div>
+                    </li>
+                    <li aria-current="page">
+                    <div className="flex items-center">
+                        <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Add City</span>
+                    </div>
+                    </li>
+                </ol>
+            </nav> 
 
-              <div className="lg:w-3/4 w-[95%] mx-auto bg-white dark:bg-gray-800/40 shadow-2xl rounded-2xl p-6 mt-5 mb-5">
-                  
-                  <nav className="flex pb-1" aria-label="Breadcrumb">
-                    <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                      <li className="inline-flex items-center">
-                        <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                          <svg className="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
-                          </svg>
-                          Home
-                        </Link>
-                      </li>
-                      <li>
-                        <div className="flex items-center">
-                          <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
-                          </svg>
-                          <a href="/myDashboard" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">My Dashboard</a>
-                        </div>
-                      </li>
-                      <li aria-current="page">
-                        <div className="flex items-center">
-                          <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
-                          </svg>
-                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Edit Admin Profile</span>
-                        </div>
-                      </li>
-                    </ol>
-                  </nav> 
-
-                  <hr className="text-gray-300"></hr>
+            <hr className="text-gray-300"></hr>
                 
-                  <h1 className="text-3xl mb-2 dark:text-white mt-8">Edit 
-                    <span className="text-[#c75a00] text-2xl">&nbsp;{user?.first_name}
-                      <span>&apos;s</span>&nbsp;</span>&nbsp;Profile
-                  </h1>
-                 
+
+            <div className=" mx-auto bg-white shadow-2xl rounded-2xl p-6 mt-5 mb-5">
+                <form onSubmit={handleSubmit} className="space-y-12">
+                <ToastContainer position="top-center" autoClose={3000} />
                     
+                    {/* Select a Country from a dynamic counrty list */}
+                    <div className="md:w-full">
+                        <div>
+                            <label className="block text-sm font-medium">Country</label>
+                            <select
+                                value={country}
+                                onChange={onChangeCountry}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                <option value="">-- Select a Country --</option>
+                                {countryList.map((country) => (
+                                    <option key={country.id} value={country.id}>
+                                    {country.country_name} ({country.code})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                
+
+                    {/* Select a - main type -  from a dynamic main type list */}
+                    <div className="md:w-full">
+                        <div>
+                            <label className="block text-sm font-medium">Main Type</label>
+                            <select
+                                value={mainType}
+                                onChange={onChangeMainType}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                <option value="">-- Select a Main Type --</option>
+                                {mainTypesList.map((mtypeobj) => (
+                                    <option key={mtypeobj.id} value={mtypeobj.id}>
+                                        {mtypeobj.maintype_label}   {/* use label here */}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                     
-                  
-                  
-                  
-                  
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <ToastContainer position="top-center" autoClose={3000} />
-                      
-                      {/* Profile Image Upload */}
-                      <div className="justify-items-center">
-                          <div className="relative w-36 h-36 bg-gray-200 overflow-hidden flex items-center justify-center">
-                                <div className="space-y-2"> 
-                                  {preview && (
-                                      // If user selected a new file → show preview
-                                      <Image
-                                          src={preview}
-                                          alt="Profile Preview"
-                                          fill
-                                          className="w-24 h-24 object-cover"
-                                      />
-                                  )}
-                                   {/* <input type="file" accept="image/*" onChange={handleFileChange} /> */}
-                                </div>
-                                 {/* Upload Button */}
-                                  <label
-                                    htmlFor="upload_profile"
-                                    className="absolute -bottom-1 -right-1 bg-blue-500 hover:bg-blue-600 
-                                            text-white p-2 rounded-full cursor-pointer shadow-md z-50"
-                                  >
-                                    <svg
-                                      className="w-5 h-5"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      strokeWidth="2"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                  </label>
-                                  <input
-                                    type="file"
-                                    id="upload_profile"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleFileChange}
-                                  />
-                            </div>      
-                       </div>              
-                                  
-                         
 
-                      {/* firstName + lastName fields  */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">First Name</label>
-                          <input
-                              name="firstName"
-                              value={firstName}
-                              onChange={onChangeFirstName}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="First Name"
-                          />
-                          </div>
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Last Name</label>
-                          <input
-                              name="lastName"
-                              value={lastName}
-                              onChange={onChangeLastName}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Last Name"
-                          />
-                          </div>
-                      </div>
+                    {/* Select a -purpose  -  from a dynamic purpose list */}
+                    <div className="md:w-full">
+                        <div>
+                            <label className="block text-sm font-medium">Purpose</label>
+                            <select
+                                value={purpose}
+                                onChange={onChangePurpose}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                <option value="">-- Select Purpose --</option>
+                                {purposeList.map((purposeobj) => (
+                                    <option key={purposeobj.id} value={purposeobj.id}>
+                                        {purposeobj.purpose_name} 
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
-                      {/* Gender + DOB  fields */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Gender</label>
-                          <select
-                              name="gender"
-                              value={gender}
-                              onChange={onChangeGender}
-                              className="mt-2 w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          >
-                              <option value="">-- Select Gender --</option>
-                              <option value="male">Male</option>
-                              <option value="female">Female</option>
-                          </select>
-                          </div>
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Date of Birth</label>
-                          <input
-                              type="date"
-                              name="dob"
-                              value={dob}
-                              onChange={onChangeDob}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          />
-                          </div>
-                      </div>
 
-                      {/* Phone + Country  fields */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Phone</label>
-                          <input
-                              name="phone"
-                              value={phone}
-                              onChange={onChangePhone}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Phone Number"
-                          />
-                          </div>
-                          <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Country</label>
-                          <input
-                              name="country"
-                              value={country}
-                              onChange={onChangeCountry}
-                              className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                              placeholder="Country"
-                          />
-                          </div>
-                      </div>
+                    {/* Select a - Amenities List -  from a dynamic Amenities List */}
+                    <div className="md:w-full">
+                        <div>
+                            <label className="block text-sm font-medium">Amenities</label>
+                            <select
+                                value={amenities}
+                                onChange={onChangeAmenities}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                <option value="">-- Select Amenities --</option>
+                                {amenitiesList.map((amenityobj) => (
+                                    <option key={amenityobj.id} value={amenityobj.id}>
+                                        {amenityobj.amenity_name}   
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
 
-                      {/* Address field */}
-                      <div>
-                          <label className="block text-sm font-medium dark:text-gray-300">Address</label>
-                          <input
-                          name="address"
-                          value={address}
-                          onChange={onChangeAddress}
-                          className="mt-2 p-3 w-full border rounded-lg dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-                          placeholder="Address"
-                          />
-                      </div>
 
-                      {/* Submit */}
-                      <button
-                          type="submit"
-                          className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md"
-                      >
-                          Save Profile
-                      </button>
-                  </form>
-              </div>
-          </section>
+
+                    {/* Submit */}
+                    <button
+                        type="submit"
+                        className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                    >
+                        Add Property
+                    </button>
+                </form>
+            </div>
+        </section>
         </>
     );
-}
+};

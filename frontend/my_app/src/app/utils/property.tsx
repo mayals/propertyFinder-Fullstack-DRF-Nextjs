@@ -222,6 +222,31 @@ export const addPurpose = async(selectedMaintype, purposeName) => {
     }
 }
 
+ 
+// getPurposeList  //
+export const getPurposeList = async() => {
+    try {
+        const response = await axios.get(
+            `${API_URL}/property/list-purposes/`,        // endpoint 
+            { withCredentials:true },                  //  sending cookies          
+        )
+        console.log("getPurposeList-response.data=",response.data);
+        return response.data;
+
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getPurposeList-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+
+
 
 
 
@@ -253,3 +278,28 @@ export const addAmenity = async(amenityName) => {
         }
     }
 }
+
+
+// getAmenitiesList //
+export const getAmenitiesList = async() => {
+    try {
+        const response = await axios.get(
+            `${API_URL}/property/list-amenity/`,        // endpoint 
+            { withCredentials:true },                  //  sending cookies          
+        )
+        console.log("getAmenitiesList-response.data=",response.data);
+        return response.data;
+
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getAmenitiesList-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+
