@@ -22,6 +22,7 @@ urlpatterns = [
     # PropertyMainType
     path('create-main-type/', views.CreateMainTypeAPIView.as_view(), name='create-main-type'),
     path('list-main-type/', views.ListMainTypeAPIView.as_view(), name='list-main-type'),
+    
     path('update-main-type/<str:id>/', views.UpdateMainTypeAPIView.as_view(), name='update-main-type'), 
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
