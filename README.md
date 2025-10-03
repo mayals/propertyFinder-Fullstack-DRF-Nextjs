@@ -2,6 +2,11 @@
 This is a full-stack property finder web application, inspired by platforms like Property Finder Saudi Arabia.
 It allows users to search, list, and manage properties for sale or rent, with features tailored to different types of users.
 
+
+## System Architecture:
+![System Architecture](assets/propertyFinderFullstackProject.png)
+
+
 ## 🔑 Key Features
 - Role-based access control (5 user types)
 - Property listings with detailed information (location, price, type, images, etc.)
