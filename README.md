@@ -75,3 +75,4 @@ Admins oversee the entire platform, review role requests, and manage users and p
 
 
 ## System Architecture:
+![System Architecture](assets/propertyFinderFullstackProject.png)
