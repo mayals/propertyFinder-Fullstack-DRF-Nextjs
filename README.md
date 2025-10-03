@@ -72,3 +72,6 @@ Agents respond on behalf of Brokers or Developers.
 
 ## Management & Control
 Admins oversee the entire platform, review role requests, and manage users and properties.
+
+
+## System Architecture:
