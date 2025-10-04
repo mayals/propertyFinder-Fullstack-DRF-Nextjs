@@ -7,6 +7,7 @@ It allows users to search, list, and manage properties for sale or rent, with fe
 ![System Architecture](assets/propertyFinderFullstackProject.png)
 
 ## ER Diagram:
+![ER Diagram](assets/dbdiagram.io_property_finder.png)
 https://dbdiagram.io/d/Property-Finder-68df410ed2b621e42210ee1f
 
 ## 🔑 Key Features
