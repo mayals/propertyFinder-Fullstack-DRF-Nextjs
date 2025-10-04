@@ -18,7 +18,7 @@ class PropertySubTypesAdmin(admin.ModelAdmin):
 
 @admin.register(PropertyPurpose)
 class PropertyPurposeAdmin(admin.ModelAdmin):
-    list_display  = ("id", "main_type" , "purpose_name" ,)
+    list_display  = ("id", "purpose_name" ,)
     search_fields = ( "purpose_name",)
     
     

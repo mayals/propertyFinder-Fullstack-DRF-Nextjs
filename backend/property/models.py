@@ -100,16 +100,16 @@ class PropertyPurpose(models.Model):
         ("buy", "Buy"),
         ("rent", "Rent"),
     ]
-    purpose_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES)
-    main_type    = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
+    purpose_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES, blank=False, null=False, unique=True)
+    # main_type    = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
     created_at   = models.DateTimeField(auto_now_add=True, null=True)
     updated_at   = models.DateTimeField(auto_now=True, null=True)
     
     def __str__(self):
-        return f'{self.main_type} for {self.purpose_name}'   
+        return self.purpose_name
     class Meta:
        ordering = ['-created_at']
-       unique_together = ['purpose_name', 'main_type']
+    #    unique_together = ['purpose_name', 'main_type']
 
     # Residential for buy
     # Residential for rent

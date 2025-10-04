@@ -169,15 +169,10 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
 
 PropertyPurpose ##################################################################
 class PropertyPurposeSerializer(serializers.ModelSerializer):
-    # must select the primary key of main_type - main_type id - before select purpose 
-    main_type = serializers.PrimaryKeyRelatedField(
-                                        queryset=PropertyMainType.objects.all(),
-                                        help_text='Select a property main_type id for this sub type.'
-                                        )
      
     class Meta:
         model = PropertyPurpose
-        fields = ['id', 'created_at', 'updated_at', 'main_type', 'purpose_name' ]
+        fields = ['id', 'created_at', 'updated_at', 'purpose_name' ]
         read_only_fields = ('id', 'created_at', 'updated_at',)
 
 
