@@ -6,6 +6,8 @@ It allows users to search, list, and manage properties for sale or rent, with fe
 ## System Architecture:
 ![System Architecture](assets/propertyFinderFullstackProject.png)
 
+## ER Diagram:
+https://dbdiagram.io/d/Property-Finder-68df410ed2b621e42210ee1f
 
 ## 🔑 Key Features
 - Role-based access control (5 user types)
