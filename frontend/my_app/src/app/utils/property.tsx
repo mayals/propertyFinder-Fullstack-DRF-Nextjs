@@ -39,11 +39,33 @@ export const addCountry = async(countryName , code) => {
         }
     }
 }
-    
 
 
 
-// getCountriesList  //
+// getCountryCitiesList -- all cities list belong to one country //
+export const getCountryCitiesList = async(selectedCountry) => {
+    try {
+        const response = await axios.get(     
+            `${API_URL}/property/${selectedCountry}/cities/`,   // endpoint 
+            { withCredentials:true },                           // sending cookies          
+        )
+        console.log("getCountryCitiesList-response.data=",response.data);
+        return response.data;
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getCountryCitiesList-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+
+
+// getCountriesList -- all countries //
 export const getCountriesList = async() => {
     try {
         const response = await axios.get(
@@ -57,7 +79,7 @@ export const getCountriesList = async() => {
     } catch (e) {
         if (e) {
         // Throw full error object for the component to handle
-        console.log('addCountry-e=',e)
+        console.log('getCountriesList-e=',e)
         throw e;
         
         } else {
@@ -66,6 +88,7 @@ export const getCountriesList = async() => {
     }
 }
     
+
 
 // addCity //
 export const addCity = async(selectedCountry, cityName) => {
@@ -158,6 +181,32 @@ export const getMainTypesList = async() => {
 
 
 
+// getMainTypeSubTypesList -- all Sub TypesList belong to one MainType //
+export const getMainTypeSubTypesList = async(selectedMainType) => {
+    try {
+        const response = await axios.get(     
+            `${API_URL}/property/${selectedMainType}/sub-types/`,   // endpoint 
+            { withCredentials:true },                              // sending cookies          
+        )
+        console.log("getMainTypeSubTypesList-response.data=",response.data);
+        return response.data;
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getMainTypeSubTypesList-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+
+
+
+
+
 // addSubType //
 export const addSubType = async(selectedMaintype, subTypeName) => {
         console.log('addSubType-selectedMaintype =', selectedMaintype );
@@ -193,14 +242,12 @@ export const addSubType = async(selectedMaintype, subTypeName) => {
 
 
 // addPurpose //
-export const addPurpose = async(selectedMaintype, purposeName) => {
-        console.log('addPurpose-selectedMaintype =', selectedMaintype );
+export const addPurpose = async(purposeName) => {
         console.log('addPurpose-purposeName=', purposeName);
     try {
         const response = await axiosInstance.post(
             "/property/create-purpose/",                  // endpoint
             {
-                main_type   :selectedMaintype,          // data --id of selected property "main type",
                 purpose_name:purposeName                // data --"purpose_name",
             },                 
             {

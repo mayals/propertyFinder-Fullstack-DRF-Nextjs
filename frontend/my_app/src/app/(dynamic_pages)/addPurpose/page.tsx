@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getMainTypesList, addPurpose } from "../../utils/property";
+import { addPurpose } from "../../utils/property";
 
 
 import axiosInstance from "../../lib/axios";
@@ -22,9 +22,6 @@ import { ToastContainer, toast } from 'react-toastify';
 export default function AddPurpose() {
     const { user, loading } = useAuth();
     const router = useRouter();
-   
-    const [mainTypesList,setMainTypesList] = useState([]);
-    const [selectedMaintype,setSelectedMainType] = useState('');   // 'main_type'
     const [purposeName,setPurposeName] = useState('')              // 'purpose_name'
    
     
@@ -45,33 +42,8 @@ export default function AddPurpose() {
     
     
 
-
-
-    useEffect(() => {
-        const fetchMainTypesList = async () => {
-                try {
-                    const data = await getMainTypesList();
-                    setMainTypesList(data);             // ✅ save the list
-                    notify("The Main Types List is now get successfully", "success");
-                
-                } catch (error: any) {
-                    notify("Failed to get Main Types List", "error");
-                    console.log("getMainTypesList-error =", error);
-                }
-        };
-        fetchMainTypesList();
-    }, []);
-
-    
-
-
     //  onChange
     ///////////////  FORM FIELDS  --- parse data from form field  
-    const onChangeSelectedMainType = (e) => {
-        setSelectedMainType(e.target.value);     // this will be country.id
-        console.log("onChangeSelectedMainType id =", e.target.value);
-    };
-
     const onChangePurposeName = (e) => {
         setPurposeName(e.target.value)
         console.log('onChangePurposeName =', e.target.value)
@@ -101,10 +73,6 @@ export default function AddPurpose() {
         if (!loading && !user){
             router.push('/login');
         }
-        if (!selectedMaintype) {
-            notify("Please select the main type !","warning");
-            return;
-        }
         if (!purposeName) {     
             notify("Please select the purpose !","warning");
             return;
@@ -112,7 +80,7 @@ export default function AddPurpose() {
        
         // addPurpose - axios //
         try { 
-              await addPurpose(selectedMaintype, purposeName)
+              await addPurpose(purposeName)
               notify("The purpose name has been add successfully", "success");
 
         }catch (error: any) {
@@ -164,7 +132,7 @@ export default function AddPurpose() {
                           <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                           </svg>
-                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Add City</span>
+                          <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Add Purpose</span>
                         </div>
                       </li>
                     </ol>
@@ -178,27 +146,6 @@ export default function AddPurpose() {
                   
                   <form onSubmit={handleSubmit} className="space-y-12">
                     <ToastContainer position="top-center" autoClose={3000} />
-                      
-                        {/* Select a - main type -  from a dynamic main type list */}
-                        <div className="md:w-full">
-                            <div>
-                                <label className="block text-sm font-medium">Main Type</label>
-                                <select
-                                  value={selectedMaintype}
-                                  onChange={onChangeSelectedMainType}
-                                  className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
-                                >
-                                    <option value="">-- Select a Main Type --</option>
-                                    {mainTypesList.map((mtypeobj) => (
-                                      <option key={mtypeobj.id} value={mtypeobj.id}>
-                                          {mtypeobj.maintype_label}   {/* use label here */}
-                                      </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <br></br><br></br><br></br>
 
                         {/* Select a - Purpose - from the list */}
                         <div className="md:w-full">

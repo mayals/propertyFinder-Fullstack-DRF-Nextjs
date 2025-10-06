@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getMainTypesList, getCountriesList, getPurposeList, getAmenitiesList  } from "../../utils/property";
+import { getMainTypesList, getCountriesList, getPurposeList, getAmenitiesList, getCountryCitiesList, getMainTypeSubTypesList  } from "../../utils/property";
 // import {  getSubTypesList , getCityList , addProperty } from "../../utils/property";
 
 
@@ -70,14 +70,16 @@ export default function AddProperty() {
     
     // models.ForeignKey
     const [countryList,setCountryList] = useState([]);           
-    const [country,setCountry] = useState("")                     // "country"
+    const [selectedCountry,setSelectedCountry] = useState("")                     // "country"
+    
     const [cityList,setCityList] = useState([]);                   
-    const [city,setCity] = useState("")                           // "city"
+    const [selectedCity,setSelectedCity] = useState("")                           // "city"
     
     const [mainTypesList,setMainTypeList] = useState([]);
-    const [mainType,setMainType] = useState("")                    // "pmain_type"
+    const [selectedMainType,setSelectedMainType] = useState("")                    // "pmain_type"
+    
     const [subTypeList,setSubTypeList] = useState([]);
-    const [subType,setSubType] = useState("")                      // "psub_type"
+    const [selectedSubType,setSelectedSubType] = useState("")                      // "psub_type"
     
     const [purposeList,setPurposeList] = useState([]);
     const [purpose,setPurpose] = useState("")                      // "purpose"
@@ -85,7 +87,7 @@ export default function AddProperty() {
     
     // models.ManyToManyField
     const [amenitiesList,setAmenitiesList] = useState([]);
-    const [amenities,setAmenities] = useState("")                  // "amenities"
+    const [amenities,setAmenities] = useState([])                  // "amenities"
 
   
        
@@ -111,15 +113,15 @@ export default function AddProperty() {
     useEffect(() => {
         // getCountriesList
         const fetchCountryList = async () => {
-                try {
-                    const data = await getCountriesList();
-                    setCountryList(data);             // ✅ save country list
-                    notify("The Main Types List is now get successfully", "success");
-                
-                } catch (error: any) {
-                    notify("Failed to get country List", "error");
-                    console.log("getCountryList-error =", error);
-                }
+            try {
+                const data = await getCountriesList();
+                setCountryList(data);             // ✅ save country list
+                notify("The Main Types List is now get successfully", "success");
+            
+            } catch (error: any) {
+                notify("Failed to get country List", "error");
+                console.log("getCountryList-error =", error);
+            }
         };
         fetchCountryList();
 
@@ -169,44 +171,58 @@ export default function AddProperty() {
     
     }, []);
 
-    
 
-    // get country- CityList
-    // useEffect(() => { 
-    //     // getCityList
-    //     const fetchCityList = async (country) => {
-    //             try {
-    //                 const data = await getCityList(country);
-    //                 setCityList(data);             // ✅ save city list
-    //                 notify("The Main Types List is now get successfully", "success");
-                
-    //             } catch (error: any) {
-    //                 notify("Failed to get Main Types List", "error");
-    //                 console.log("getMainTypesList-error =", error);
-    //             }
-    //     };
-    //     fetchCityList(country);
 
-    // }, [country]);
-    
-    
-    // get mainType - SubTypeList
+   
+
+
+
+
+
+    // getCountryCitiesList - send id of selected country to get cities list
     useEffect(() => {     
-        // getSubTypeList
-        const fetchSubTypeList = async (mainType) => {
-                try {
-                    const data = await getSubTypesList(mainType);
-                    setSubTypeList(data);             // ✅ save city list
-                    notify("The Main Types List is now get successfully", "success");
-                
-                } catch (error: any) {
-                    notify("Failed to get Main Types List", "error");
-                    console.log("getMainTypesList-error =", error);
-                }
-        };
-        fetchSubTypeList(mainType);
+        // getCountryCitiesList
+        if(selectedCountry){
+            setCityList([])
+            const fetchCityListForSelectedCountry = async (selectedCountry) => {
+                console.log("fetchCityListForSelectedCountry-selectedCountry",selectedCountry)
+                    try {
+                        const data = await getCountryCitiesList(selectedCountry);
+                        setCityList(data);             // ✅ save the result city list
+                        notify("The cities List belong to selected country is now get successfully", "success");
+                    
+                    } catch (error: any) {
+                        notify("Failed to get cities List belong to selected country", "error");
+                        console.log(" fetchCityListForSelectedCountry-error =", error);
+                    }
+            };    
+        fetchCityListForSelectedCountry(selectedCountry);
+        }    
+    }, [selectedCountry]);
 
-    }, [mainType]);
+    
+    
+   
+    // getMainTypeSubTypesList - send id of selected MainType to get SubTypes list
+    useEffect(() => {     
+        // getMainTypeSubTypesList
+        if(selectedMainType){
+            setSubTypeList([])
+            const fetchSubTypesListForSelectedMainType = async (selectedMainType) => {
+                console.log("fetchSubTypesListForSelectedMainType-selectedMainType",selectedMainType)
+                    try {
+                        const data = await getMainTypeSubTypesList(selectedMainType);
+                        setSubTypeList(data);             // ✅ save the result SubType List
+                        notify("SubType List belong to selected MainType is now get successfully", "success");
+                    
+                    } catch (error: any) {
+                        notify("Failed to get SubType List belong to selected MainType", "error");
+                        console.log("fetchSubTypesListForSelectedMainType -error =", error);
+                    }
+            };    
+        fetchSubTypesListForSelectedMainType(selectedMainType);
+        }    
+    }, [selectedMainType]);
 
 
 
@@ -219,6 +235,30 @@ export default function AddProperty() {
     const onChangeTitle = (e) => {
         setTitle(e.target.value);     // this will be country.id
         console.log("onChangeTitle =", e.target.value);
+    };
+    const onChangeDescription = (e) => {
+        setDescription(e.target.value)
+        console.log('onChangeDescription =', e.target.value)
+    };
+    const onChangeSelectedMainType= (e) => {
+        setSelectedMainType(e.target.value)
+        console.log('onChangeSelectedMainType=', e.target.value)
+    };
+    const onChangeSelectedSubType= (e) => {
+        setSelectedSubType(e.target.value)
+        console.log('onChangeSelectedSubType=', e.target.value)
+    };
+    const onChangePurpose= (e) => {
+        setPurpose(e.target.value)
+        console.log('onChangePurpose =', e.target.value)
+    };
+    const onChangeSelectedCountry = (e) => {
+        setSelectedCountry(e.target.value);     // this will be country.id
+        console.log("onChangeSelectedCountry=", e.target.value);
+    };
+    const onChangeSelectedCity= (e) => {
+        setSelectedCity(e.target.value)
+        console.log('onChangeSelectedCity=', e.target.value)
     };
     const onChangeArea = (e) => {
         setArea(e.target.value)
@@ -240,38 +280,6 @@ export default function AddProperty() {
         setAddressDetail(e.target.value)
         console.log('onChangeAddressDetail =', e.target.value)
     };
-    const onChangeCurrency = (e) => {
-        setCurrency(e.target.value);    
-        console.log("onChangeCurrency =", e.target.value);
-    };
-    const onChangeFacade = (e) => {
-        setFacade(e.target.value)
-        console.log('onChangeFacade =', e.target.value)
-    };
-    const onChangeFurnishing = (e) => {
-        setFurnishing(e.target.value);     
-        console.log("onChangeFurnishing =", e.target.value);
-    };
-    const onChangeIsOccupied = (e) => {
-        setIsOccupied(e.target.value)
-        console.log('onChangeIsOccupied =', e.target.value)
-    };
-    const onChangeDescription = (e) => {
-        setDescription(e.target.value)
-        console.log('onChangeDescription =', e.target.value)
-    };
-    const onChangeBedrooms = (e) => {
-        setBedrooms(e.target.value)
-        console.log('onChangeBedrooms =', e.target.value)
-    };
-    const onChangeBathrooms= (e) => {
-        setBathrooms(e.target.value)
-        console.log('onChangeBathrooms =', e.target.value)
-    };
-    const onChangePropertyAge= (e) => {
-        setPropertyAge(e.target.value)
-        console.log('onChangePropertyAge =', e.target.value)
-    };
     const onChangeLatitude= (e) => {
         setLatitude(e.target.value)
         console.log('onChangeLatitude =', e.target.value)
@@ -279,6 +287,18 @@ export default function AddProperty() {
     const onChangeLongitude= (e) => {
         setLongitude(e.target.value)
         console.log('onChangeLongitude =', e.target.value)
+    };
+    const onChangePrice= (e) => {
+        setPrice(e.target.value)
+        console.log('onChangePrice =', e.target.value)
+    };
+    const onChangeCurrency = (e) => {
+        setCurrency(e.target.value);    
+        console.log("onChangeCurrency =", e.target.value);
+    };
+    const onChangePropertyAge= (e) => {
+        setPropertyAge(e.target.value)
+        console.log('onChangePropertyAge =', e.target.value)
     };
     const onChangePropertySize= (e) => {
         setPropertySize(e.target.value)
@@ -292,38 +312,36 @@ export default function AddProperty() {
         setPlotWidth(e.target.value)
         console.log('onChangePlotWidth =', e.target.value)
     };
+    const onChangeBedrooms = (e) => {
+        setBedrooms(e.target.value)
+        console.log('onChangeBedrooms =', e.target.value)
+    };
+    const onChangeBathrooms= (e) => {
+        setBathrooms(e.target.value)
+        console.log('onChangeBathrooms =', e.target.value)
+    };
+    const onChangeFacade = (e) => {
+        setFacade(e.target.value)
+        console.log('onChangeFacade =', e.target.value)
+    };
     const onChangeStreetWidth= (e) => {
         setStreetWidth(e.target.value)
         console.log('onChangeStreetWidth =', e.target.value)
     };
-    const onChangePrice= (e) => {
-        setPrice(e.target.value)
-        console.log('onChangePrice =', e.target.value)
+    const onChangeFurnishing = (e) => {
+        setFurnishing(e.target.value);     
+        console.log("onChangeFurnishing =", e.target.value);
+    };
+    const onChangeIsOccupied = (e) => {
+        setIsOccupied(e.target.value)
+        console.log('onChangeIsOccupied =', e.target.value)
     };
     const onChangeAvailableFrom= (e) => {
         setAvailableFrom(e.target.value)
         console.log('onChangeAvailableFrom =', e.target.value)
     };
-    const onChangeCountry= (e) => {
-        setCountry(e.target.value)
-        console.log('onChangeCountry =', e.target.value)
-    };
-    const onChangeCity= (e) => {
-        setCity(e.target.value)
-        console.log('onChangeCity =', e.target.value)
-    };
-    const onChangeMainType= (e) => {
-        setMainType(e.target.value)
-        console.log('onChangeMainType =', e.target.value)
-    };
-    const onChangeSubType= (e) => {
-        setSubType(e.target.value)
-        console.log('onChangeSubType =', e.target.value)
-    };
-    const onChangePurpose= (e) => {
-        setPurpose(e.target.value)
-        console.log('onChangePurpose =', e.target.value)
-    };
+   
+
     const onChangeAmenities= (e) => {
         setAmenities(e.target.value)
         console.log('onChangeAmenities =', e.target.value)
@@ -356,8 +374,8 @@ export default function AddProperty() {
 
         if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade
            || !furnishing || !isOccupied || !description || !latitude || !propertyAge|| !longitude || !propertySize || !plotLength 
-           || !plotWidth || !streetWidth || !price || !availableFrom || !country || !city || !mainType
-           || !subType || !purpose || !amenities){
+           || !plotWidth || !streetWidth || !price || !availableFrom || !selectedCountry || !selectedCity || !selectedMainType
+           || !selectedSubType || !purpose || !amenities){
                     notify("Please fill the form fields !","warning");
                     return;
         }
@@ -377,7 +395,7 @@ export default function AddProperty() {
         formData.append("furnishing", furnishing );
         formData.append("is_occupied", isOccupied);
         formData.append("property_age", propertyAge); 
-        formData.append("description  ", description  );
+        formData.append("description", description  );
         formData.append("latitude", latitude);
         formData.append("longitude", longitude);
         formData.append("property_size", propertySize);     
@@ -386,12 +404,16 @@ export default function AddProperty() {
         formData.append("street_width", streetWidth);
         formData.append("price", price);
         formData.append("available_from", availableFrom);
-        formData.append("country", country);
-        formData.append("city", city);
-        formData.append("pmain_type", mainType);
-        formData.append("psub_type", subType);
+        
+        formData.append("country", selectedCountry);
+        formData.append("city", selectedCity);
+        formData.append("pmain_type", selectedMainType);
+        formData.append("psub_type", selectedSubType);
         formData.append("purpose", purpose);
-        formData.append("amenities", amenities);
+        amenities.forEach(id => formData.append("amenities", id));  // multiple -- many to many relationship 
+
+
+
 
         // // Only append if it's a File
         // if (ppicture instanceof File) {
@@ -432,7 +454,7 @@ export default function AddProperty() {
 
     return (
         <>
-        <section className="py-1 min-h-screen bg-gray-100  flex items-center ">
+        <section className="py-1 px-10 min-h-screen bg-gray-100 items-center">
               
             <nav className="flex pb-1" aria-label="Breadcrumb">
                 <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -457,7 +479,7 @@ export default function AddProperty() {
                         <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Add City</span>
+                        <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Add Property</span>
                     </div>
                     </li>
                 </ol>
@@ -466,43 +488,73 @@ export default function AddProperty() {
             <hr className="text-gray-300"></hr>
                 
 
-            <div className=" mx-auto bg-white shadow-2xl rounded-2xl p-6 mt-5 mb-5">
+            <div className=" mx-auto shadow-2xl rounded-2xl p-6 mt-5 mb-5 bg-sky-200">
                 <form onSubmit={handleSubmit} className="space-y-12">
                 <ToastContainer position="top-center" autoClose={3000} />
                     
-                    {/* Select a Country from a dynamic counrty list */}
-                    <div className="md:w-full">
+                    {/*  title  ---   */}
+                    <div className="md:w-full flex">
+                        {/* insert title */}
                         <div>
-                            <label className="block text-sm font-medium">Country</label>
+                            <label className="block text-sm font-medium">Title</label>
+                            <input
+                                name="title"
+                                value={title}
+                                onChange={onChangeTitle}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Title"
+                            />
+                        </div>
+                    </div>
+
+
+                    {/*  description   ---   */}
+                    <div className="w-full" >
+                        <div>
+                            <label className="block text-sm font-medium">Description</label>
+                            <input
+                                name="description"
+                                value={description}
+                                onChange={onChangeDescription}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Description"
+                            />
+                        </div>
+                    </div>
+                   
+                   
+
+                    {/*  MainType --- SubType  */}
+                    <div className="md:w-full flex">
+                        {/* selectedMainType from a dynamic mainTypesList */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Main Type</label>
                             <select
-                                value={country}
-                                onChange={onChangeCountry}
+                                value={selectedMainType}
+                                onChange={onChangeSelectedMainType}
                                 className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
                             >
-                                <option value="">-- Select a Country --</option>
-                                {countryList.map((country) => (
-                                    <option key={country.id} value={country.id}>
-                                    {country.country_name} ({country.code})
+                                <option value="">-- Select a Main Type --</option>
+                                {mainTypesList.map((mtobj) => (
+                                    <option key={mtobj.id} value={mtobj.id}>
+                                        {mtobj.maintype_label}   {/* use label here */}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                    </div>
-                
 
-                    {/* Select a - main type -  from a dynamic main type list */}
-                    <div className="md:w-full">
-                        <div>
-                            <label className="block text-sm font-medium">Main Type</label>
+                        {/* selectedSubType from a dynamic subTypeList */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Sub Type</label>
                             <select
-                                value={mainType}
-                                onChange={onChangeMainType}
+                                value={selectedSubType}
+                                onChange={onChangeSelectedSubType}
                                 className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
                             >
-                                <option value="">-- Select a Main Type --</option>
-                                {mainTypesList.map((mtypeobj) => (
-                                    <option key={mtypeobj.id} value={mtypeobj.id}>
-                                        {mtypeobj.maintype_label}   {/* use label here */}
+                                <option value="">-- Select a Sub Type --</option>
+                                {subTypeList.map((stobj) => (
+                                    <option key={stobj.id} value={stobj.id}>
+                                        {stobj.subtype_name}  
                                     </option>
                                 ))}
                             </select>
@@ -510,8 +562,9 @@ export default function AddProperty() {
                     </div>
                     
 
+
                     {/* Select a -purpose  -  from a dynamic purpose list */}
-                    <div className="md:w-full">
+                    <div className="">
                         <div>
                             <label className="block text-sm font-medium">Purpose</label>
                             <select
@@ -530,22 +583,371 @@ export default function AddProperty() {
                     </div>
 
 
+                    <br></br><br></br>
+                    <p className="text-center"> - - - -   Location  - - - -</p>
+                    {/*  Country  --- City   */}
+                    <div className="md:w-full flex">
+                        {/* Select a Country from a dynamic counrty list */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Country</label>
+                            <select
+                                value={selectedCountry}
+                                onChange={onChangeSelectedCountry}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                <option value="">-- Select a Country --</option>
+                                {countryList.map((co) => (
+                                    <option key={co.id} value={co.id}>
+                                        {co.country_name} ({co.code})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Select a City from a dynamic city list */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">City</label>
+                            <select
+                                value={selectedCity}
+                                onChange={onChangeSelectedCity}
+                                className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                            >
+                                    <option value="">-- Select City --</option>
+                                    {cityList.map((ci) => (
+                                        <option key={ci.id} value={ci.id}>
+                                            {ci.city_name} 
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+                    </div>
+                
+
+                    {/*  Area - district   */}
+                    <div className="md:w-full flex">
+                        {/* Area */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Area</label>
+                            <input
+                                name="area"
+                                value={area}
+                                onChange={onChangeArea}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Area"
+                            />
+                        </div>
+
+                        {/* District */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">District</label>
+                            <input
+                                name="district"
+                                value={district}
+                                onChange={onChangeDistrict}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert District"
+                            />
+                        </div>
+                    </div>
+
+
+                    {/*  PlotNumber - district   */}
+                    <div className="md:w-full flex">
+                        {/* PlotNumber */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Plot Number</label>
+                            <input
+                                name="plotNumber"
+                                value={plotNumber}
+                                onChange={onChangePlotNumber}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Plot Number"
+                            />
+                        </div>
+
+                        {/* LandNumber */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Land Number</label>
+                            <input
+                                name="landNumber"
+                                value={landNumber}
+                                onChange={onChangeLandNumber}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert Land Number"
+                            />
+                        </div>
+                    </div>
+                
+                
+                    {/* onChangeAddressDetail  */}
+                    <div className="w-full">
+                        {/* insert Address Detail */}
+                        <div>
+                            <label className="block text-sm font-medium">Address Detail</label>
+                            <input
+                                name="addressDetail"
+                                value={addressDetail}
+                                onChange={onChangeAddressDetail}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Address Detail"
+                            />
+                        </div>
+                    </div>
+
+                    {/*  Latitude  -- Longitude  */}
+                    <div className="md:w-full flex">
+                        {/* Latitude */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Latitude</label>
+                            <input
+                                name="latitude"
+                                value={latitude}
+                                onChange={onChangeLatitude}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Latitude"
+                            />
+                        </div>
+
+                        {/* Longitude */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Longitude</label>
+                            <input
+                                name="longitude"
+                                value={longitude}
+                                onChange={onChangeLongitude}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert Longitude"
+                            />
+                        </div>
+                    </div> 
+
+
+                    <br></br><br></br>
+                    <p className="text-center"> - - - -   other description   - - - -</p>
+                    {/*  Price  -- Currency  */}
+                    <div className="md:w-full flex">
+                        {/* Price */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Price</label>
+                            <input
+                                name="price"
+                                value={price}
+                                onChange={onChangePrice}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Price"
+                            />
+                        </div>
+
+                        {/* Currency */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Currency</label>
+                            <input
+                                name="currency"
+                                value={currency}
+                                onChange={onChangeCurrency}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert Currency"
+                            />
+                        </div>
+                    </div>
+
+                    
+                    
+                    {/*  PropertyAge -- PropertySize  */}
+                    <div className="md:w-full flex">
+                        {/* PropertyAge */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Property Age (in years)</label>
+                            <input
+                                name="propertyAge"
+                                value={propertyAge}
+                                onChange={onChangePropertyAge}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Property Age"
+                            />
+                        </div>
+
+                        {/* PropertySize */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Property Size (in square meter unit)</label>
+                            <input
+                                name="propertySize"
+                                value={propertySize}
+                                onChange={onChangePropertySize}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert Property Size"
+                            />
+                        </div>
+                    </div>
+
+                    
+                    {/*  PlotLength -- PlotWidth  */}
+                    <div className="md:w-full flex">
+                        {/* PlotLength */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Plot Length (in meters)</label>
+                            <input
+                                name="plotLength"
+                                value={plotLength}
+                                onChange={onChangePlotLength}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert Plot Length"
+                            />
+                        </div>
+
+                        {/* PlotWidth */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Plot Width (in meters)</label>
+                            <input
+                                name="plotWidth"
+                                value={plotWidth}
+                                onChange={onChangePlotWidth}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert Plot Width"
+                            />
+                        </div>
+                    </div>
+
+
+
+                    {/*  Bedrooms -- Pathrooms  */}
+                    <div className="md:w-full flex">
+                        {/* Bedrooms */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Bedrooms(Number)</label>
+                            <input
+                                name="bedrooms"
+                                value={bedrooms}
+                                onChange={onChangeBedrooms}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Insert the number of bedrooms"
+                            />
+                        </div>
+
+                        {/* Bathrooms */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Bathrooms(Number)</label>
+                            <input
+                                name="bathrooms"
+                                value={bathrooms}
+                                onChange={onChangeBathrooms}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert the number of bathrooms"
+                            />
+                        </div>
+                    </div>
+
+
+
+                    {/*  Facade -- Street Width  */}
+                    <div className="md:w-full flex">
+                        {/* Facade*/}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Facade</label>
+                            <select
+                                name="facade"
+                                value={facade}
+                                onChange={onChangeFacade}
+                                className="mt-2 w-full p-3 border rounded-lg bg-white"
+                            >
+                                <option value="">-- Select Faced Direction --</option>
+                                <option value="north">North</option>
+                                <option value="south">South</option>
+                                <option value="east">East</option>
+                                <option value="west">West</option>
+                            </select>
+                        </div>
+
+                        {/* Street Width */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Street Width(Meter)</label>
+                            <input
+                                name="streetWidth"
+                                value={streetWidth}
+                                onChange={onChangeStreetWidth}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white "
+                                placeholder="Insert the Street Width"
+                            />
+                        </div>
+                    </div>
+
+
+                    {/*  Furnishing */}
+                    <div className="md:w-full flex">
+                        {/* Furnishing */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Furnishing</label>
+                            <select
+                                name="furnishing"
+                                value={furnishing}
+                                onChange={onChangeFurnishing}
+                                className="mt-2 w-full p-3 border rounded-l bg-white"
+                            >
+                                <option value="">-- Select Furnishing --</option>
+                                <option value="furnished">Furnished</option>
+                                <option value="unfurnished">Unfurnished</option>
+                                <option value="partly">Partly Furnished</option>
+                            </select>
+                        </div>
+
+                        
+                    </div>
+
+
+
+                    {/*  IsOccupied  -- AvailableFrom  */}
+                    <div className="md:w-full flex">
+                        {/* IsOccupied */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Is Occupied ?</label>
+                            <select
+                                name="isOccupied"
+                                value={isOccupied}
+                                onChange={onChangeIsOccupied}
+                                className="mt-2 w-full p-3 border rounded-l bg-white"
+                            >
+                                <option value="">-- Select Occupancy --</option>
+                                <option value="true">Occupied</option>
+                                <option value="false">Not Occupied</option>
+                            </select>
+                        </div>
+                         {/* AvailableFrom */}
+                        <div className="m-2">
+                            <label className="block text-sm font-medium">Available From</label>
+                            <input
+                                type="date"
+                                name="availableFrom"
+                                value={availableFrom}
+                                onChange={onChangeAvailableFrom}
+                                className="mt-2 p-3 w-full border rounded-lg bg-white"
+                                placeholder="Available From"
+                            />
+                        </div>
+                    </div>
+
+                    
+                   
+
+
                     {/* Select a - Amenities List -  from a dynamic Amenities List */}
                     <div className="md:w-full">
                         <div>
                             <label className="block text-sm font-medium">Amenities</label>
-                            <select
+                            <select 
+                                multiple 
                                 value={amenities}
-                                onChange={onChangeAmenities}
                                 className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                                onChange={(e) => 
+                                    setAmenities([...e.target.selectedOptions].map(o => o.value))
+                                }
                             >
-                                <option value="">-- Select Amenities --</option>
-                                {amenitiesList.map((amenityobj) => (
-                                    <option key={amenityobj.id} value={amenityobj.id}>
-                                        {amenityobj.amenity_name}   
-                                    </option>
-                                ))}
+                                    {amenitiesList.map((amenityobj) => (
+                                        <option key={amenityobj.id} value={amenityobj.id}>
+                                            {amenityobj.amenity_name}
+                                        </option>
+                                    ))}
                             </select>
+
                         </div>
                     </div>
 
