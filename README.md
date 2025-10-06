@@ -1,5 +1,5 @@
 # 🏡 Property Finder Project(Work In Progress)
-This is a full-stack property finder web application, inspired by platforms like Property Finder Saudi Arabia.
+This is a full-stack property finder web application, inspired by platforms like Property Finder Saudi Arabia (you can change to any country).
 It allows users to search, list, and manage properties for sale or rent, with features tailored to different types of users.
 
 
@@ -7,6 +7,7 @@ It allows users to search, list, and manage properties for sale or rent, with fe
 ![System Architecture](assets/propertyFinderFullstackProject.png)
 
 ## ER Diagram:
+![ER Diagram](assets/dbdiagram.io_property_finder.png)
 https://dbdiagram.io/d/Property-Finder-68df410ed2b621e42210ee1f
 
 ## 🔑 Key Features
