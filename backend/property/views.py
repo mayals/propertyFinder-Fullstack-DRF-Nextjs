@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer,PropertyPurposeSerializer,AmenitySerializer
-from .models import Country, PropertyMainType, PropertyPurpose, Amenity
+from .models import Country, City, PropertyMainType,PropertySubTypes, PropertyPurpose, Amenity
 from rest_framework import  response, permissions, status, generics
 from rest_framework.response import Response
-
+from django.shortcuts import get_object_or_404
 
 # Country ############
 # CreateCountry  -- No pagination
@@ -58,6 +58,25 @@ class CreateCityAPIView(APIView):
 
 
 
+class ListCountryCitiesAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+   
+    def get(self, request, country_id, *args, **kwargs):
+        try:
+            country = get_object_or_404(Country, id=country_id)
+            cities = City.objects.all().filter(country=country_id)
+
+        except Country.DoesNotExist:
+            print('country =', "country not found")
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CitySerializer(cities, many=True)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
 class ListCityAPIView(APIView):
     pass 
 class UpdateCityAPIView(APIView):
@@ -88,6 +107,24 @@ class ListMainTypeAPIView(APIView):
        queryset = PropertyMainType.objects.all() 
        serializer = self.serializer_class(queryset,many=True)
        return Response(serializer.data,status=status.HTTP_200_OK) 
+
+
+
+
+class ListMaintypeSubTypesAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+   
+    def get(self, request, main_type_id, *args, **kwargs):
+        try:
+            mainType = get_object_or_404(PropertyMainType, id=main_type_id)
+            subTypes = PropertySubTypes.objects.all().filter(main_type=main_type_id)
+
+        except PropertyMainType.DoesNotExist:
+            print('mainType =', "mainType not found")
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PropertySubTypesSerializer(subTypes, many=True)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

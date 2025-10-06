@@ -16,6 +16,7 @@ urlpatterns = [
     # City
     path('create-city/', views.CreateCityAPIView.as_view(), name='create-city'),
     path('list-city/', views.ListCityAPIView.as_view(), name='list-city'),
+    path('<str:country_id>/cities/', views.ListCountryCitiesAPIView.as_view(), name='list-country-cities'),
     path('update-city/<str:id>/', views.UpdateCityAPIView.as_view(), name='update-city'), 
     path('delete-city/<str:id>/', views.DeleteCityAPIView.as_view(), name='delete-city'),
 
@@ -29,6 +30,7 @@ urlpatterns = [
     # PropertySubTypes
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
     path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
+    path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
 

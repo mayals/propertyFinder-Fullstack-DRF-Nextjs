@@ -228,7 +228,7 @@ class PropertySerializer(serializers.ModelSerializer):
                   'category']
                   
         read_only_fields = ['id', 'images_project', 'created_at', 'updated_at', 'ratings_count', 'average_ratings']
-        write_only_fields = ['uploaded_images', 'uploaded_images']                   
+        write_only_fields = ['uploaded_images']                   
     
     def validate_title(self, value):
         print('value in serializer=',value)
