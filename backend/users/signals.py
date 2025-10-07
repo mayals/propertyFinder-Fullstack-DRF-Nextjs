@@ -22,34 +22,20 @@ from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile,Br
 @receiver(post_save, sender=get_user_model())
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-            instance_user = instance 
-            
-            # create AdminProfile instance 
-            if instance_user.is_superuser==True:  
-                AdminProfile.objects.create(user=instance_user)
-                instance_user.admin_profile.id = instance_user.id
+        role = instance.role
 
-            # create BuyerProfile instance
-            if instance_user.role == "buyer" :  
-                BuyerProfile.objects.create(user=instance_user)  
-                instance_user.buyer_profile.id = instance_user.id
+        if role == "developer":
+            DeveloperProfile.objects.create(id=instance.id, user=instance)
+        elif role == "broker":
+            BrokerProfile.objects.create(id=instance.id, user=instance)
+        elif role == "agent":
+            AgentProfile.objects.create(id=instance.id, user=instance)
+        elif role == "buyer":
+            BuyerProfile.objects.create(id=instance.id, user=instance)
+        elif instance.is_superuser:
+            AdminProfile.objects.create(id=instance.id, user=instance)
+                
             
-            # create DeveloperProfile instance 
-            if instance_user.role == "developer" :  
-                DeveloperProfile.objects.create(user=instance_user)
-                instance_user.developer_profile.id = instance_user.id                 
-                
-            # create BrokerProfile instance 
-            if instance_user.role == "broker" :  
-                BrokerProfile.objects.create(user=instance_user)
-                instance_user.broker_profile.id = instance_user.id                                   
-            
-            # create AgentProfile instance 
-            if instance_user.role == "agent" :  
-                AgentProfile.objects.create(user=instance_user)
-                instance_user.agent_profile.id = instance_user.id
-                
-                
                 
 #signal-2 -- for confirm email for the user by send confirm link in email
 # sender   =   get_user_model()        -------- instance user from django.contrib.auth import get_user_model

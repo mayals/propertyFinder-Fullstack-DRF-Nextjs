@@ -2,9 +2,15 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer
 from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property
-from rest_framework import  response, permissions, status, generics
+from rest_framework import  response, permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+# permissions
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsAllowedToAddProperty
+
+
+
 
 # Country ############
 # CreateCountry  -- No pagination
@@ -223,7 +229,7 @@ class DeleteAmenityAPIView(APIView):
 # Property
 class CreatePropertyDataAPIView(APIView): # only property data no images  --step1
     serializer_class = PropertySerializer
-    
+    permission_classes = [IsAuthenticated, IsAllowedToAddProperty]  # 👈 both required
     
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -245,6 +251,7 @@ class DeletePropertyAPIView(APIView):
 # PropertyImage
 class CreatePropertyImageUploadAPIView(APIView): # only property images for data saved pefore --step2
     serializer_class = PropertyImageSerializer
+    permission_classes = [IsAuthenticated, IsAllowedToAddProperty]  # 👈 both required
 
     def post(self, request, *args, **kwargs):
         property_id = self.kwargs.get("property_id")

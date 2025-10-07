@@ -216,13 +216,14 @@ class PropertySerializer(serializers.ModelSerializer):
             'id', 'owner', 'title', 'description', 'country', 'city', 'area',
             'district', 'plot_number', 'land_number', 'address_detail',
             'latitude', 'longitude', 'is_occupied', 'available_from',
-            'psub_type', 'purpose', 'property_size',
+            'pmain_type','psub_type', 'purpose', 'property_size',
             'bedrooms', 'bathrooms', 'plot_length', 'plot_width', 'street_width',
             'facade', 'property_age', 'amenities', 'price', 'currency',
             'furnishing', 'category', 'is_published'
         ]
-        read_only_fields = ['id', 'is_published']
+        read_only_fields = ['id', 'is_published', 'owner']  # 👈 add 'owner' here because it come from backend -- request.user -- serializer.save(owner=self.request.user) in view.py
 
+    
     def validate_title(self, value):
         if not value:
             raise serializers.ValidationError("The Property title is required")
