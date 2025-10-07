@@ -10,6 +10,7 @@ const API_URL = "http://127.0.0.1:8000";
 
 interface RequestUserProfileData {
 
+    id?: string;
     first_name?: string;
     last_name?: string;
     email?: string;

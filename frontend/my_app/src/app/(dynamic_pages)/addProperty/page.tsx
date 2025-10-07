@@ -24,7 +24,7 @@ import { ToastContainer, toast } from 'react-toastify';
 export default function AddProperty() {
     const { user, loading } = useAuth();
     const router = useRouter();
-   
+    
     // models.ForeignKey --- current user  -- from useAuth()
     // const [owner,setOwner] = useState("")    // "owner"
     
@@ -103,10 +103,15 @@ export default function AddProperty() {
         }
 
         if (!loading && user && ( user.role === "buyer") ){
-                      console.log('role=', user.role)
-                      toast.error( "You have no permission to reach this page"); 
-                      router.push("/myDashboard");
-        }    
+                console.log('role=', user.role)
+                toast.error( "You have no permission to reach this page"); 
+                router.push("/myDashboard");
+        } 
+        
+        // if (!loading && user && ( user.role === "admin" || user.role === "developer" || user.role === "broker" || user.role === "agent") ){
+        //         setOwner(user.id)
+        // } 
+        
     }, [user, loading, router]);
     
     
@@ -372,8 +377,8 @@ export default function AddProperty() {
         if (!loading && !user){
             router.push('/login');
         }
-        console.log('title=',title )
-        if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade
+        
+        if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade || !bedrooms || !bathrooms
            || !furnishing || !isOccupied || !description || !latitude || !propertyAge|| !longitude || !propertySize || !plotLength 
            || !plotWidth || !streetWidth || !price || !availableFrom || !selectedCountry || !selectedCity || !selectedMainType
            || !selectedSubType || !purpose || !amenities){
@@ -385,6 +390,7 @@ export default function AddProperty() {
         // Create FormData object
         // When uploading files in React with Axios, you must use FormData and not JSON.
         const formData = new FormData();
+        // formData.append("owner",owner);
         formData.append("title",title);
         formData.append("area",area);
         formData.append("district",district);
@@ -395,6 +401,8 @@ export default function AddProperty() {
         formData.append("facade", facade );
         formData.append("furnishing", furnishing );
         formData.append("is_occupied", isOccupied);
+        formData.append("bedrooms", bedrooms); 
+        formData.append("bathrooms", bathrooms); 
         formData.append("property_age", propertyAge); 
         formData.append("description", description  );
         formData.append("latitude", latitude);
@@ -416,9 +424,13 @@ export default function AddProperty() {
 
         console.log('formData=', formData);
         console.log('formData.title=', formData.get('title'));
+        console.log('formData.selectedMainType=', formData.get('pmain_type'));
         console.log('formData.propertySize=', formData.get('property_size'));
         console.log('formData.price=', formData.get('price'));
-        // console.log('formData.owner=', formData.get('owner'));
+        console.log('formData.bedrooms=', formData.get('bedrooms'));
+        console.log('formData.bathrooms=', formData.get('bathrooms'));
+        
+        // console.log('formData.owner=', formData.get('owner'));    ---not need, will add later in backend -- request.user
 
 
         // // Only append if it's a File
