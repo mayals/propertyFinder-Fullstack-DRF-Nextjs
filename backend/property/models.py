@@ -170,7 +170,7 @@ class Property(models.Model):
     # Location
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
-    Area = models.CharField(max_length=100, blank=True, null=True)
+    area = models.CharField(max_length=100, blank=True, null=True)
     district = models.CharField(max_length=100, blank=True, null=True)
     plot_number = models.CharField(max_length=50, blank=True, null=True)
     land_number = models.CharField(max_length=50, blank=True, null=True)
@@ -212,6 +212,8 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    #  to manage displaying the property or not.
+    is_published = models.BooleanField(null=True, default=False)
     
     def __str__(self):
         return f"{self.title} - {self.city}"
@@ -219,7 +221,7 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pmain_type and self.purpose:
-            self.category = f"{self.pmain_type.maintype_name.capitalize()} for {self.purpose.purpose_sub_choice_name}"
+            self.category = f"{self.pmain_type.maintype_name.capitalize()} for {self.purpose.purpose_name}"
         super().save(*args, **kwargs)
 
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer,CitySerializer,PropertyMainTypeSerializer,PropertySubTypesSerializer,PropertyPurposeSerializer,AmenitySerializer
-from .models import Country, City, PropertyMainType,PropertySubTypes, PropertyPurpose, Amenity
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer
+from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property
 from rest_framework import  response, permissions, status, generics
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -216,9 +216,24 @@ class DeleteAmenityAPIView(APIView):
     pass 
 
 
+
+
+
+
 # Property
-class CreatePropertyAPIView(APIView):
-    pass  
+class CreatePropertyDataAPIView(APIView): # only property data no images  --step1
+    serializer_class = PropertySerializer
+    
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save(owner=self.request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+  
+        
 class ListPropertyAPIView(APIView):
     pass 
 class UpdatePropertyAPIView(APIView):
@@ -228,6 +243,28 @@ class DeletePropertyAPIView(APIView):
 
 
 # PropertyImage
+class CreatePropertyImageUploadAPIView(APIView): # only property images for data saved pefore --step2
+    serializer_class = PropertyImageSerializer
+
+    def post(self, request, *args, **kwargs):
+        property_id = self.kwargs.get("property_id")
+        property_obj = get_object_or_404(Property, id=property_id)
+
+        data = request.data.copy()
+        data.setlist("images", request.FILES.getlist("images"))
+
+        serializer = self.get_serializer(data=data, context={"property": property_obj})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {"detail": "Images uploaded successfully"},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+
+
 class CreatePropertyImageAPIView(APIView):
     pass  
 class ListPropertyImageAPIView(APIView):

@@ -47,13 +47,14 @@ urlpatterns = [
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
     # Property
-    path('create-property/', views.CreatePropertyAPIView.as_view(), name='create-property'),
+    path('create-property-data/', views.CreatePropertyDataAPIView.as_view(), name='create-property-data'),
     path('list-property/', views.ListPropertyAPIView.as_view(), name='list-property'),
     path('update-property/<str:id>/', views.UpdatePropertyAPIView.as_view(), name='update-property'), 
     path('delete-property/<str:id>/', views.DeletePropertyAPIView.as_view(), name='delete-property'),
 
     # PropertyImage
-    path('create-property-image/', views.CreatePropertyImageAPIView.as_view(), name='create-property-image'),
+    path('<uuid:property_id>/upload-images/', views.CreatePropertyImageUploadAPIView.as_view(), name="create-property-upload-images"),
+    # path('create-property-image/', views.CreatePropertyImageAPIView.as_view(), name='create-property-image'),
     path('list-property-image/', views.ListPropertyImageAPIView.as_view(), name='list-property-image'),
     path('update-property-image/<str:id>/', views.UpdatePropertyImageAPIView.as_view(), name='update-property-image'), 
     path('delete-property-image/<str:id>/',views. DeletePropertyImageAPIView.as_view(), name='delete-property-image'),

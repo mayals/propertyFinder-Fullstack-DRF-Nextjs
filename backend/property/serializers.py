@@ -197,64 +197,140 @@ class AmenitySerializer(serializers.ModelSerializer):
 
 
 
-# PropertyImage ##################################################################
-class PropertyImageSerializer(serializers.ModelSerializer): 
-    # must select the primary key of property id - before insert an image for it
-    property = serializers.PrimaryKeyRelatedField(
-                                        queryset=Property.objects.all(),
-                                        help_text='Select a property id for this image.'
-                                        )
-    class Meta:
-        model = PropertyImage
-        fields = ['id','property','images','uploaded_at']
 
-
-
-
-# Property ##################################################################
+    
+    
+ ## CREATE PROPERTY  way-1 ##################################################################################################################################
+   
+# Creater Property #######  if we want to create new property with 1 step(data form only-first form) - and at 2step(images form only-second next form)  ###########################################
 class PropertySerializer(serializers.ModelSerializer):
-    title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Property.objects.all())])
-    images_Property  = PropertyImageSerializer(many=True,read_only=True)                                     
-    uploaded_images = serializers.ListField(child = serializers.ImageField(max_length = 1000000, allow_empty_file = False, use_url = False), write_only=True)
-     
+    title = serializers.CharField(
+                                    max_length=200,
+                                    required=True,
+                                    allow_blank=False,
+                                    validators=[UniqueValidator(queryset=Property.objects.all())]
+    )
     class Meta:
         model = Property
-        fields = ['id','owner','title','description','country','city','Area',
-                  'district','plot_number','land_number','address_detail',
-                  ' latitude','longitude','is_occupied','available_from',
-                  'psub_type','purpose','property_size',
-                  'bedrooms','bathrooms','plot_length','plot_width','street_width',
-                  'facade','property_age','amenities','price','currency','furnishing',
-                  'category']
-                  
-        read_only_fields = ['id', 'images_project', 'created_at', 'updated_at', 'ratings_count', 'average_ratings']
-        write_only_fields = ['uploaded_images']                   
-    
+        fields = [
+            'id', 'owner', 'title', 'description', 'country', 'city', 'area',
+            'district', 'plot_number', 'land_number', 'address_detail',
+            'latitude', 'longitude', 'is_occupied', 'available_from',
+            'psub_type', 'purpose', 'property_size',
+            'bedrooms', 'bathrooms', 'plot_length', 'plot_width', 'street_width',
+            'facade', 'property_age', 'amenities', 'price', 'currency',
+            'furnishing', 'category', 'is_published'
+        ]
+        read_only_fields = ['id', 'is_published']
+
     def validate_title(self, value):
-        print('value in serializer=',value)
-        if value is None  or value == "" :
-            raise serializers.ValidationError("The Property's title is required") 
-        if Property.objects.filter(name=value).exists():
-            raise serializers.ValidationError("The Property's title must be unique")     
-        print('value of validated title =',value)
+        if not value:
+            raise serializers.ValidationError("The Property title is required")
+        if Property.objects.filter(title=value).exists():
+            raise serializers.ValidationError("The Property title must be unique")
         return value
+    
+    
+    
+    
+class PropertyImageSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(
+                            child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
+                            write_only=True
+    )
+    class Meta:
+        model = PropertyImage
+        fields = ["images"]
+
+    def create(self, validated_data):
+        # we'll inject property instance from view later
+        property_obj = self.context.get("property")
+        images_data = validated_data.pop("images", [])
+
+        for image in images_data:
+            PropertyImage.objects.create(property=property_obj, images=image)
+
+        property_obj.is_published = True
+        property_obj.save(update_fields=["is_published"])
+        return property_obj
+
+####################################################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## CREATE PROPERTY  way-2 ##################################################################################################################################
+ 
+# Property #######################  if we want to create new property with (data + images) in the same form - at one step  ###########################################
+####################### not applied this type of form
+
+# PropertyImage ##################################################################
+# class PropertyImageSerializer(serializers.ModelSerializer): 
+#     # must select the primary key of property id - before insert an image for it
+#     property = serializers.PrimaryKeyRelatedField(
+#                                         queryset=Property.objects.all(),
+#                                         help_text='Select a property id for this image.'
+#                                         )
+#     class Meta:
+#         model = PropertyImage
+#         fields = ['id','property','images','uploaded_at']
+
+
+
+
+# class PropertySerializer(serializers.ModelSerializer):
+#     title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Property.objects.all())])
+#     images_Property  = PropertyImageSerializer(many=True,read_only=True)                                     
+#     uploaded_images = serializers.ListField(child = serializers.ImageField(max_length = 1000000, allow_empty_file = False, use_url = False), write_only=True)
+     
+#     class Meta:
+#         model = Property
+#         fields = ['id','owner','title','description','country','city','area',
+#                   'district','plot_number','land_number','address_detail',
+#                   ' latitude','longitude','is_occupied','available_from',
+#                   'psub_type','purpose','property_size',
+#                   'bedrooms','bathrooms','plot_length','plot_width','street_width',
+#                   'facade','property_age','amenities','price','currency','furnishing',
+#                   'category']
+                  
+#         read_only_fields = ['id', 'images_project', 'created_at', 'updated_at']
+#         write_only_fields = ['uploaded_images']                   
+    
+#     def validate_title(self, value):
+#         print('value in serializer=',value)
+#         if value is None  or value == "" :
+#             raise serializers.ValidationError("The Property's title is required") 
+#         if Property.objects.filter(name=value).exists():
+#             raise serializers.ValidationError("The Property's title must be unique")     
+#         print('value of validated title =',value)
+#         return value
    
     
-    def validate_uploaded_images(self, value):
-        allowed_extensions = ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'tiff']
-        if not value.name.split('.')[-1].lower() in allowed_extensions:
-            raise serializers.ValidationError("Invalid file extension. Allowed extensions are: bmp, gif, jpg, jpeg, png, webp, tiff.")
-        return value
+#     def validate_uploaded_images(self, value):
+#         allowed_extensions = ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'tiff']
+#         if not value.name.split('.')[-1].lower() in allowed_extensions:
+#             raise serializers.ValidationError("Invalid file extension. Allowed extensions are: bmp, gif, jpg, jpeg, png, webp, tiff.")
+#         return value
     
     
-    def create(self,validated_data):
-        print('validated_data in serializer=',validated_data) 
-        uploaded_images = validated_data.pop('uploaded_images', [])
-        print('uploaded_images in serializer=',uploaded_images) 
-        property = Property.objects.create(**validated_data)
-        for image in uploaded_images:
-            PropertyImage.objects.create(property=property, images=image)
-        return property
+#     def create(self,validated_data):
+#         print('validated_data in serializer=',validated_data) 
+#         uploaded_images = validated_data.pop('uploaded_images', [])
+#         print('uploaded_images in serializer=',uploaded_images) 
+#         property = Property.objects.create(**validated_data)
+#         for image in uploaded_images:
+#             PropertyImage.objects.create(property=property, images=image)
+#         return property
 
 
 
