@@ -6,8 +6,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getMainTypesList, getCountriesList, getPurposeList, getAmenitiesList, getCountryCitiesList, getMainTypeSubTypesList  } from "../../utils/property";
-// import {  getSubTypesList , getCityList , addProperty } from "../../utils/property";
+import { getMainTypesList, getCountriesList, getPurposeList, getAmenitiesList,
+       getCountryCitiesList, getMainTypeSubTypesList , addProperty } from "../../utils/property";
+
 
 
 import axiosInstance from "../../lib/axios";
@@ -25,7 +26,7 @@ export default function AddProperty() {
     const router = useRouter();
    
     // models.ForeignKey --- current user  -- from useAuth()
-    const [owner,setOwner] = useState("")    // "owner"
+    // const [owner,setOwner] = useState("")    // "owner"
     
     // models.CharField
     const [title,setTitle] = useState("")                   // "title"
@@ -61,7 +62,7 @@ export default function AddProperty() {
     const [plotLength,setPlotLength] = useState("")       // "plot_length"  
     const [plotWidth,setPlotWidth] = useState("")         // "plot_width"
     const [streetWidth,setStreetWidth] = useState("")     // "street_width"
-    const [price,setPrice] = useState("")   // "price"
+    const [price,setPrice] = useState("")                  // "price"
 
 
     // models.DateField
@@ -233,7 +234,7 @@ export default function AddProperty() {
     //  onChange
     ///////////////  FORM FIELDS  --- parse data from form field  
     const onChangeTitle = (e) => {
-        setTitle(e.target.value);     // this will be country.id
+        setTitle(e.target.value);    
         console.log("onChangeTitle =", e.target.value);
     };
     const onChangeDescription = (e) => {
@@ -290,7 +291,7 @@ export default function AddProperty() {
     };
     const onChangePrice= (e) => {
         setPrice(e.target.value)
-        console.log('onChangePrice =', e.target.value)
+        console.log('onChangePrice=', e.target.value)
     };
     const onChangeCurrency = (e) => {
         setCurrency(e.target.value);    
@@ -371,7 +372,7 @@ export default function AddProperty() {
         if (!loading && !user){
             router.push('/login');
         }
-
+        console.log('title=',title )
         if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade
            || !furnishing || !isOccupied || !description || !latitude || !propertyAge|| !longitude || !propertySize || !plotLength 
            || !plotWidth || !streetWidth || !price || !availableFrom || !selectedCountry || !selectedCity || !selectedMainType
@@ -384,9 +385,9 @@ export default function AddProperty() {
         // Create FormData object
         // When uploading files in React with Axios, you must use FormData and not JSON.
         const formData = new FormData();
-        formData.append("title", title );
-        formData.append("Area", area );
-        formData.append("district", district);
+        formData.append("title",title);
+        formData.append("area",area);
+        formData.append("district",district);
         formData.append("plot_number", plotNumber );
         formData.append("land_number", landNumber);
         formData.append("address_detail", addressDetail);
@@ -404,7 +405,6 @@ export default function AddProperty() {
         formData.append("street_width", streetWidth);
         formData.append("price", price);
         formData.append("available_from", availableFrom);
-        
         formData.append("country", selectedCountry);
         formData.append("city", selectedCity);
         formData.append("pmain_type", selectedMainType);
@@ -413,6 +413,12 @@ export default function AddProperty() {
         amenities.forEach(id => formData.append("amenities", id));  // multiple -- many to many relationship 
 
 
+
+        console.log('formData=', formData);
+        console.log('formData.title=', formData.get('title'));
+        console.log('formData.propertySize=', formData.get('property_size'));
+        console.log('formData.price=', formData.get('price'));
+        // console.log('formData.owner=', formData.get('owner'));
 
 
         // // Only append if it's a File
@@ -428,27 +434,27 @@ export default function AddProperty() {
 
 
         // addProperty - axios //
-        // try { 
-        //       await addProperty(formData)
-        //       notify("The Property has been add successfully", "success");
+        try {
+            await addProperty(formData)
+            notify("The Property has been add successfully", "success");
 
-        // }catch (error: any) {
-        //     console.log("addPurpose error =", error);
-        //     if (error.response && error.response.data) {
-        //             const errors = error.response.data;
+        }catch (error: any) {
+            console.log("addPurpose error =", error);
+            if (error.response && error.response.data) {
+                    const errors = error.response.data;
 
-        //             Object.entries(errors).forEach(([field, messages]) => {
-        //             if (Array.isArray(messages)) {
-        //                 messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
-        //             } else {
-        //                 notify(`${field}: ${messages}`, "error");
-        //             }
-        //             });
+                    Object.entries(errors).forEach(([field, messages]) => {
+                    if (Array.isArray(messages)) {
+                        messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
+                    } else {
+                        notify(`${field}: ${messages}`, "error");
+                    }
+                    });
 
-        //     } else {
-        //             notify("Something went wrong, please try again.", "error");
-        //     }
-        // }
+            } else {
+                    notify("Something went wrong, please try again.", "error");
+            }
+        }
     }
 
 
@@ -623,7 +629,7 @@ export default function AddProperty() {
                     </div>
                 
 
-                    {/*  Area - district   */}
+                    {/*  area - district   */}
                     <div className="md:w-full flex">
                         {/* Area */}
                         <div className="m-2">
@@ -769,7 +775,7 @@ export default function AddProperty() {
 
                         {/* PropertySize */}
                         <div className="m-2">
-                            <label className="block text-sm font-medium">Property Size (in square meter unit)</label>
+                            <label className="block text-sm font-medium">Property Size (Size in sqm)</label>
                             <input
                                 name="propertySize"
                                 value={propertySize}
