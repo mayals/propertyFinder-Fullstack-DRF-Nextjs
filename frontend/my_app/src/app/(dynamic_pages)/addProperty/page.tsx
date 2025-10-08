@@ -25,6 +25,8 @@ export default function AddProperty() {
     const { user, loading } = useAuth();
     const router = useRouter();
     
+
+    
     // models.ForeignKey --- current user  -- from useAuth()
     // const [owner,setOwner] = useState("")    // "owner"
     
@@ -92,8 +94,10 @@ export default function AddProperty() {
 
   
        
-   
+    const [newPropertyId,setNewPropertyId]= useState("")      // new property id
     
+
+
     useEffect(() => {
         console.log("AddProperty-loading=",loading)
         console.log("AddProperty-user=",user)
@@ -447,10 +451,22 @@ export default function AddProperty() {
 
         // addProperty - axios //
         try {
-            await addProperty(formData)
-            notify("The Property has been add successfully", "success");
+            const newProperty = await addProperty(formData); // ✅ This returns response.data from backend
+            console.log("newProperty=", newProperty);
+            
+            const propertyId = newProperty.id; // ✅ Access ID safely
+            console.log("propertyId=", propertyId );
+            setNewPropertyId(propertyId);
 
-        }catch (error: any) {
+            notify("The Property has been added successfully", "success");
+
+            // Example navigation to image form
+            router.push(`/addProperty/images/${propertyId}`);
+            // http://localhost:3000/addProperty/images/2723a133-a26f-4e79-94b7-d4e1c9924658
+ 
+
+
+        } catch (error: any) {
             console.log("addPurpose error =", error);
             if (error.response && error.response.data) {
                     const errors = error.response.data;

@@ -356,15 +356,14 @@ export const getAmenitiesList = async() => {
 
 // addProperty -- only data without images //
 export const addProperty = async(formData) => {
-        console.log('addProperty-formData =', formData);
     try {
         const response = await axiosInstance.post(
             "/property/create-property-data/",             // endpoint
             formData ,                                     // data
-            {withCredentials:true,},                       //  sending cookies -- since we use HTTP-only cookies              
+            { withCredentials:true },                       // sending cookies -- since we use HTTP-only cookies              
                                              
-        )
-        console.log("addProperty-response.data=",response.data)
+        );
+        console.log("addProperty-response.data=",response.data);
         return response.data;
     
 
