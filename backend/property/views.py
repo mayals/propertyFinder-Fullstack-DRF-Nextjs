@@ -257,10 +257,9 @@ class CreatePropertyImageUploadAPIView(APIView): # only property images for data
         property_id = self.kwargs.get("property_id")
         property_obj = get_object_or_404(Property, id=property_id)
 
-        data = request.data.copy()
-        data.setlist("images", request.FILES.getlist("images"))
+        files = request.FILES.getlist("images")
+        serializer = self.serializer_class(data={"images": files}, context={"property": property_obj})
 
-        serializer = self.get_serializer(data=data, context={"property": property_obj})
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
