@@ -5,7 +5,8 @@ import React, { useState, ChangeEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { uploadPropertyImages } from  "../../../../utils/property";
-import { toast } from "react-hot-toast";
+
+import { Toaster, toast } from "react-hot-toast";
 // react-toastify
 // import notify from "../../common/useNotification"
 // import { ToastContainer, toast } from 'react-toastify';
@@ -63,7 +64,7 @@ export default function UploadImagesPage() {
             setPreviewUrls([]);
 
             // Navigate to next step (optional)
-            setTimeout(() => router.push("/dashboard"), 2000);
+            setTimeout(() => router.push("/myDashboard"), 2000);
 
         } catch (error: any) {
             console.error("Upload error:", error);
@@ -76,7 +77,9 @@ export default function UploadImagesPage() {
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 py-12">
+    
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-lg p-8">
+        <Toaster position="top-center" />
         <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
           Upload Property Images 🏠
         </h2>
