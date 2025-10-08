@@ -360,7 +360,7 @@ export const addProperty = async(formData) => {
         const response = await axiosInstance.post(
             "/property/create-property-data/",             // endpoint
             formData ,                                     // data
-            { withCredentials:true },                       // sending cookies -- since we use HTTP-only cookies              
+            { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies              
                                              
         );
         console.log("addProperty-response.data=",response.data);
@@ -377,4 +377,33 @@ export const addProperty = async(formData) => {
         throw { error: "Something went wrong." };
         }
     }
-}
+};
+
+
+
+// uploadPropertyImages -- upload images for a new property i created -- use proprty.id  //
+export const uploadPropertyImages = async (propertyId:string, formData:FormData) => {
+    try { 
+        const response = await axiosInstance.post(
+            `/property/${propertyId}/upload-images/`,                  // endpoint
+            formData,                                                  // data as formData because there is a file inside the sending data
+            {
+                headers: { "Content-Type": "multipart/form-data" },    // since there is a file inside the sending data
+                withCredentials: true,                                 // since you're using cookies
+            }
+        );
+        console.log("uploadPropertyImages-response.data=",response.data);
+        return response.data;
+  
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('uploadPropertyImages-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+};
