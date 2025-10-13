@@ -30,8 +30,8 @@ class CountrySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Country
-        fields = ['id', 'country_name', 'code', 'cities']
-        read_only_fields = ('id','cities', )
+        fields = ['id', 'country_name', 'code', 'country_slug', 'cities']
+        read_only_fields = ('id', 'country_slug', 'cities', )
 
     
     
@@ -69,8 +69,8 @@ class UpdateCountrySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Country
-        fields = ('id', 'country_name', 'code')
-        read_only_fields = ['id']  
+        fields = ['id', 'country_name', 'code']
+        read_only_fields = ('id', 'country_slug', 'cities', )
 
 
 
@@ -93,8 +93,8 @@ class CitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
-        fields = ['id', 'city_name', 'country']
-        read_only_fields = ('id',)
+        fields = ['id', 'city_name', 'city_slug', 'country']
+        read_only_fields = ('id', 'city_slug',)
 
     def validate(self, attrs):
         """Validate uniqueness of city within the selected country."""
@@ -198,11 +198,50 @@ class AmenitySerializer(serializers.ModelSerializer):
 
 
 
+
+
+####################################################################################################################################
+
+## CREATE PROPERTY  way-1 ##################################################################################################################################
+#  add images to property selected of params property.id
+class PropertyImageSerializer(serializers.ModelSerializer):
+    images = serializers.ImageField()
+
+    class Meta:
+        model = PropertyImage
+        fields = ["id", "images"]
+
+    def create(self, validated_data):
+        # Get the property from the context
+        property_obj = self.context.get("property")
+        if not property_obj:
+            raise serializers.ValidationError("Property is required to upload images.")
+
+        # Handle multiple files
+        request = self.context.get("request")
+        files = request.FILES.getlist("images") if request else None
+
+        if files:
+            images = [PropertyImage.objects.create(property=property_obj, images=file) for file in files]
+            return images
+
+        # Single image fallback
+        return PropertyImage.objects.create(property=property_obj, **validated_data)
+
+    def to_representation(self, instance):
+        request = self.context.get("request")
+        representation = super().to_representation(instance)
+        if request and instance.images:
+            representation["images"] = request.build_absolute_uri(instance.images.url)
+        return representation
     
     
- ## CREATE PROPERTY  way-1 ##################################################################################################################################
-   
-# Creater Property #######  if we want to create new property with 1 step(data form only-first form) - and at 2step(images form only-second next form)  ###########################################
+
+
+
+
+
+# Creater Property data #######  if we want to create new property with 1 step(data form only-first form) - and at 2step(images form only-second next form)  ###########################################
 class PropertySerializer(serializers.ModelSerializer):
     title = serializers.CharField(
                                     max_length=200,
@@ -210,6 +249,9 @@ class PropertySerializer(serializers.ModelSerializer):
                                     allow_blank=False,
                                     validators=[UniqueValidator(queryset=Property.objects.all())]
     )
+    images = PropertyImageSerializer(many=True, read_only=True) # to get images with response.data
+    
+    
     class Meta:
         model = Property
         fields = [
@@ -219,7 +261,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'pmain_type','psub_type', 'purpose', 'property_size',
             'bedrooms', 'bathrooms', 'plot_length', 'plot_width', 'street_width',
             'facade', 'property_age', 'amenities', 'price', 'currency',
-            'furnishing', 'category', 'is_published'
+            'furnishing', 'category', 'is_published','images'
         ]
         read_only_fields = ['id', 'is_published', 'owner']  # 👈 add 'owner' here because it come from backend -- request.user -- serializer.save(owner=self.request.user) in view.py
 
@@ -234,31 +276,6 @@ class PropertySerializer(serializers.ModelSerializer):
     
     
     
-class PropertyImageSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(
-                            child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
-                            write_only=True
-    )
-    class Meta:
-        model = PropertyImage
-        fields = ["images"]
-
-    def create(self, validated_data):
-        # we'll inject property instance from view later
-        property_obj = self.context.get("property")
-        images_data = validated_data.pop("images", [])
-
-        for image in images_data:
-            PropertyImage.objects.create(property=property_obj, images=image)
-
-        property_obj.is_published = True
-        property_obj.save(update_fields=["is_published"])
-        return property_obj
-
-####################################################################################################################################
-
-
-
 
 
 

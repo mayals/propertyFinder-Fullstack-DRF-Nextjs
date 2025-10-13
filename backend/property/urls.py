@@ -48,12 +48,13 @@ urlpatterns = [
 
     # Property
     path('create-property-data/', views.CreatePropertyDataAPIView.as_view(), name='create-property-data'),
-    path('list-property/', views.ListPropertyAPIView.as_view(), name='list-property'),
+    path('list-property/<slug:country_slug>/', views.ListPropertyByCountrySlugAPIView.as_view(), name='list-property-by-country-slug'),
     path('update-property/<str:id>/', views.UpdatePropertyAPIView.as_view(), name='update-property'), 
     path('delete-property/<str:id>/', views.DeletePropertyAPIView.as_view(), name='delete-property'),
 
     # PropertyImage
     path('<uuid:property_id>/upload-images/', views.CreatePropertyImageUploadAPIView.as_view(), name="create-property-upload-images"),
+    
     # path('create-property-image/', views.CreatePropertyImageAPIView.as_view(), name='create-property-image'),
     path('list-property-image/', views.ListPropertyImageAPIView.as_view(), name='list-property-image'),
     path('update-property-image/<str:id>/', views.UpdatePropertyImageAPIView.as_view(), name='update-property-image'), 

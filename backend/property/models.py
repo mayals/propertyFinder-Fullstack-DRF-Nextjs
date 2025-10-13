@@ -1,29 +1,50 @@
 import uuid
 from django.db import models
 from django.conf import settings
-
+from django.utils.text import slugify
 
 
 # Country model #######################
+from django.db import models
+from django.utils.text import slugify
+
 class Country(models.Model):
-    country_name = models.CharField(max_length=100, unique=True, blank=False, null=True)
+    country_name = models.CharField(max_length=100, null=True, unique=True)
     code = models.CharField(max_length=3, unique=True)  # ISO code like "SA", "AE"
+    country_slug = models.SlugField(max_length=10, blank=True, null=True, unique=True)
+
+    class Meta:
+        verbose_name_plural = "Countries"
 
     def __str__(self):
         return self.country_name
 
+    def save(self, *args, **kwargs):
+        if not self.country_slug:
+            # make sure slug is lowercase and unique
+            self.country_slug = slugify(self.code.lower())
+        super().save(*args, **kwargs)
 
+    
 
 # City model #######################
 class City(models.Model):
-    city_name = models.CharField(max_length=100, unique=True, blank=False, null=True)
+    city_name = models.CharField(max_length=50, null=True, unique=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
+    city_slug = models.SlugField(max_length=100, blank=True, null=True, unique=True)
 
+    class Meta:
+        verbose_name_plural = "Cities"
 
     def __str__(self):
         return f"{self.city_name}, {self.country.code}"
 
+    def save(self, *args, **kwargs):
+        if not self.city_slug:
+            self.city_slug = slugify(self.city_name.lower())
+        super().save(*args, **kwargs)
 
+    
 
 
 
@@ -49,10 +70,12 @@ class PropertyMainType(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    #  This data will insert in database for PropertyMainType model 
+    # ("residential_type", "Residential"),
+    # ("commercial_type" , "Commercial"),
+     
+        
 
-        
-        
-        
 # Property sub type model ########################
 class PropertySubTypes(models.Model):
     subtype_name = models.CharField(max_length=100, blank=False, null=False, unique=True)
@@ -69,7 +92,6 @@ class PropertySubTypes(models.Model):
        
     #  This data will insert in database for PropertySubTypes model 
     
-    # Residential
     # ("apartment", "Apartment"),
     # ("villa", "Villa"),
     # ("farm", "Farm"),
@@ -95,25 +117,42 @@ class PropertySubTypes(models.Model):
 
 
 # Property sub type model ########################
+from django.utils.text import slugify
+
 class PropertyPurpose(models.Model):
     PROPERTY_PURPOSE_CHOICES = [
-        ("buy", "Buy"),
+        ("sale", "Sale"),
         ("rent", "Rent"),
     ]
-    purpose_name = models.CharField(max_length=100, choices=PROPERTY_PURPOSE_CHOICES, blank=False, null=False, unique=True)
-    # main_type    = models.ForeignKey(PropertyMainType, on_delete=models.CASCADE, null=True, related_name='purpose_choices')
-    created_at   = models.DateTimeField(auto_now_add=True, null=True)
-    updated_at   = models.DateTimeField(auto_now=True, null=True)
-    
+
+    purpose_name = models.CharField(
+        max_length=100,
+        choices=PROPERTY_PURPOSE_CHOICES,
+        unique=True,
+        blank=False,
+        null=False
+    )
+    slug = models.SlugField(max_length=50, unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
         return self.purpose_name
-    class Meta:
-       ordering = ['-created_at']
-    #    unique_together = ['purpose_name', 'main_type']
 
-    # Residential for buy
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            # Example: purpose_name="Sale" → slug="sale"
+            self.slug = slugify(self.purpose_name.lower())
+        super().save(*args, **kwargs)
+
+    
+
+    # Residential for sale
     # Residential for rent
-    # Commercial for buy
+    # Commercial for sale
     # Commercial for rent
 
 
@@ -241,6 +280,14 @@ class PropertyImage(models.Model):
     def __str__(self):
         return str(self.images)
 
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # If property has at least one image, mark as published
+        if self.property and not self.property.is_published:
+            if self.property.images.exists():
+                self.property.is_published = True
+                self.property.save(update_fields=["is_published"])
 
 
 

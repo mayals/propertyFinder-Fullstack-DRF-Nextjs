@@ -237,29 +237,23 @@ class CreatePropertyDataAPIView(APIView): # only property data no images  --step
             serializer.save(owner=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED) 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-  
-        
-class ListPropertyAPIView(APIView):
-    pass 
-class UpdatePropertyAPIView(APIView):
-    pass 
-class DeletePropertyAPIView(APIView):
-    pass 
-
-
+    
+    
+    
+     
 # PropertyImage
-class CreatePropertyImageUploadAPIView(APIView): # only property images for data saved pefore --step2
+class CreatePropertyImageUploadAPIView(APIView):
     serializer_class = PropertyImageSerializer
-    permission_classes = [IsAuthenticated, IsAllowedToAddProperty]  # 👈 both required
+    permission_classes = [IsAuthenticated, IsAllowedToAddProperty]
 
     def post(self, request, *args, **kwargs):
         property_id = self.kwargs.get("property_id")
         property_obj = get_object_or_404(Property, id=property_id)
 
-        files = request.FILES.getlist("images")
-        serializer = self.serializer_class(data={"images": files}, context={"property": property_obj})
-
+        serializer = self.serializer_class(
+            data=request.data,
+            context={"property": property_obj, "request": request}
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
@@ -267,6 +261,58 @@ class CreatePropertyImageUploadAPIView(APIView): # only property images for data
             {"detail": "Images uploaded successfully"},
             status=status.HTTP_201_CREATED,
         )
+
+
+    
+     
+     
+        
+  
+# List all properties in one country only
+class ListPropertyByCountrySlugAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, country_slug, *args, **kwargs):
+        country = get_object_or_404(Country, country_slug=country_slug)
+        queryset = Property.objects.filter(country=country, is_published=True)
+
+        city_slug = request.query_params.get("city")
+        purpose = request.query_params.get("purpose")
+        order = request.query_params.get("order")
+
+        if city_slug:
+            queryset = queryset.filter(city__city_slug=city_slug)
+        if purpose:
+            queryset = queryset.filter(purpose__slug=purpose)
+        if order == "latest":
+            queryset = queryset.order_by("-created_at")
+        elif order == "price-asc":
+            queryset = queryset.order_by("price")
+        elif order == "price-desc":
+            queryset = queryset.order_by("-price")
+
+        # ✅ Important line
+        serializer = PropertySerializer(queryset, many=True, context={'request': request})
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "country": country.country_name,
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+
+
+    
+     
+class UpdatePropertyAPIView(APIView):
+    pass 
+class DeletePropertyAPIView(APIView):
+    pass 
 
 
 
