@@ -46,9 +46,12 @@ urlpatterns = [
     path('update-amenity/<str:id>/', views.UpdateAmenityAPIView.as_view(), name='update-amenity'), 
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
+    # Property in one country --- sa
+    # residential-properties-for-sale 
+    path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/', views.ListPropertyByCountryMaintypePurposeAPIView.as_view(), name='list-property-by-country-maintype-purpose'),
+    
     # Property
     path('create-property-data/', views.CreatePropertyDataAPIView.as_view(), name='create-property-data'),
-    path('list-property/<slug:country_slug>/', views.ListPropertyByCountrySlugAPIView.as_view(), name='list-property-by-country-slug'),
     path('update-property/<str:id>/', views.UpdatePropertyAPIView.as_view(), name='update-property'), 
     path('delete-property/<str:id>/', views.DeletePropertyAPIView.as_view(), name='delete-property'),
 

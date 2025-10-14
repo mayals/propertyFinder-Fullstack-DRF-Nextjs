@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import  Country,City,PropertyMainType,PropertySubTypes,PropertyPurpose,Amenity,Property,PropertyImage
 from rest_framework.validators import UniqueValidator
-
+from .models import  Country,City,PropertyMainType,PropertySubTypes,PropertyPurpose,Amenity,Property,PropertyImage
+from users.serializers import CustomUserSerializer
 
 
 
@@ -249,8 +249,15 @@ class PropertySerializer(serializers.ModelSerializer):
                                     allow_blank=False,
                                     validators=[UniqueValidator(queryset=Property.objects.all())]
     )
-    images = PropertyImageSerializer(many=True, read_only=True) # to get images with response.data
-    
+    # ForeignKey fields - make ForeignKey fields as this to get all object informations instesd of only id number of that object
+    owner      = CustomUserSerializer(many=False,read_only=True)
+    country    = CountrySerializer(many=False, read_only=True)
+    city       = CitySerializer(many=False, read_only=True)
+    pmain_type = PropertyMainTypeSerializer(many=False, read_only=True)
+    psub_type  = PropertySubTypesSerializer(many=False, read_only=True)
+    purpose    = PropertyPurposeSerializer(many=False, read_only=True)
+    images     = PropertyImageSerializer(many=True, read_only=True) # to get images data with response.data
+    amenities  = AmenitySerializer(many=True, read_only=True)
     
     class Meta:
         model = Property
@@ -263,7 +270,11 @@ class PropertySerializer(serializers.ModelSerializer):
             'facade', 'property_age', 'amenities', 'price', 'currency',
             'furnishing', 'category', 'is_published','images'
         ]
-        read_only_fields = ['id', 'is_published', 'owner']  # 👈 add 'owner' here because it come from backend -- request.user -- serializer.save(owner=self.request.user) in view.py
+        read_only_fields = [
+            'id', 'is_published','owner', # 👈 add 'owner' here because it come from backend not from frontend -- request.user -- serializer.save(owner=self.request.user) in view.py
+            'country ', 'city', 'images',
+            'pmain_type', 'psub_type', 'purpose','amenities'
+        ]  
 
     
     def validate_title(self, value):

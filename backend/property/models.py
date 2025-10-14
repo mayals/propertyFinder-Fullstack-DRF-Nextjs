@@ -51,8 +51,8 @@ class City(models.Model):
 # Property main type model ###############3
 class PropertyMainType(models.Model):
     PROPERTY_MAIN_TYPE_CHOICES = [
-        ("residential_type", "Residential"),
-        ("commercial_type", "Commercial"),
+        ("residential", "Residential"),
+        ("commercial", "Commercial"),
     ]
 
     maintype_name = models.CharField(
@@ -61,6 +61,7 @@ class PropertyMainType(models.Model):
         unique=True,
         blank=False
     )
+    maintype_slug = models.SlugField(max_length=30, blank=True, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -70,6 +71,13 @@ class PropertyMainType(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    def save(self, *args, **kwargs):
+        if not self.maintype_slug:
+            # make sure slug is lowercase and unique
+            self.maintype_slug = slugify(self.maintype_name.lower())
+        super().save(*args, **kwargs)
+    
+    
     #  This data will insert in database for PropertyMainType model 
     # ("residential_type", "Residential"),
     # ("commercial_type" , "Commercial"),
@@ -116,9 +124,7 @@ class PropertySubTypes(models.Model):
    
 
 
-# Property sub type model ########################
-from django.utils.text import slugify
-
+# Property Purpose model ########################
 class PropertyPurpose(models.Model):
     PROPERTY_PURPOSE_CHOICES = [
         ("sale", "Sale"),
@@ -132,7 +138,7 @@ class PropertyPurpose(models.Model):
         blank=False,
         null=False
     )
-    slug = models.SlugField(max_length=50, unique=True, blank=True, null=True)
+    purpose_slug = models.SlugField(max_length=50, unique=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 
@@ -143,9 +149,9 @@ class PropertyPurpose(models.Model):
         return self.purpose_name
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if not self.purpose_slug:
             # Example: purpose_name="Sale" → slug="sale"
-            self.slug = slugify(self.purpose_name.lower())
+            self.purpose_slug = slugify(self.purpose_name.lower())
         super().save(*args, **kwargs)
 
     

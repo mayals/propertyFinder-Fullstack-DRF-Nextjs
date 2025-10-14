@@ -269,28 +269,31 @@ class CreatePropertyImageUploadAPIView(APIView):
         
   
 # List all properties in one country only
-class ListPropertyByCountrySlugAPIView(APIView):
+class ListPropertyByCountryMaintypePurposeAPIView(APIView):
     serializer_class = PropertySerializer
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request, country_slug, *args, **kwargs):
+    def get(self, request, country_slug, maintype_slug, purpose_slug, *args, **kwargs):
         country = get_object_or_404(Country, country_slug=country_slug)
-        queryset = Property.objects.filter(country=country, is_published=True)
+        pmain_type = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+        purpose = get_object_or_404(PropertyPurpose, purpose_slug=purpose_slug)
+        
+        queryset = Property.objects.filter(country=country, pmain_type=pmain_type, purpose=purpose, is_published=True)
 
-        city_slug = request.query_params.get("city")
-        purpose = request.query_params.get("purpose")
-        order = request.query_params.get("order")
+        # city_slug = request.query_params.get("city")
+        # # purpose = request.query_params.get("purpose")
+        # order = request.query_params.get("order")
 
-        if city_slug:
-            queryset = queryset.filter(city__city_slug=city_slug)
-        if purpose:
-            queryset = queryset.filter(purpose__slug=purpose)
-        if order == "latest":
-            queryset = queryset.order_by("-created_at")
-        elif order == "price-asc":
-            queryset = queryset.order_by("price")
-        elif order == "price-desc":
-            queryset = queryset.order_by("-price")
+        # if city_slug:
+        #     queryset = queryset.filter(city__city_slug=city_slug)
+        # if purpose:
+        #     queryset = queryset.filter(purpose__slug=purpose)
+        # if order == "latest":
+        #     queryset = queryset.order_by("-created_at")
+        # elif order == "price-asc":
+        #     queryset = queryset.order_by("price")
+        # elif order == "price-desc":
+        #     queryset = queryset.order_by("-price")
 
         # ✅ Important line
         serializer = PropertySerializer(queryset, many=True, context={'request': request})

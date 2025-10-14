@@ -89,7 +89,9 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
         verbose_name_plural = 'CustomUser'
 
     
-   
+        
+    
+    
     
     
     @property
