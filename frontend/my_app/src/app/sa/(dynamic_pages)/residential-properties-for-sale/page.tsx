@@ -11,12 +11,16 @@ import Link from "next/link";
 export default function ResidentialSale() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
   const CountryName = process.env.NEXT_PUBLIC_COUNTRY_NAME
+  
+  const maintypeSlug = "residential"
+  const purposeSlug = "sale"
+
   const [properties, setProperties] = useState<any[]>([]);
-  const [filters, setFilters] = useState({
-                                          city: "",
-                                          order: "latest",
-                                          purpose: "sale",
-                                        });
+  // const [filters, setFilters] = useState({
+  //                                         city: "",
+  //                                         order: "latest",
+  //                                         purpose: "sale",
+  //                                       });
 
 
 
@@ -24,9 +28,8 @@ export default function ResidentialSale() {
     const fetchProperties = async () => {
         try {
               const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/property/list-property/${countrySlug}/`,
+                `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/`,
                 {
-                  params: filters,
                   withCredentials: true,
                 }
               );
@@ -39,7 +42,7 @@ export default function ResidentialSale() {
 
     fetchProperties();
 
-  }, [countrySlug, filters]);
+  }, [countrySlug, maintypeSlug, purposeSlug]);
 
 
 
@@ -47,7 +50,7 @@ export default function ResidentialSale() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-          <section className="max-w-7xl mx-auto px-4 py-8">
+          <section className="max-w-6xl mx-auto px-4">
               
               <Find  /> 
              
@@ -70,7 +73,6 @@ export default function ResidentialSale() {
                             </svg>
                             <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">
                                 Residential Properties for sale in {CountryName}
-                                {/* Commercial Properties for sale in Saudi */}
                             </span>
                         </div>
                     </li>
@@ -95,13 +97,10 @@ export default function ResidentialSale() {
                                         No properties found.
                                   </p>
                               ) : (
-                                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                                      {properties.map((property) => (
-                                          <PropertyCard 
-                                              key={property.id} 
-                                              property={property} 
-                                          />
-                                      ))}
+                                  <div className="flex flex-col gap-10 mt-8">
+                                    {properties.map((property) => (
+                                      <PropertyCard key={property.id} property={property} />
+                                    ))}
                                   </div>
                               )
               }

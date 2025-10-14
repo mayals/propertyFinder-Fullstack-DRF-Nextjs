@@ -45,9 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       pathname === "/changePassword" ||
       pathname.startsWith("/setNewPassword/") ||      // for the dynamic path "/setNewPassword/[uid]/[token]"
       pathname.startsWith("/users/confirm-email/") ||  // for the dynamic path "/users/confirm-email/[uid]/[token]"
-      pathname.startsWith("/register") ||             // for the dynamic path "/register/[role]"
+      pathname.startsWith("/register")              // for the dynamic path "/register/[role]"
       
-      console.log("/users/confirm-email/", pathname.startsWith("/users/confirm-email/"))
+      // console.log("/users/confirm-email/", pathname.startsWith("/users/confirm-email/"))
+    
     
     
       return (
