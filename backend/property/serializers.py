@@ -145,6 +145,7 @@ class PropertyMainTypeSerializer(serializers.ModelSerializer):
 
 
 
+
 # PropertySubTypes ##################################################################
 class PropertySubTypesSerializer(serializers.ModelSerializer):
     # must select the primary key of main_type - main_type id - before insert subtype_name
@@ -158,10 +159,31 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
                                     style={'placeholder': 'sub type name here...'},
                                     validators=[UniqueValidator(queryset=PropertySubTypes.objects.all())]
                                     )
+    properties = serializers.SerializerMethodField
+    # properties = PropertySerializer(many=True, read_only=True)  # you can use it if PropertySerializer is before PropertySubTypesSerializer in the same file.
+    
+    
     class Meta:
         model = PropertySubTypes
-        fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name']
-        read_only_fields = ('id', 'created_at', 'updated_at',)
+        fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name', 'properties']
+        read_only_fields = ('id', 'created_at', 'updated_at', 'properties',)
+
+    def get_properties(self, obj):
+        from .serializers import PropertySerializer  # now you can import PropertySerializer inside method
+        # get from context
+        country_slug = self.context.get('country_slug')
+        purpose_slug = self.context.get('purpose_slug')
+        
+        # filter by is_published, country, and purpose
+        published_properties = obj.properties.filter(
+            is_published=True,
+            country__country_slug=country_slug,
+            purpose__purpose_slug=purpose_slug
+        )
+        return PropertySerializer(published_properties, many=True).data
+
+
+
 
 
 
@@ -249,6 +271,7 @@ class PropertySerializer(serializers.ModelSerializer):
                                     allow_blank=False,
                                     validators=[UniqueValidator(queryset=Property.objects.all())]
     )
+    # ✅ Nested with property list
     # ForeignKey fields - make ForeignKey fields as this to get all object informations instesd of only id number of that object
     owner      = CustomUserSerializer(many=False,read_only=True)
     country    = CountrySerializer(many=False, read_only=True)
@@ -297,7 +320,7 @@ class PropertySerializer(serializers.ModelSerializer):
 
 
 
-
+# ------------------- Property Serializer -------------------
 ## CREATE PROPERTY  way-2 ##################################################################################################################################
  
 # Property #######################  if we want to create new property with (data + images) in the same form - at one step  ###########################################

@@ -155,8 +155,26 @@ class CreateSubTypesAPIView(APIView):
  
 
 
-class ListSubTypesAPIView(APIView):
-    pass 
+class ListSubTypesByCountryMaintypePurposeAPIView(APIView):
+    serializer_class = PropertySubTypesSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, maintype_slug, *args, **kwargs):
+        pmain_type = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+        queryset = PropertySubTypes.objects.filter(main_type=pmain_type)
+ 
+        # ✅ Important line
+        serializer = PropertySubTypesSerializer(queryset, many=True, context={'request': request})
+
+        return Response(serializer.data,status=status.HTTP_200_OK)
+           
+
+
+
+ 
+
+
+
 class UpdateSubTypesAPIView(APIView):
     pass 
 class DeleteSubTypesAPIView(APIView):
