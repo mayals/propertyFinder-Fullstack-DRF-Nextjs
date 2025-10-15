@@ -74,7 +74,7 @@ export default function ResidentialRent() {
                         </div>
                     </li>
                 </ol>
-            </nav> 
+              </nav> 
 
               <h1 className="text-xl font-semibold mb-6">
                 Residential Properties for rent in {CountryName}

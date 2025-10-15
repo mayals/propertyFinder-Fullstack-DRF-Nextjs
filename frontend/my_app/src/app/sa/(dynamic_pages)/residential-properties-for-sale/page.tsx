@@ -1,10 +1,11 @@
-// src/app/sa/(dynamic_pages)/buy/page.js
+// src/app/sa/(dynamic_pages)/residential-properties-for-sale/page.js
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PropertyCard from "./components/PropertyCard";
 import Find from "./components/Find";
 import Link from "next/link";
+import SubTypes from "./components/SubTypes";
 
 
 
@@ -16,6 +17,8 @@ export default function ResidentialSale() {
   const purposeSlug = "sale"
 
   const [properties, setProperties] = useState<any[]>([]);
+  const [subtypes,setSubtypes] = useState<any[]>([]);
+
   // const [filters, setFilters] = useState({
   //                                         city: "",
   //                                         order: "latest",
@@ -39,11 +42,34 @@ export default function ResidentialSale() {
               console.error("❌ Error fetching properties:", error);
         }
     };
-
     fetchProperties();
 
-  }, [countrySlug, maintypeSlug, purposeSlug]);
+  
 
+    const fetchSubTypes = async () => {
+        try {
+              const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/subtypes/`,
+                {
+                  withCredentials: true,
+                }
+              );
+              console.log("✅fetchSubTypes-response.data =", response.data);
+              setSubtypes(response.data || []); // ✅ Fix here
+              console.log("subtypes =", subtypes); 
+        
+            } catch (error) {
+              console.error("❌ Error fetching Subtypes:", error);
+        }
+    };
+    fetchSubTypes();
+  
+  
+  }, [countrySlug, maintypeSlug, purposeSlug, subtypes]);
+
+
+
+  
 
 
 
@@ -87,8 +113,21 @@ export default function ResidentialSale() {
                 { properties.length } Properties
               </div>
               
-              <div className="bg-gray-200 h-30 rounded grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-              
+              <div className="bg-gray-200 p-3">
+                  {subtypes.length === 0 ? (
+                                  <p className="text-gray-500 mt-8">
+                                        No subtypes found.
+                                  </p>
+                              ) : (
+                                  <div className="gap-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+                                    {subtypes.map((sub) => (
+                                                        <SubTypes key={sub.id} 
+                                                                  sub={sub}
+                                                        />
+                                    ))}
+                                  </div>
+                              )
+                  }
               </div>
               
               
