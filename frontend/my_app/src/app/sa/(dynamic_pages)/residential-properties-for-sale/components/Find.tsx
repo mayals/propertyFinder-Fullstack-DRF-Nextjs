@@ -1,277 +1,209 @@
-
 "use client";
+
+import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
 export default function Findsection() {
-  const [activeRadioButton, setActiveRadioButton] = useState<string | null>(null);
-  // const [buyrentAction, setBuyrentAction] = useState<string | null>(null);
-  // const [commercialAction, setCommercialAction] = useState<string | null>(null);
+  const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
+
+  // buy- resident -- main type button 
+  const [maintypePurpose, setMaintypePurpose] = useState("Buy residential");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [activeRadioButton, setActiveRadioButton] = useState<string | null>("Buy residential");
   const containerRef = useRef<HTMLDivElement>(null);
-
-
-
-  useEffect(() => {
-      setActiveRadioButton("buy")     
-  }, []);
-
-
-  // buy button - rent button - comercial button
-  const handleactiveRadioButton = (buttonName: string) =>{
-    setActiveRadioButton(buttonName)
-  }
   
-  
-
-
-
-  //  property type menue - beds&bath menue 
+  // Toggle menu open/close
   const toggleMenu = (menu: string) => {
     setActiveMenu((prev) => (prev === menu ? null : menu));
   };
 
+  // Handle radio button change
+  const handleActiveRadioButton = (buttonName: string) => {
+    setActiveRadioButton(buttonName);
+    setMaintypePurpose(buttonName);
+    setActiveMenu(null);
+  };
+  
+  
+  // buy- resident -- filtering buttons
+  const [subtypesList, setSubtypesList] = useState([]);
+  const [selectedSubtype, setSelectedSubtype] = useState({
+                                                          id: "",
+                                                          subtype_name: "Property type",
+                                                        });
+  console.log("selectedSubtype=",selectedSubtype);
+  
+  
+  
 
-
-  // close on click outside
+  // Fetch subtypes based on selected purpose (residential/commercial)
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
+  const fetchSubTypesList = async () => {
+    try {
+      const purposeSlug = maintypePurpose.toLowerCase().includes("buy") ? "sale" : "rent";
+      const maintypeSlug = maintypePurpose.toLowerCase().includes("residential")
+        ? "residential"
+        : "commercial";
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/subtypes/`,
+        { withCredentials: true }
+      );
+
+      setSubtypesList(response.data || []);
+
+      // ✅ Reset subtype each time user switches main type/purpose
+      setSelectedSubtype({ id: "", subtype_name: "Property type" });
+    } catch (error) {
+      console.error("❌ Error fetching subtypes:", error);
+    }
+  };
+
+  fetchSubTypesList();
+}, [maintypePurpose, countrySlug]);
+
+
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setActiveMenu(null);
       }
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
-
-  // close on Esc
+  // Close dropdown on Escape
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
+    const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setActiveMenu(null);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
 
 
 
+ const handleSelectSubtype = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const selectedValue = e.target.value;
+  const selected = subtypesList.find((sub: any) => String(sub.id) === String(selectedValue));
 
+  setSelectedSubtype(
+    selected
+      ? { id: selected.id, subtype_name: selected.subtype_name }
+      : { id: "", subtype_name: "Property type" }
+  );
+
+  console.log("✅ Selected subtype updated:", selected);
+};
+
+
+
+
+  // Handle search click — builds query like PropertyFinder
+  const handleSearch = () => {
+    const queryParams = new URLSearchParams();
+
+    queryParams.append("purpose", maintypePurpose.includes("Buy") ? "buy" : "rent");
+    queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
+
+    if (selectedSubtype.id) queryParams.append("subtype", selectedSubtype.id);
+
+    // Example of how it would look:
+    // /search?purpose=buy&type=residential&subtype=apartment
+    window.location.href = `/search?${queryParams.toString()}`;
+  };
 
   return (
-    <section className="relative min-h-[450px] bg-cover bg-center bg-[url('https://static-assets.propertyfinder.com/images/homepage/hero/sa-desktop.jpg')]">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
-
-      {/* Title */}
-      <h1 className="relative z-10 text-center text-white text-5xl pt-20 pb-12">
-        Find every home here
-      </h1>
-
-      {/* main container */}
+    <section className="bg-red-300 p-2">
+      {/* Main container */}
       <div
         ref={containerRef}
-        className="relative z-10 bg-black/20 backdrop-blur-sm px-2 py-5 rounded-[24px] mx-4 md:mx-10 lg:mx-[170px]"
+        className="flex items-center w-full max-w-5xl mx-auto bg-white rounded-[24px] shadow-md overflow-visible"
       >
-
-        {/* Toggle Radio Button group -----buy-------rent------commercial-----*/}
-        <div className="flex items-center justify-center max-w-xl mx-auto mb-4">
-          
-          {/* buy ----- */}
-          <label 
-            className="text-center w-full border-l border-t border-b text-base font-medium rounded-l-2xl text-black bg-white hover:bg-gray-100 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] px-4 py-1 cursor-pointer"
-            htmlFor="buy">
-                <input
-                type="radio"
-                name="options"
-                id="buy" 
-                onChange={() => handleactiveRadioButton("buy")}
-                checked={activeRadioButton === "buy"}
-                className="hidden"   //  hides the blue circle
-                
-                />
-                Buy
-          </label>
-            
-          {/* rent ------ */}
-          <label 
-              className="text-center w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
-              htmlFor="rent">
-              <input
-                type="radio"
-                name="options"
-                id="rent"
-                onChange={() => handleactiveRadioButton("rent")}
-                checked={activeRadioButton === "rent"}
-                className="hidden"   //  hides the blue circle
-              />
-              Rent
-          </label>
-          
-          {/* commercial ------ */}
-          <label 
-              className="text-center w-full border-t border-b border-r text-base font-medium rounded-r-2xl text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
-              htmlFor="commercial">
-              <input
-                  type="radio"
-                  name="options"
-                  id="commercial"
-                  onChange={() => handleactiveRadioButton("commercial")}
-                  checked={activeRadioButton === "commercial"}
-                  className="hidden"   //  hides the blue circle
-              />
-              Commercial
-          </label>
-        </div>
-
-
-
-
-
-        {/* Search fields container   ---- */}
-        <div className="flex items-center w-full max-w-4xl mx-auto bg-white rounded-[24px] shadow-md overflow-visible">
-         
-         {/* search by word field */}
+        {/* Search input */}
+        <div className="flex-1">
           <input
             type="text"
             placeholder="City, community or building"
-            className="flex-1 px-4 py-3 text-gray-700 focus:outline-none"
+            className="w-full px-4 py-3 text-gray-700 focus:outline-none rounded-l-[24px]"
           />
+        </div>
 
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-1 px-2">
 
-          {/* search by choose  */}
-          {/* Property type dropdown menu*/}
+          {/* Purpose Menu */}
           <div className="relative">
-            
-            {/* Property type -- button */}
             <button
-              onClick={() => toggleMenu("property_type")}
-              aria-expanded={activeMenu === "property_type"}
-              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+              onClick={() => toggleMenu("maintypePurposeMenu")}
+              aria-expanded={activeMenu === "maintypePurposeMenu"}
+              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
             >
-              Property type
+              {maintypePurpose}
               <FiChevronDown
                 className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "property_type" ? "rotate-180" : ""
+                  activeMenu === "maintypePurposeMenu" ? "rotate-180" : ""
                 }`}
               />
             </button>
-            {/* Property type -- for  buy rent  -- menue */}
-            {activeMenu === "property_type" && activeRadioButton !== "commercial" && (
-              <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Apartment</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Villa</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Farm</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rest House</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Compound</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Duplex</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Whole Building</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Hotel / Hotel Apartment
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Full Floor</li>
-              </ul>
-            )}
-            {/* Property type -- for  commercial  -- menu */}
-            {activeMenu === "property_type" && activeRadioButton === "commercial" && (
-              <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Office Space</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Retail</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Warehouse</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Villa</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Show Room</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Bulk Units</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Factory</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Hotel / Hotel Apartment
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Labor Camp</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Staff Acomodation</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Shop</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Land</li>
-              </ul>
+
+            {activeMenu === "maintypePurposeMenu" && (
+              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-52 p-2">
+                {["Buy residential", "Rent residential", "Buy commercial", "Rent commercial"].map(
+                  (option) => (
+                    <label
+                      key={option}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                        activeRadioButton === option ? "bg-indigo-200" : ""
+                      }`}
+                      onClick={() => handleActiveRadioButton(option)}
+                    >
+                      <input
+                        type="radio"
+                        name="maintypePurpose"
+                        checked={activeRadioButton === option}
+                        onChange={() => handleActiveRadioButton(option)}
+                        className="hidden"
+                      />
+                      <span>{option}</span>
+                    </label>
+                  )
+                )}
+              </div>
             )}
           </div>
 
-
-
-
-          {/* Beds & Baths  button ---  Area(sqm) button */}
+          {/* Subtype Dropdown */}
           <div className="relative">
-           { activeRadioButton !== "commercial" && 
-              (<button
-                onClick={() => toggleMenu("bed_bath")}
-                aria-expanded={activeMenu === "bed_bath"}
-                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
-              >
-                Beds & Baths
-                <FiChevronDown
-                  className={`ml-1 transition-transform duration-300 ${
-                    activeMenu === "bed_bath" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>)
-            }
-            { activeRadioButton === "commercial" && 
-              (<button
-                onClick={() => toggleMenu("area-sqm")}
-                aria-expanded={activeMenu === "area-sqm"}
-                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
-              >
-                Area(sqm)
-                <FiChevronDown
-                  className={`ml-1 transition-transform duration-300 ${
-                    activeMenu === "area-sqm" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>)
-            }
-
-            {activeMenu === "bed_bath" && activeRadioButton !== "commercial" &&  (
-              <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
-                  Bedrooms
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Studio</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">5+</li>
-
-                <li className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase border-t">
-                  Bathrooms
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">5+</li>
-              </ul>
-            )}
-            
-             {activeMenu === "area-sqm" && activeRadioButton === "commercial" &&  (
-              <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Min Area</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Max Area</li>
-              </ul>
-            )}
-
-
-
-
+            <select
+              value={selectedSubtype.id}
+              onChange={handleSelectSubtype}
+              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg focus:outline-none hover:bg-gray-200"
+            >
+            {/* Show placeholder only when nothing is selected */}
+                  {!selectedSubtype.id && (
+                    <option value="">{selectedSubtype.subtype_name}</option>
+                  )}
+                  
+                  {subtypesList.map((sub: any) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.subtype_name}
+                    </option>
+                  ))}
+            </select>
           </div>
 
-          
-          
-          
-          
-          
-          
-          {/* Search button */}
-          <button className="cursor-pointer px-6 py-3 rounded-r-3xl bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition">
+
+          {/* Find button */}
+          <button
+            onClick={handleSearch}
+            className="cursor-pointer px-6 py-3 rounded-r-3xl bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
+          >
             Search
           </button>
         </div>
