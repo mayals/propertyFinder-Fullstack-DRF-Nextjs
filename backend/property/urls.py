@@ -48,8 +48,11 @@ urlpatterns = [
     path('update-amenity/<str:id>/', views.UpdateAmenityAPIView.as_view(), name='update-amenity'), 
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
-    # Property in one country --- sa
-    # residential-properties-for-sale 
+    # return 4 main type - purpose  Properties in one country --- sa
+    # -1 residential-properties-for-sale 
+    # -2 residential-properties-for-rent
+    # -3 commercial-properties-for-sale 
+    # -4 commercial-properties-for-rent
     path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/', views.ListPropertyByCountryMaintypePurposeAPIView.as_view(), name='list-property-by-country-maintype-purpose'),
     
     # Property
