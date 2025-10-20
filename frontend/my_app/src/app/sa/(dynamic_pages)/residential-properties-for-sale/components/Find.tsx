@@ -80,13 +80,36 @@ export default function Findsection() {
     console.log("onChangeMinArea=",e.target.value)
   }
   // Amenities
-  // const [AmenitiesList,setAmenitiesList]= useState([]);
+  const [AmenitiesList,setAmenitiesList]= useState([]);
   const [selectedAmenities,setSelectedAmenities]= useState([]);
   const handleAmenitiesOptions = (option) =>{
       setSelectedAmenities(option);  
   }
 
-  const AmenitiesList = ["water","views","pool"]
+  // const AmenitiesList = ["water","views","pool"]
+
+   // Fetch dynamic fetchAmenitiesList
+  useEffect(() => {
+  const fetchAmenitiesList= async () => {
+    try {
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/property/list-amenity/`,
+        { withCredentials: true }
+      );
+
+      setAmenitiesList(response.data || []);
+      console.log("AmenitiesList=",AmenitiesList)
+
+    } catch (error) {
+      console.error("❌ Error fetchAmenitiesList:", error);
+    }
+  };
+  fetchAmenitiesList();
+},  [AmenitiesList] );
+
+
+
 
 
 
@@ -184,7 +207,7 @@ const containerRef = useRef<HTMLDivElement>(null);
   }, []);
 
 
-
+  
 
  
 
@@ -334,14 +357,14 @@ const containerRef = useRef<HTMLDivElement>(null);
                           onChange={() => handleBedsNumbers(option)}
                           className="hidden"
                         />
-                        <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
+                        <span className="flex rounded rounded-full p-1">{option}</span>
                     </label>
                   )
                 )}
                 </div>
                 Bathrooms
                 <div className="flex p-2 ">
-                {["studio","1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
+                {["1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
                   (option) => (
                     <label
                         key={option}
@@ -357,7 +380,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                           onChange={() => handleBathsNumbers(option)}
                           className="hidden"
                         />
-                        <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
+                        <span className="flex rounded rounded-full p-1">{option}</span>
                     </label>
                   )
                 )}
@@ -491,7 +514,7 @@ const containerRef = useRef<HTMLDivElement>(null);
 
                               <div className="space-y-2 p-2">
                                   <div className="p-2 space-y-2">
-                                      <h2 className="text-xl tracking-tight" text-center id="page-action.heading">
+                                      <h2 className="text-xl tracking-tight text-center"  id="page-action.heading">
                                         More Filters
                                       </h2>
                                       <hr></hr>
@@ -572,22 +595,23 @@ const containerRef = useRef<HTMLDivElement>(null);
                                         <p className="text-gray-500 pt-2">Amenities</p>
                                         <div className="flex">
                                             {AmenitiesList.map(
-                                              (option) => (
+                                              (amenity) => (
                                                 <label
-                                                    key={option}
+                                                    key={amenity.id}
                                                     className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                                                      activeRadioButton === option ? "bg-indigo-200" : ""
+                                                      activeRadioButton === amenity.amenity_name
+                                                      ? "bg-indigo-200" : ""
                                                     }`}
-                                                    onClick={() => handleAmenitiesOptions(option)}
+                                                    onClick={() => handleAmenitiesOptions(amenity.amenity_name)}
                                                 >
                                                     <input
                                                       type="checkbox"
                                                       name="Amenities"
                                                       // checked={activeRadioButton === option}
-                                                      onChange={() => handleAmenitiesOptions(option)}
+                                                      onChange={() => handleAmenitiesOptions(amenity.amenity_name)}
                                                       className=""
                                                     />
-                                                    <span className="flex p-1">{option}</span>
+                                                    <span className="flex p-1 capitalize">{amenity.amenity_name}</span>
                                                 </label>
                                               )
                                             )}
