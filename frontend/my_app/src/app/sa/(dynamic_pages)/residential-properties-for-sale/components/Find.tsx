@@ -6,7 +6,7 @@ import { FiChevronDown } from "react-icons/fi";
 
 export default function Findsection() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+ 
 
   // buy- resident -- main type button 
   const [maintypePurpose, setMaintypePurpose] = useState("Buy residential");
@@ -23,26 +23,33 @@ export default function Findsection() {
 
 
   // Beds & Baths
-  const handleBedsBathsButton = (buttonName: string) => {
-    setBeds(buttonName);
-  };
-  
-  // Beds & Baths
   const [beds,setBeds]= useState("");
   const [baths,setBaths]= useState("");
-  const [activeBedsBathsButton, setActiveBedsBathsButton] = useState<string | null>("Beds & Baths");
+  
+  const handleBedsNumbers = (optionName: string) => {
+    setBeds(optionName);
+  };
+  const handleBathsNumbers = (optionName: string) => {
+    setBaths(optionName);
+  };
   
   
 
 
 
   // price 
-  const handlePriceButton = (buttonName: string) => {
-    setPrice(buttonName);
-  };
-  const [price,setPrice]= useState("Price");
-  const [activePriceButton, setActivePriceButton] = useState<string | null>("Price");
-
+  // min price 
+  const [selectedMinPrice,setSelectedMinPrice]= useState("Price");
+  const onChangeMinPrice = (e)=>{
+    setSelectedMinPrice(e.target.value)
+    console.log("onChangeMinPrice=",e.target.value)
+  }
+  // max price 
+  const [selectedMaxPrice,setSelectedMaxPrice]= useState("Price");
+  const onChangeMaxPrice = (e)=>{
+    setSelectedMaxPrice(e.target.value)
+    console.log("onChangeMinPrice=",e.target.value)
+  }
 
 
 
@@ -54,8 +61,38 @@ export default function Findsection() {
   const [more,setMore]= useState("");
   const [activeMoreButton, setActiveMoreButton] = useState<string | null>("More");
 
+  // Furnishings
+  const [fur,setFur]= useState("");
+  const handleFurnishingsOption = (option) =>{
+      setFur(option);  
+  }
+  // Area
+  // min Area 
+  const [selectedMinArea,setSelectedMinArea]= useState("Area");
+  const onChangeMinArea = (e)=>{
+    setSelectedMinArea(e.target.value)
+    console.log("onChangeMinArea=",e.target.value)
+  }
+  // max Area 
+  const [selectedMaxArea,setSelectedMaxArea]= useState("Area");
+  const onChangeMaxArea = (e)=>{
+    setSelectedMaxArea(e.target.value)
+    console.log("onChangeMinArea=",e.target.value)
+  }
+  // Amenities
+  // const [AmenitiesList,setAmenitiesList]= useState([]);
+  const [selectedAmenities,setSelectedAmenities]= useState([]);
+  const handleAmenitiesOptions = (option) =>{
+      setSelectedAmenities(option);  
+  }
+
+  const AmenitiesList = ["water","views","pool"]
 
 
+
+
+
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   // Toggle menu open/close
   const toggleMenu = (menu: string) => {
     setActiveMenu((prev) => (prev === menu ? null : menu));
@@ -288,13 +325,13 @@ const containerRef = useRef<HTMLDivElement>(null);
                         className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
                           activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
-                        onClick={() => handleBedsBathsButton(option)}
+                        onClick={() => handleBedsNumbers(option)}
                     >
                         <input
                           type="radio"
                           name="beds"
                           checked={activeRadioButton === option}
-                          onChange={() => handleBedsBathsButton(option)}
+                          onChange={() => handleBedsNumbers(option)}
                           className="hidden"
                         />
                         <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
@@ -311,24 +348,24 @@ const containerRef = useRef<HTMLDivElement>(null);
                         className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
                           activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
-                        onClick={() => handleBedsBathsButton(option)}
+                        onClick={() => handleBathsNumbers(option)}
                     >
                         <input
                           type="radio"
-                          name="beds"
+                          name="baths"
                           checked={activeRadioButton === option}
-                          onChange={() => handleBedsBathsButton(option)}
+                          onChange={() => handleBathsNumbers(option)}
                           className="hidden"
                         />
                         <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
                     </label>
                   )
                 )}
-
                 </div>
+                <hr></hr>
+                    <div className="mt-3 mb-1">Reset</div>
               </div>
             )}
-            
           </div>
 
 
@@ -336,100 +373,278 @@ const containerRef = useRef<HTMLDivElement>(null);
 
           {/* price */}
           <div className="relative">
-            <button
-              onClick={() => toggleMenu("priceMenu")}
-              aria-expanded={activeMenu === "priceMenu"}
-              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
-            >
-              { price }
-              <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "priceMenu" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+              <button
+                onClick={() => toggleMenu("priceMenu")}
+                aria-expanded={activeMenu === "priceMenu"}
+                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
+              >
+                { selectedMinPrice }-{selectedMaxPrice}
+                <FiChevronDown
+                  className={`ml-1 transition-transform duration-300 ${
+                    activeMenu === "priceMenu" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-            {activeMenu === "priceMenu" && (
-              <div className="flex absolute z-50 left-[-100px] top-full bg-gray-100 border rounded-lg shadow-md w-[200px] p-2">
-                Price
-                {["200","300"].map(
-                  (option) => (
-                    <label
-                        key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                          activePriceButton === option ? "bg-indigo-200" : ""
-                        }`}
-                        onClick={() => handleBedsBathsButton(option)}
-                    >
-                        <input
-                          type="radio"
-                          name="price"
-                          checked={activePriceButton === option}
-                          onChange={() => handlePriceButton(option)}
-                          className="hidden"
-                        />
-                        <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
-                    </label>
-                  )
-                )}
+              {activeMenu === "priceMenu" && (
+              <div className="flex absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-[380px] h-[100px]  p-2">
+               
+                        {/* Select a min price - max price from a prices list */}
+                        <div className="md:w-full flex justify-between">
+                            <div>
+                                {/* <label className="block text-sm font-medium">Min. Price</label> */}
+                                <select
+                                  value={selectedMinPrice}
+                                  onChange={onChangeMinPrice}
+                                  className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                                >
+                                    <option value="">Min. Price (SAR)</option>
+                                    <option value="200000">200000</option>
+                                    <option value="300000">300000</option>
+                                    <option value="400000">400000</option>
+                                    <option value="500000">500000</option>
+                                    <option value="600000">600000</option>
+                                    <option value="700000">700000</option>
+                                    <option value="800000">800000</option>
+                                    <option value="900000">900000</option>
+                                    <option value="1000000">1000000</option>
+                                    <option value="1000000">2000000</option>
+                                    <option value="1000000">3000000</option>
+                                    <option value="1000000">4000000</option>
+                                    <option value="1000000">5000000</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                {/* <label className="block text-sm font-medium">Max. Price</label> */}
+                                <select
+                                  value={selectedMaxPrice}
+                                  onChange={onChangeMaxPrice}
+                                  className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                                >
+                                    <option value="">Max. Price (SAR)</option>
+                                    <option value="200000">200000</option>
+                                    <option value="300000">300000</option>
+                                    <option value="400000">400000</option>
+                                    <option value="500000">500000</option>
+                                    <option value="600000">600000</option>
+                                    <option value="700000">700000</option>
+                                    <option value="800000">800000</option>
+                                    <option value="900000">900000</option>
+                                    <option value="1000000">1000000</option>
+                                    <option value="1000000">2000000</option>
+                                    <option value="1000000">3000000</option>
+                                    <option value="1000000">4000000</option>
+                                    <option value="1000000">5000000</option>
+                                </select>
+                            </div>
+                        </div>
               </div>
             )}
           </div>
 
 
 
-            {/* more*/}
+          {/* more*/}
           <div className="relative">
-            <button
-              onClick={() => toggleMenu("moreMenu")}
-              aria-expanded={activeMenu === "moreMenu"}
-              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
-            >
-              more
-              <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "moreMenu" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
+                  <button
+                    onClick={() => toggleMenu("moreMenu")}
+                    aria-expanded={activeMenu === "moreMenu"}
+                    className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
+                  >
+                    More
+                    <FiChevronDown
+                      className={`ml-1 transition-transform duration-300 ${activeMenu === "moreMenu" ? "rotate-180" : "" }`}
+                    />
+                  </button>
 
-            {activeMenu === "moreMenu" && (
-              <div className="flex absolute z-50 left-[-100px] top-full bg-gray-100 border rounded-lg shadow-md w-[200px] p-2">
-                more
-                {["more","1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
-                  (option) => (
-                    <label
-                        key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                          activeMoreButton === option ? "bg-indigo-200" : ""
-                        }`}
-                        onClick={() => handleMoreButton(option)}
-                    >
-                        <input
-                          type="radio"
-                          name="more"
-                          checked={activeMoreButton === option}
-                          onChange={() => handleMoreButton(option)}
-                          className="hidden"
-                        />
-                        <span className="flex bg-red-300 rounded rounded-full p-1">{option}</span>
-                    </label>
-                  )
-                )}
-              </div>
-            )}
-          </div>
+                  {activeMenu === "moreMenu" && (
+
+                  //  <div className="flex absolute z-50 left-[-100px] top-full bg-gray-100 border rounded-lg shadow-md w-[200px] p-2"> */}
+                  //  more modal  
+
+                  <div className="fixed inset-0 z-40 min-h-full overflow-y-auto overflow-x-hidden transition flex items-center">
+                      {/* overlay  */}
+                      <div aria-hidden="true" className="fixed inset-0 w-full h-full bg-black/50 cursor-pointer">
+                      </div>
+
+                      {/* Modal  */}
+                      <div className="relative cursor-pointer pointer-events-none transition my-auto p-4 w-[800px] mx-auto">
+                          <div className="w-full py-2 bg-white cursor-default pointer-events-auto  relative rounded-xl">
+
+                              <button 
+                                      onClick={() => toggleMenu("moreMenu")}
+                                      aria-expanded={activeMenu === "moreMenu"} 
+                                      type="button" 
+                                      className="absolute top-2 right-2 rtl:right-auto rtl:left-2"
+                              >
+                                      <svg xlinkTitle="Close" className="h-4 w-4 hover:rotate-180 transition-all ease-in-out duration-500 cursor-pointer text-gray-400"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fillRule="evenodd"
+                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                          clipRule="evenodd"></path>
+                                      </svg>
+                                      <span className="sr-only">
+                                        Close
+                                      </span>
+                              </button>
+
+                              <div className="space-y-2 p-2">
+                                  <div className="p-2 space-y-2">
+                                      <h2 className="text-xl tracking-tight" text-center id="page-action.heading">
+                                        More Filters
+                                      </h2>
+                                      <hr></hr>
+                                      <p className="text-gray-500 pt-2">Furnishing</p>
+                                        <div className="flex">
+                                            {["All furnishings","Furnished", "Unfurnished", "Partly furnished"].map(
+                                              (option) => (
+                                                <label
+                                                    key={option}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                                                      activeRadioButton === option ? "bg-indigo-200" : ""
+                                                    }`}
+                                                    onClick={() => handleFurnishingsOption(option)}
+                                                >
+                                                    <input
+                                                      type="radio"
+                                                      name="furnishings"
+                                                      checked={activeRadioButton === option}
+                                                      onChange={() => handleFurnishingsOption(option)}
+                                                      className="hidden"
+                                                    />
+                                                    <span className="flex p-1">{option}</span>
+                                                </label>
+                                              )
+                                            )}
+                                        </div>
+
+                                        <hr></hr>
+                                        <p className="text-gray-500 pt-2"> Property Size (sqm)</p>
+                                        {/* Select a min Area - max Area from a Area list */}
+                                        <div className="md:w-full flex gap-3 pb-2">
+                                            <div>
+                                                {/* <label className="block text-sm font-medium">Min. Area</label> */}
+                                                <select
+                                                  value={selectedMinArea}
+                                                  onChange={onChangeMinArea}
+                                                  className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                                                >
+                                                    <option value="">From</option>
+                                                    <option value="50">50</option>
+                                                    <option value="200">200</option>
+                                                    <option value="400">400</option>
+                                                    <option value="600">600</option>
+                                                    <option value="800">800</option>
+                                                    <option value="1000">1000</option>
+                                                    <option value="1500">1500</option>
+                                                    <option value="2000">2000</option>
+                                                    <option value="2500">2500</option>
+                                                    <option value="3000">3000</option>
+                                                    <option value="3500">3500</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                {/* <label className="block text-sm font-medium">Max. Area</label> */}
+                                                <select
+                                                  value={selectedMaxArea}
+                                                  onChange={onChangeMaxArea}
+                                                  className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
+                                                >
+                                                    <option value="">To</option>
+                                                    <option value="50">50</option>
+                                                    <option value="200">200</option>
+                                                    <option value="400">400</option>
+                                                    <option value="600">600</option>
+                                                    <option value="800">800</option>
+                                                    <option value="1000">1000</option>
+                                                    <option value="1500">1500</option>
+                                                    <option value="2000">2000</option>
+                                                    <option value="2500">2500</option>
+                                                    <option value="3000">3000</option>
+                                                    <option value="3500">3500</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <hr ></hr>
+                                        <p className="text-gray-500 pt-2">Amenities</p>
+                                        <div className="flex">
+                                            {AmenitiesList.map(
+                                              (option) => (
+                                                <label
+                                                    key={option}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                                                      activeRadioButton === option ? "bg-indigo-200" : ""
+                                                    }`}
+                                                    onClick={() => handleAmenitiesOptions(option)}
+                                                >
+                                                    <input
+                                                      type="checkbox"
+                                                      name="Amenities"
+                                                      // checked={activeRadioButton === option}
+                                                      onChange={() => handleAmenitiesOptions(option)}
+                                                      className=""
+                                                    />
+                                                    <span className="flex p-1">{option}</span>
+                                                </label>
+                                              )
+                                            )}
+                                        </div>
+
+
+                                        <hr></hr>
+                                        <p className="text-gray-500 pt-2">Keywords</p>
+                                        {/* Keywords */}
+                                        <div className="">
+                                          <input
+                                            type="text"
+                                            placeholder="Keywords: e.g. beach, chiller free"
+                                            className="rounded-2xl  w-full px-2 py-3 mx-1 bg-gray-100 text-gray-700 focus:outline-none"
+                                          />
+                                        </div>
+
+                                        {/* Show results button */}
+                                        <button
+                                          // onClick={handleSearch}
+                                          className="rounded-xl cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
+                                        >
+                                          Show results
+                                        </button>
+                                        {/* <button type="submit"
+                                            className="inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-[#4d1b80] hover:bg-[#7127BA] focus:bg-[#11071F] focus:ring-offset-[#11071F]">
+
+                                            <span className="flex items-center gap-1">
+                                              <span className="">
+                                               Show results
+                                              </span>
+                                            </span>
+                                        </button> */}
+
+
+                                  </div>
+                              </div>
+
+                              
+                          </div>
+                      </div>
+                  </div>
+
+          // </div>
+          )} 
+      </div>
 
 
 
-          {/* Find button */}
-          <button
-            onClick={handleSearch}
-            className="cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
-          >
-            Search
-          </button>
-        </div>
+      {/* Find button */}
+      <button
+        onClick={handleSearch}
+        className="cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
+      >
+        Search
+      </button>
+      </div>
       </div>
     </section>
   );
