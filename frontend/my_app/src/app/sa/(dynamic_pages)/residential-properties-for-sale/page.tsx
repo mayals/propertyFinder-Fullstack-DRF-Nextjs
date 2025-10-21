@@ -65,7 +65,7 @@ export default function ResidentialSale() {
     fetchSubTypes();
   
   
-  }, [countrySlug, maintypeSlug, purposeSlug, subtypes]);
+  }, [countrySlug, maintypeSlug, purposeSlug]);
 
 
 
