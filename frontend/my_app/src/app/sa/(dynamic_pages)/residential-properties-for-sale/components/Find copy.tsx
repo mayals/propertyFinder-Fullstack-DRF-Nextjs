@@ -24,13 +24,9 @@ export default function Findsection() {
 
 
   // Beds & Baths
-  const [studio,setStudio]= useState("");
   const [beds,setBeds]= useState("");
   const [baths,setBaths]= useState("");
   
-  const handleStudio = (optionName: string) => {
-    setStudio(optionName);
-  };
   const handleBedsNumbers = (optionName: string) => {
     setBeds(optionName);
   };
@@ -111,7 +107,7 @@ export default function Findsection() {
     }
   };
   fetchAmenitiesList();
-},  [] );
+},  [AmenitiesList] );
 
 
 
@@ -334,7 +330,7 @@ const containerRef = useRef<HTMLDivElement>(null);
               aria-expanded={activeMenu === "bedsBathsMenu"}
               className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
             >
-              {studio},{beds}Beds, {baths}Baths
+              {beds}Beds, {baths}Baths
               <FiChevronDown
                 className={`ml-1 transition-transform duration-300 ${
                   activeMenu === "bedsBathsMenu" ? "rotate-180" : ""
@@ -346,35 +342,12 @@ const containerRef = useRef<HTMLDivElement>(null);
               <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-[450px] h-[250px] p-2">
                 Bedrooms
                 <div className="flex p-2 mb-6">
-                {["studio"].map(
+                {["studio","1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
                   (option) => (
                     <label
                         key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${
-                          studio === option ? "bg-indigo-200" : ""
-                        }`}
-                        onClick={() => handleStudio(option)}
-                    >
-                        <input
-                          type="radio"
-                          name="studio"
-                          checked={activeRadioButton === option}
-                          onChange={() => handleStudio(option)}
-                          className="hidden"
-                        />
-                        <span className="flex rounded rounded-full p-1">{option}</span>
-                    </label>
-                  )
-                )}
-                
-                
-               
-                {["1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
-                  (option) => (
-                    <label
-                        key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${
-                          beds === option ? "bg-indigo-200" : ""
+                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                          activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
                         onClick={() => handleBedsNumbers(option)}
                     >
@@ -397,7 +370,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                     <label
                         key={option}
                         className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                          baths === option ? "bg-indigo-200" : ""
+                          activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
                         onClick={() => handleBathsNumbers(option)}
                     >
@@ -553,7 +526,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                                                 <label
                                                     key={option}
                                                     className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                                                      fur === option ? "bg-indigo-200" : ""
+                                                      activeRadioButton === option ? "bg-indigo-200" : ""
                                                     }`}
                                                     onClick={() => handleFurnishingsOption(option)}
                                                 >
