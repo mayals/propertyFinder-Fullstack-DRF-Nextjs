@@ -5,129 +5,44 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
+
+
 export default function Findsection() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
- 
-
-  // buy- resident -- main type button 
-  const [maintypePurpose, setMaintypePurpose] = useState("Buy residential");
-  const [activeRadioButton, setActiveRadioButton] = useState<string | null>("Buy residential");
   
-  // Handle radio button change -- for MaintypePurpose
-  const handleActiveRadioButton = (buttonName: string) => {
-    setActiveRadioButton(buttonName);
-    setMaintypePurpose(buttonName);
-    setActiveMenu(null);
-  };
-  
-
-
-
-  // Beds & Baths
-  const [studio,setStudio]= useState("");
-  const [beds,setBeds]= useState("");
-  const [baths,setBaths]= useState("");
-  
-  const handleStudio = (optionName: string) => {
-    setStudio(optionName);
-  };
-  const handleBedsNumbers = (optionName: string) => {
-    setBeds(optionName);
-  };
-  const handleBathsNumbers = (optionName: string) => {
-    setBaths(optionName);
-  };
-  
-  
-
-
-
-  // price 
-  // min price 
-  const [selectedMinPrice,setSelectedMinPrice]= useState("Price");
-  const onChangeMinPrice = (e)=>{
-    setSelectedMinPrice(e.target.value)
-    console.log("onChangeMinPrice=",e.target.value)
-  }
-  // max price 
-  const [selectedMaxPrice,setSelectedMaxPrice]= useState("Price");
-  const onChangeMaxPrice = (e)=>{
-    setSelectedMaxPrice(e.target.value)
-    console.log("onChangeMinPrice=",e.target.value)
-  }
-
-
-
-
-// more 
-  const handleMoreButton = (buttonName: string) => {
-    setMore(buttonName);
-  };
-  const [more,setMore]= useState("");
-  const [activeMoreButton, setActiveMoreButton] = useState<string | null>("More");
-
-  // Furnishings
-  const [fur,setFur]= useState("");
-  const handleFurnishingsOption = (option) =>{
-      setFur(option);  
-  }
-  // Area
-  // min Area 
-  const [selectedMinArea,setSelectedMinArea]= useState("Area");
-  const onChangeMinArea = (e)=>{
-    setSelectedMinArea(e.target.value)
-    console.log("onChangeMinArea=",e.target.value)
-  }
-  // max Area 
-  const [selectedMaxArea,setSelectedMaxArea]= useState("Area");
-  const onChangeMaxArea = (e)=>{
-    setSelectedMaxArea(e.target.value)
-    console.log("onChangeMinArea=",e.target.value)
-  }
-  // Amenities
-  const [AmenitiesList,setAmenitiesList]= useState([]);
-  const [selectedAmenities,setSelectedAmenities]= useState([]);
-  const handleAmenitiesOptions = (option) =>{
-      setSelectedAmenities(option);  
-  }
-
-  // const AmenitiesList = ["water","views","pool"]
-
-   // Fetch dynamic fetchAmenitiesList
-  useEffect(() => {
-  const fetchAmenitiesList= async () => {
-    try {
-
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/property/list-amenity/`,
-        { withCredentials: true }
-      );
-
-      setAmenitiesList(response.data || []);
-      console.log("AmenitiesList=",AmenitiesList)
-
-    } catch (error) {
-      console.error("❌ Error fetchAmenitiesList:", error);
-    }
-  };
-  fetchAmenitiesList();
-},  [] );
-
-
-
-
-
-
-
-
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   // Toggle menu open/close
   const toggleMenu = (menu: string) => {
     setActiveMenu((prev) => (prev === menu ? null : menu));
   };
+  const [activeRadioButton, setActiveRadioButton] = useState<string | null>("Buy residential");
 
+
+
+
+  // city
+  // const [cityList, setCityList] = useState([]);
+  const cityList =["khobar","dammam","jeddah"]
+  const [selectedCity, setSelectedCity] = useState("All cities");
+
+  const handleCitiesOptions = (option: string) =>{
+      setSelectedCity(option);  
+  }
   
+    
+    
+
+
+  // buy- resident -- main type button 
+  const [maintypePurpose, setMaintypePurpose] = useState("Buy residential");
   
+  // Handle radio button change -- for MaintypePurpose
+  const handleMaintypePurposeOptions = (option: string) => {
+    setMaintypePurpose(option);
+  };
+  
+
+
 
 
 
@@ -187,6 +102,118 @@ const handleSelectSubtype = (e: React.ChangeEvent<HTMLSelectElement>) => {
 
 
 
+
+
+  // Beds & Baths
+  const [studio,setStudio]= useState("");
+  const [beds,setBeds]= useState("");
+  const [baths,setBaths]= useState("");
+  
+  const handleStudio = (optionName: string) => {
+    setStudio(optionName);
+  };
+  const handleBedsNumbers = (optionName: string) => {
+    setBeds(optionName);
+  };
+  const handleBathsNumbers = (optionName: string) => {
+    setBaths(optionName);
+  };
+  
+  
+
+
+
+  // price 
+  // min price 
+  const [selectedMinPrice,setSelectedMinPrice]= useState("Min. Price");
+  const onChangeMinPrice = (e)=>{
+    setSelectedMinPrice(e.target.value)
+    console.log("onChangeMinPrice=",e.target.value)
+  }
+  // max price 
+  const [selectedMaxPrice,setSelectedMaxPrice]= useState("Max. Price");
+  const onChangeMaxPrice = (e)=>{
+    setSelectedMaxPrice(e.target.value)
+    console.log("onChangeMinPrice=",e.target.value)
+  }
+
+
+  // more 
+  const [more,setMore]= useState("");
+  const [activeMoreButton, setActiveMoreButton] = useState<string | null>("More");
+  const handleMoreButton = (buttonName: string) => {
+    setMore(buttonName);
+  };
+
+  // Furnishings
+  const [fur,setFur]= useState("");
+  const handleFurnishingsOption = (option) =>{
+      setFur(option);  
+  }
+
+  // Area
+  // min Area 
+  const [selectedMinArea,setSelectedMinArea]= useState("Area");
+  const onChangeMinArea = (e)=>{
+    setSelectedMinArea(e.target.value)
+    console.log("onChangeMinArea=",e.target.value)
+  }
+  // max Area 
+  const [selectedMaxArea,setSelectedMaxArea]= useState("Area");
+  const onChangeMaxArea = (e)=>{
+    setSelectedMaxArea(e.target.value)
+    console.log("onChangeMinArea=",e.target.value)
+  }
+  // Amenities
+  // const AmenitiesList = ["water","views","pool"]
+  const [AmenitiesList,setAmenitiesList]= useState([]);
+  const [selectedAmenities,setSelectedAmenities]= useState([]);
+  
+  const handleAmenitiesOptions = (amenityName) => {
+      setSelectedAmenities((prev) => {
+          // If amenity is already selected, remove it
+          if (prev.includes(amenityName)) {
+            return prev.filter((item) => item !== amenityName);
+          }
+          // Otherwise, add it
+          return [...prev, amenityName];
+          });
+  };
+  
+
+   // Fetch dynamic fetchAmenitiesList
+  useEffect(() => {
+  const fetchAmenitiesList= async () => {
+    try {
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/property/list-amenity/`,
+        { withCredentials: true }
+      );
+
+      setAmenitiesList(response.data || []);
+      console.log("AmenitiesList=",AmenitiesList)
+
+    } catch (error) {
+      console.error("❌ Error fetchAmenitiesList:", error);
+    }
+  };
+  fetchAmenitiesList();
+},  [] );
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
 const containerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -220,15 +247,38 @@ const containerRef = useRef<HTMLDivElement>(null);
   // Handle search click — builds query like PropertyFinder
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
+    console.log("maintypePurpose=",maintypePurpose);
+    console.log("selectedSubtype=",selectedSubtype);
+    console.log("studio=",studio);
+    console.log("beds=",beds);
+    console.log("baths=",baths);
+    console.log("selectedMinPrice=",selectedMinPrice);
+    console.log("selectedMaxPrice=",selectedMaxPrice);
+    console.log("fur=",fur);
+    console.log("selectedMinArea=",selectedMinArea);
+    console.log("selectedMaxArea=",selectedMaxArea);
+    console.log("selectedAmenities=",selectedAmenities);
+    if (maintypePurpose) queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
+    if (maintypePurpose) queryParams.append("purpose", maintypePurpose.includes("Buy") ? "buy" : "rent");
+    if (selectedSubtype) queryParams.append("selectedSubtype",selectedSubtype.subtype_name);
+    if (studio) queryParams.append("studio",studio);
+    if (beds)queryParams.append("beds",beds);
+    if (baths)queryParams.append("baths",baths);
+    if (selectedMinPrice)queryParams.append("selectedMinPrice",selectedMinPrice);
+    if (selectedMaxPrice)queryParams.append("selectedMaxPrice",selectedMaxPrice);
+    if (fur)queryParams.append("fur",fur);
+    if (selectedMinArea)queryParams.append("selectedMinArea",selectedMinArea);
+    if (selectedMaxArea)queryParams.append("selectedMaxArea",selectedMaxArea);
+    if (Array.isArray(selectedAmenities) && selectedAmenities.length > 0) {
+      selectedAmenities.forEach((a) => queryParams.append("amenities", a));
+    }
 
-    queryParams.append("purpose", maintypePurpose.includes("Buy") ? "buy" : "rent");
-    queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
 
-    if (selectedSubtype.id) queryParams.append("subtype", selectedSubtype.id);
+    
 
     // Example of how it would look:
     // /search?purpose=buy&type=residential&subtype=apartment
-    window.location.href = `/search?${queryParams.toString()}`;
+    window.location.href = `/sa/search?${queryParams.toString()}`;
   };
 
 
@@ -244,16 +294,60 @@ const containerRef = useRef<HTMLDivElement>(null);
         className="flex items-center w-full mx-auto bg-white shadow-md justify-between"
       >
         {/* Search input */}
-        <div className="">
+        {/* <div className="">
           <input
             type="text"
             placeholder="City, community or building"
             className="w-52 px-2 py-3 mx-1 bg-gray-500 text-gray-700 focus:outline-none"
           />
-        </div>
+        </div> */}
+
 
         {/* Filters */}
         <div className="flex items-center gap-1">
+
+        
+          {/*city */}
+          <div className="relative">
+            <button
+              onClick={() => toggleMenu("cityMenu")}
+              aria-expanded={activeMenu === "cityMenu"}
+              className={`capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === selectedCity? "border border-indigo-600 text-indigo-600":""}`}
+            >
+              {selectedCity}
+              <FiChevronDown
+                className={`ml-1 transition-transform duration-300 ${ activeMenu === "cityMenu" ? "rotate-180" : ""  }`}  
+              />
+            </button>
+
+            {activeMenu === "cityMenu" && (
+              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
+                
+                  
+                {cityList.map(
+                  (option) => (
+                    <label
+                      key={option}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedCity === option ? "bg-indigo-200" : "" }`}
+                      onClick={() => handleCitiesOptions(option)}
+                    >
+                      <input
+                        type="radio"
+                        name="selectedCity"
+                        checked={activeRadioButton === option}
+                        onChange={() => handleCitiesOptions(option)}
+                        className="hidden"
+                      />
+                      <span className="capitalize">{option}</span>
+                    </label>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+
+
+
 
 
 
@@ -267,9 +361,7 @@ const containerRef = useRef<HTMLDivElement>(null);
             >
               {maintypePurpose}
               <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "maintypePurposeMenu" ? "rotate-180" : ""
-                }`}
+                className={`ml-1 transition-transform duration-300 ${activeMenu === "maintypePurposeMenu" ? "rotate-180" : ""}`}
               />
             </button>
 
@@ -279,16 +371,14 @@ const containerRef = useRef<HTMLDivElement>(null);
                   (option) => (
                     <label
                       key={option}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                        activeRadioButton === option ? "bg-indigo-200" : ""
-                      }`}
-                      onClick={() => handleActiveRadioButton(option)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ maintypePurpose === option ? "bg-indigo-200" : ""  }`}
+                      onClick={() => handleMaintypePurposeOptions(option)}
                     >
                       <input
                         type="radio"
                         name="maintypePurpose"
                         checked={activeRadioButton === option}
-                        onChange={() => handleActiveRadioButton(option)}
+                        onChange={() => handleMaintypePurposeOptions(option)}
                         className="hidden"
                       />
                       <span>{option}</span>
@@ -350,9 +440,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                   (option) => (
                     <label
                         key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${
-                          studio === option ? "bg-indigo-200" : ""
-                        }`}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${studio === option ? "bg-indigo-200" : ""}`}
                         onClick={() => handleStudio(option)}
                     >
                         <input
@@ -522,7 +610,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                       {/* Modal  */}
                       <div className="relative cursor-pointer pointer-events-none transition my-auto p-4 w-[800px] mx-auto">
                           <div className="w-full py-2 bg-white cursor-default pointer-events-auto  relative rounded-xl">
-
+                              {/*  close button */}
                               <button 
                                       onClick={() => toggleMenu("moreMenu")}
                                       aria-expanded={activeMenu === "moreMenu"} 
@@ -552,9 +640,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                                               (option) => (
                                                 <label
                                                     key={option}
-                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                                                      fur === option ? "bg-indigo-200" : ""
-                                                    }`}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ fur === option ? "bg-indigo-200" : "" }`}
                                                     onClick={() => handleFurnishingsOption(option)}
                                                 >
                                                     <input
@@ -621,30 +707,26 @@ const containerRef = useRef<HTMLDivElement>(null);
 
                                         <hr ></hr>
                                         <p className="text-gray-500 pt-2">Amenities</p>
-                                        <div className="flex">
-                                            {AmenitiesList.map(
-                                              (amenity) => (
-                                                <label
-                                                    key={amenity.id}
-                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                                                      activeRadioButton === amenity.amenity_name
-                                                      ? "bg-indigo-200" : ""
-                                                    }`}
-                                                    onClick={() => handleAmenitiesOptions(amenity.amenity_name)}
-                                                >
-                                                    <input
-                                                      type="checkbox"
-                                                      name="Amenities"
-                                                      // checked={activeRadioButton === option}
-                                                      onChange={() => handleAmenitiesOptions(amenity.amenity_name)}
-                                                      className=""
-                                                    />
-                                                    <span className="flex p-1 capitalize">{amenity.amenity_name}</span>
-                                                </label>
-                                              )
-                                            )}
+                                        <div className="flex flex-wrap gap-2">
+                                          {AmenitiesList.map((amenity) => (
+                                            <label
+                                              key={amenity.id}
+                                              className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer border ${
+                                                selectedAmenities.includes(amenity.amenity_name)
+                                                  ? "bg-indigo-200 border-indigo-400"
+                                                  : "border-gray-300"
+                                              }`}
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                checked={selectedAmenities.includes(amenity.amenity_name)}
+                                                onChange={() => handleAmenitiesOptions(amenity.amenity_name)}
+                                                className="cursor-pointer"
+                                              />
+                                              <span className="capitalize">{amenity.amenity_name}</span>
+                                            </label>
+                                          ))}
                                         </div>
-
 
                                         <hr></hr>
                                         <p className="text-gray-500 pt-2">Keywords</p>
@@ -657,22 +739,14 @@ const containerRef = useRef<HTMLDivElement>(null);
                                           />
                                         </div>
 
-                                        {/* Show results button */}
+                                        {/* Show filtering results button */}
                                         <button
-                                          // onClick={handleSearch}
+                                          onClick={() => toggleMenu("moreMenu")}
                                           className="rounded-xl cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
                                         >
-                                          Show results
+                                          Add filters
                                         </button>
-                                        {/* <button type="submit"
-                                            className="inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-[#4d1b80] hover:bg-[#7127BA] focus:bg-[#11071F] focus:ring-offset-[#11071F]">
-
-                                            <span className="flex items-center gap-1">
-                                              <span className="">
-                                               Show results
-                                              </span>
-                                            </span>
-                                        </button> */}
+                                       
 
 
                                   </div>
