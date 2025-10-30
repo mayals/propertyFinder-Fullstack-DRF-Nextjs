@@ -21,13 +21,42 @@ export default function Findsection() {
 
 
   // city
-  // const [cityList, setCityList] = useState([]);
-  const cityList =["khobar","dammam","jeddah"]
-  const [selectedCity, setSelectedCity] = useState("All cities");
+  const [cityList, setCityList] = useState([]);
+  // const cityList =["khobar","dammam","jeddah"]
+  const [selectedCity, setSelectedCity] = useState({
+                                                     id:"",
+                                                     city_name: "All Cities",
+                                                   });
 
-  const handleCitiesOptions = (option: string) =>{
-      setSelectedCity(option);  
-  }
+  const handleCitiesOptions = (option) => {
+      setSelectedCity(
+                        {
+                                id: option.id, 
+                          city_name: option.city_name 
+                        });
+                        console.log("selectedCity.city_name=", selectedCity.city_name)
+      setActiveMenu(null); // close dropdown after selecting
+  };
+
+  // Fetch dynamic cityList
+  useEffect(() => {
+  const fetchCityList= async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/cities/`,
+        { withCredentials: true }
+      );
+
+      setCityList(response.data || []);
+      console.log("fetchCityList-cityList=",response.data)
+
+    } catch (error) {
+      console.error("❌ Error fetchCityList:", error);
+    }
+  };
+  fetchCityList();
+  },  [] );
+
   
     
     
@@ -60,13 +89,10 @@ export default function Findsection() {
   useEffect(() => {
   const fetchSubTypesList = async () => {
     try {
-      const purposeSlug = maintypePurpose.toLowerCase().includes("buy") ? "sale" : "rent";
-      const maintypeSlug = maintypePurpose.toLowerCase().includes("residential")
-        ? "residential"
-        : "commercial";
-
+      // const purposeSlug = maintypePurpose.toLowerCase().includes("buy") ? "sale" : "rent";
+      const maintypeSlug = maintypePurpose.toLowerCase().includes("residential")? "residential" : "commercial";
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/subtypes/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}/subtypes/`,
         { withCredentials: true }
       );
 
@@ -78,23 +104,18 @@ export default function Findsection() {
       console.error("❌ Error fetching subtypes:", error);
     }
   };
-
   fetchSubTypesList();
 }, [maintypePurpose, countrySlug]);
 
 
-const handleSelectSubtype = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  const selectedValue = e.target.value;
-  const selected = subtypesList.find((sub: any) => String(sub.id) === String(selectedValue));
-
-  setSelectedSubtype(
-    selected
-      ? { id: selected.id, subtype_name: selected.subtype_name }
-      : { id: "", subtype_name: "Property type" }
-  );
-
-  console.log("✅ Selected subtype updated:", selected);
-};
+const handleSelectSubtypeOptions = (option) => {
+      setSelectedSubtype({
+                            id: option.id, 
+                            subtype_name: option.subtype_name, 
+                          });
+                        console.log("selectedSubtype.subtype_name=", selectedSubtype.subtype_name)
+      setActiveMenu(null); // close dropdown after selecting
+  };
 
 
 
@@ -146,24 +167,31 @@ const handleSelectSubtype = (e: React.ChangeEvent<HTMLSelectElement>) => {
   };
 
   // Furnishings
+  // const f =  { 
+  //             "Furnished": "furnished" ,
+  //             "Unfurnished":"unfurnished",
+  //             "Partly Furnished": "partly"
+  //           }
   const [fur,setFur]= useState("");
   const handleFurnishingsOption = (option) =>{
-      setFur(option);  
-  }
+      setFur(option)  
+  };
 
   // Area
   // min Area 
-  const [selectedMinArea,setSelectedMinArea]= useState("Area");
+  const [selectedMinArea,setSelectedMinArea]= useState("Min. Area");
   const onChangeMinArea = (e)=>{
     setSelectedMinArea(e.target.value)
     console.log("onChangeMinArea=",e.target.value)
   }
   // max Area 
-  const [selectedMaxArea,setSelectedMaxArea]= useState("Area");
+  const [selectedMaxArea,setSelectedMaxArea]= useState("Max. Area");
   const onChangeMaxArea = (e)=>{
     setSelectedMaxArea(e.target.value)
     console.log("onChangeMinArea=",e.target.value)
   }
+
+  
   // Amenities
   // const AmenitiesList = ["water","views","pool"]
   const [AmenitiesList,setAmenitiesList]= useState([]);
@@ -247,8 +275,9 @@ const containerRef = useRef<HTMLDivElement>(null);
   // Handle search click — builds query like PropertyFinder
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
+    console.log("selectedCity=",selectedCity.city_name);
     console.log("maintypePurpose=",maintypePurpose);
-    console.log("selectedSubtype=",selectedSubtype);
+    console.log("selectedSubtype=",selectedSubtype.subtype_name);
     console.log("studio=",studio);
     console.log("beds=",beds);
     console.log("baths=",baths);
@@ -258,17 +287,39 @@ const containerRef = useRef<HTMLDivElement>(null);
     console.log("selectedMinArea=",selectedMinArea);
     console.log("selectedMaxArea=",selectedMaxArea);
     console.log("selectedAmenities=",selectedAmenities);
+    if (selectedCity.city_name && selectedCity.city_name !== "All Cities") {
+        queryParams.append("selectedCity", selectedCity.city_name);
+    }
     if (maintypePurpose) queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
-    if (maintypePurpose) queryParams.append("purpose", maintypePurpose.includes("Buy") ? "buy" : "rent");
-    if (selectedSubtype) queryParams.append("selectedSubtype",selectedSubtype.subtype_name);
-    if (studio) queryParams.append("studio",studio);
+    if (maintypePurpose) queryParams.append("purpose", maintypePurpose.includes("Buy") ? "sale" : "rent");
+    if (selectedSubtype.subtype_name && selectedSubtype.subtype_name !== "Property type") {
+        queryParams.append("selectedSubtype", selectedSubtype.subtype_name);
+    }
+    if (studio) queryParams.append("beds","0");
     if (beds)queryParams.append("beds",beds);
     if (baths)queryParams.append("baths",baths);
-    if (selectedMinPrice)queryParams.append("selectedMinPrice",selectedMinPrice);
-    if (selectedMaxPrice)queryParams.append("selectedMaxPrice",selectedMaxPrice);
-    if (fur)queryParams.append("fur",fur);
-    if (selectedMinArea)queryParams.append("selectedMinArea",selectedMinArea);
-    if (selectedMaxArea)queryParams.append("selectedMaxArea",selectedMaxArea);
+    if (selectedMinPrice && selectedMinPrice !== "Min. Price") {
+        queryParams.append("selectedMinPrice",selectedMinPrice);
+    }
+    if (selectedMaxPrice && selectedMaxPrice !== "Max. Price") {
+        queryParams.append("selectedMaxPrice",selectedMaxPrice);
+    }
+    if (fur && fur === "Furnished"){
+       queryParams.append("fur","furnished");
+    };
+    if (fur && fur === "Unfurnished"){
+       queryParams.append("fur","unfurnished");
+    };
+    if (fur && fur === "Partly furnished"){
+       queryParams.append("fur","partly");
+    };
+    if (selectedMinArea && selectedMinArea !== "Min. Area") {
+        queryParams.append("selectedMinArea",selectedMinArea);
+    }
+    if (selectedMaxArea && selectedMaxArea !== "Max. Area") {
+        queryParams.append("selectedMaxArea",selectedMaxArea);
+    }
+
     if (Array.isArray(selectedAmenities) && selectedAmenities.length > 0) {
       selectedAmenities.forEach((a) => queryParams.append("amenities", a));
     }
@@ -312,9 +363,9 @@ const containerRef = useRef<HTMLDivElement>(null);
             <button
               onClick={() => toggleMenu("cityMenu")}
               aria-expanded={activeMenu === "cityMenu"}
-              className={`capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === selectedCity? "border border-indigo-600 text-indigo-600":""}`}
+              className="capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
             >
-              {selectedCity}
+             {!selectedCity.id ? "All Cities": selectedCity.city_name}
               <FiChevronDown
                 className={`ml-1 transition-transform duration-300 ${ activeMenu === "cityMenu" ? "rotate-180" : ""  }`}  
               />
@@ -322,23 +373,21 @@ const containerRef = useRef<HTMLDivElement>(null);
 
             {activeMenu === "cityMenu" && (
               <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
-                
-                  
                 {cityList.map(
                   (option) => (
                     <label
-                      key={option}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedCity === option ? "bg-indigo-200" : "" }`}
+                      key={option.id}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedCity.city_name === option.city_name ? "bg-indigo-200" : "" }`}
                       onClick={() => handleCitiesOptions(option)}
                     >
                       <input
                         type="radio"
                         name="selectedCity"
-                        checked={activeRadioButton === option}
+                        checked={activeRadioButton === option.city_name}
                         onChange={() => handleCitiesOptions(option)}
                         className="hidden"
                       />
-                      <span className="capitalize">{option}</span>
+                      <span className="capitalize">{option.city_name}</span>
                     </label>
                   )
                 )}
@@ -357,7 +406,7 @@ const containerRef = useRef<HTMLDivElement>(null);
             <button
               onClick={() => toggleMenu("maintypePurposeMenu")}
               aria-expanded={activeMenu === "maintypePurposeMenu"}
-              className={`cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === "Buy residential"?" border border-indigo-600 text-indigo-600":""}`}
+              className={`cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === "Buy residential"?"border border-indigo-600 text-indigo-600":""}`}
             >
               {maintypePurpose}
               <FiChevronDown
@@ -393,24 +442,42 @@ const containerRef = useRef<HTMLDivElement>(null);
 
 
 
-          {/* Subtype Dropdown */}
+          
+          {/*subtypeMenu */}
           <div className="relative">
-            <select
-              value={selectedSubtype.id}
-              onChange={handleSelectSubtype}
-              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg focus:outline-none hover:bg-gray-200"
+            <button
+              onClick={() => toggleMenu("subtypeMenu")}
+              aria-expanded={activeMenu === "subtypeMenu"}
+              className="capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
             >
-            {/* Show placeholder only when nothing is selected */}
-                  {!selectedSubtype.id && (
-                    <option value="">{selectedSubtype.subtype_name}</option>
-                  )}
-                  
-                  {subtypesList.map((sub: any) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.subtype_name}
-                    </option>
-                  ))}
-            </select>
+             {!selectedSubtype.id ? "Property type": selectedSubtype.subtype_name}
+              <FiChevronDown
+                className={`ml-1 transition-transform duration-300 ${ activeMenu === "subtypeMenu" ? "rotate-180" : ""  }`}  
+              />
+            </button>
+
+            {activeMenu === "subtypeMenu" && (
+              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
+                {subtypesList.map(
+                  (option) => (
+                    <label
+                      key={option.id}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedSubtype.subtype_name === option.subtype_name ? "bg-indigo-200" : "" }`}
+                      onClick={() => handleSelectSubtypeOptions(option)}
+                    >
+                      <input
+                        type="radio"
+                        name="selectedSubtype"
+                        checked={activeRadioButton === option.subtype_name }
+                        onChange={() => handleSelectSubtypeOptions(option)}
+                        className="hidden"
+                      />
+                      <span className="capitalize">{option.subtype_name}</span>
+                    </label>
+                  )
+                )}
+              </div>
+            )}
           </div>
 
 
@@ -636,7 +703,8 @@ const containerRef = useRef<HTMLDivElement>(null);
                                       <hr></hr>
                                       <p className="text-gray-500 pt-2">Furnishing</p>
                                         <div className="flex">
-                                            {["All furnishings","Furnished", "Unfurnished", "Partly furnished"].map(
+                                          
+                                            {["Furnished", "Unfurnished", "Partly furnished"].map(
                                               (option) => (
                                                 <label
                                                     key={option}
@@ -744,7 +812,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                                           onClick={() => toggleMenu("moreMenu")}
                                           className="rounded-xl cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
                                         >
-                                          Add filters
+                                          Apply filter
                                         </button>
                                        
 
@@ -768,7 +836,7 @@ const containerRef = useRef<HTMLDivElement>(null);
         onClick={handleSearch}
         className="cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
       >
-        Search
+        Find
       </button>
       </div>
       </div>

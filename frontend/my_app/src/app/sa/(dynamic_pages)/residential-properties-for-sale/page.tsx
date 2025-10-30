@@ -6,16 +6,16 @@ import PropertyCard from "./components/PropertyCard";
 import Find from "./components/Find";
 import Link from "next/link";
 import SubTypes from "./components/SubTypes";
-
+import Loading from "../../components/loading/Loading";
 
 
 export default function ResidentialSale() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
   const CountryName = process.env.NEXT_PUBLIC_COUNTRY_NAME
-  
   const maintypeSlug = "residential"
   const purposeSlug = "sale"
 
+  const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState<any[]>([]);
   const [subtypes,setSubtypes] = useState<any[]>([]);
 
@@ -40,7 +40,9 @@ export default function ResidentialSale() {
               setProperties(response.data.results || []); // ✅ Fix here
         } catch (error) {
               console.error("❌ Error fetching properties:", error);
-        }
+        } finally {
+              setLoading(false);
+        };
     };
     fetchProperties();
 
@@ -49,7 +51,7 @@ export default function ResidentialSale() {
     const fetchSubTypes = async () => {
         try {
               const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/subtypes/`,
+                `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}/subtypes/`,
                 {
                   withCredentials: true,
                 }
@@ -68,6 +70,22 @@ export default function ResidentialSale() {
   }, [countrySlug, maintypeSlug, purposeSlug]);
 
 
+  if (loading) {
+        return (
+          <div className="text-center mt-20">
+              <Loading />
+          </div>
+        );
+  }
+
+
+  if (properties.length === 0) {
+          return (
+            <p className="text-center py-10">
+              No properties found.
+            </p>
+          );
+  }
 
   
 
