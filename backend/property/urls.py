@@ -16,7 +16,7 @@ urlpatterns = [
     # City
     path('create-city/', views.CreateCityAPIView.as_view(), name='create-city'),
     path('list-city/', views.ListCityAPIView.as_view(), name='list-city'),
-    path('<str:country_id>/cities/', views.ListCountryCitiesAPIView.as_view(), name='list-country-cities'),
+    path('<slug:country_slug>/cities/', views.ListCountryCitiesAPIView.as_view(), name='list-country-cities'),
     path('update-city/<str:id>/', views.UpdateCityAPIView.as_view(), name='update-city'), 
     path('delete-city/<str:id>/', views.DeleteCityAPIView.as_view(), name='delete-city'),
 
@@ -27,9 +27,13 @@ urlpatterns = [
     path('update-main-type/<str:id>/', views.UpdateMainTypeAPIView.as_view(), name='update-main-type'), 
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
-    # PropertySubTypes
-    path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/subtypes/', views.ListSubTypesByCountryMaintypePurposeAPIView.as_view(), name='list-subtypes-by-country-maintype-purpose'),
-    
+    # SubTypes
+    path('<slug:country_slug>/<slug:maintype_slug>/subtypes/', views.ListSubTypesByCountryMaintypeAPIView.as_view(), name='list-subtypes-by-country-maintype'),
+    path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
+
+
+
+
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
     # path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
     path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
@@ -48,14 +52,19 @@ urlpatterns = [
     path('update-amenity/<str:id>/', views.UpdateAmenityAPIView.as_view(), name='update-amenity'), 
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
-    # return 4 main type - purpose  Properties in one country --- sa
+    
+    # Property
+    # Property list -- return 4 main type - purpose  Properties in one country --- sa
     # -1 residential-properties-for-sale 
     # -2 residential-properties-for-rent
     # -3 commercial-properties-for-sale 
     # -4 commercial-properties-for-rent
     path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/', views.ListPropertyByCountryMaintypePurposeAPIView.as_view(), name='list-property-by-country-maintype-purpose'),
     
-    # Property
+    # property list -- with filtering -- search
+    path('<slug:country_slug>/search/', views.ListPropertyByParamsFilteringAPIView.as_view(), name='list-property-with-filtering'),
+
+    
     path('create-property-data/', views.CreatePropertyDataAPIView.as_view(), name='create-property-data'),
     path('update-property/<str:id>/', views.UpdatePropertyAPIView.as_view(), name='update-property'), 
     path('delete-property/<str:id>/', views.DeletePropertyAPIView.as_view(), name='delete-property'),

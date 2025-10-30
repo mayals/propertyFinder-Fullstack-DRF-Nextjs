@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 # permissions
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAllowedToAddProperty
-
+from django.utils.text import slugify
 
 
 
@@ -66,16 +66,10 @@ class CreateCityAPIView(APIView):
 
 class ListCountryCitiesAPIView(APIView):
     permission_classes = [permissions.AllowAny]
-   
-    def get(self, request, country_id, *args, **kwargs):
-        try:
-            country = get_object_or_404(Country, id=country_id)
-            cities = City.objects.all().filter(country=country_id)
 
-        except Country.DoesNotExist:
-            print('country =', "country not found")
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
-        
+    def get(self, request, country_slug, *args, **kwargs):
+        country = get_object_or_404(Country, country_slug=country_slug)
+        cities = City.objects.filter(country=country)
         serializer = CitySerializer(cities, many=True)
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -155,12 +149,13 @@ class CreateSubTypesAPIView(APIView):
  
 
 
-class ListSubTypesByCountryMaintypePurposeAPIView(APIView):
+class ListSubTypesByCountryMaintypeAPIView(APIView):
     serializer_class = PropertySubTypesSerializer
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, maintype_slug, *args, **kwargs):
         pmain_type = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+        
         queryset = PropertySubTypes.objects.filter(main_type=pmain_type)
  
         # ✅ Important line
@@ -168,6 +163,36 @@ class ListSubTypesByCountryMaintypePurposeAPIView(APIView):
 
         return Response(serializer.data,status=status.HTTP_200_OK)
            
+
+
+class SearchListSubTypesByCountryMaintypeAPIView(APIView):
+    serializer_class = PropertySubTypesSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        queryset = PropertySubTypes.objects.all()
+        print("without filter-SubTypes-queryset=",queryset)
+        print("query_params=",request.query_params)
+        
+        
+        # filtering  -- search
+        # from searchParams -- come from filtering by buyer in frontend 
+        type = request.query_params.get("type")  
+        if type:
+            type = slugify(type.lower())
+            queryset = queryset.filter(main_type__maintype_slug=type)
+            print("Final queryset=",queryset)
+            
+        serializer =PropertySubTypesSerializer(queryset, many=True, context={'request': request})
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 
 
 
@@ -297,15 +322,114 @@ class ListPropertyByCountryMaintypePurposeAPIView(APIView):
         purpose = get_object_or_404(PropertyPurpose, purpose_slug=purpose_slug)
         
         queryset = Property.objects.filter(country=country, pmain_type=pmain_type, purpose=purpose, is_published=True)
+        serializer = PropertySerializer(queryset, many=True, context={'request': request})
 
-        # city_slug = request.query_params.get("city")
-        # # purpose = request.query_params.get("purpose")
-        # order = request.query_params.get("order")
+        return Response(
+            {
+                "count": queryset.count(),
+                "country": country.country_name,
+                "type": pmain_type.maintype_slug,
+                "purpose": purpose.purpose_slug,
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
-        # if city_slug:
-        #     queryset = queryset.filter(city__city_slug=city_slug)
-        # if purpose:
-        #     queryset = queryset.filter(purpose__slug=purpose)
+    
+    
+    
+# http://localhost:3000/sa/search?selectedCity=Riyadh&type=residential&purpose=buy&selectedSubtype=Villa&beds=3&baths=4&selectedMinPrice=400000&selectedMaxPrice=800000&fur=Unfurnished&selectedMinArea=1500&selectedMaxArea=3000&amenities=Waters&amenities=Electricity&amenities=pool
+# filtering -- search from frontend
+# queryString=
+# selectedCity=Riyadh&
+# type=residential&
+# purpose=buy&
+# selectedSubtype=Floor&
+# beds=1&
+# baths=4&
+# selectedMinPrice=400000&
+# selectedMaxPrice=700000&
+# fur=Unfurnished&
+# selectedMinArea=2000&
+# selectedMaxArea=2000&
+# amenities=Waters&
+# amenities=Electricity&
+# amenities=pool
+# List all properties in one country only
+class ListPropertyByParamsFilteringAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, country_slug, *args, **kwargs):
+        country = get_object_or_404(Country, country_slug=country_slug)
+        queryset = Property.objects.filter(country=country, is_published=True)
+        print("without filter-queryset=",queryset)
+        print("query_params=",request.query_params)
+        
+        # from searchParams -- come from filtering by buyer in frontend 
+        city_name = request.query_params.get("selectedCity")
+        pmain_type = request.query_params.get("type")  
+        purpose = request.query_params.get("purpose")
+        psub_type = request.query_params.get("selectedSubtype")
+        bedrooms = request.query_params.get("beds")
+        bathrooms = request.query_params.get("baths")  
+        selectedMinPrice = request.query_params.get("selectedMinPrice")
+        selectedMaxPrice= request.query_params.get("selectedMaxPrice")
+        fur = request.query_params.get("fur")
+        selectedMinArea = request.query_params.get("selectedMinArea")
+        selectedMaxArea= request.query_params.get("selectedMaxArea")
+        amenities = request.query_params.get("amenities")
+        
+        # filtering  -- search
+        if city_name:
+            city_name = slugify(city_name.lower())
+            queryset = queryset.filter(city__city_slug=city_name)
+            print("queryset-city_name", queryset)
+        
+        if pmain_type:
+            pmain_type = slugify(pmain_type.lower())
+            queryset = queryset.filter(pmain_type__maintype_slug=pmain_type)
+            print("queryset-pmain_type", queryset)
+        
+        if purpose:
+            purpose = slugify(purpose.lower())
+            queryset = queryset.filter(purpose__purpose_slug=purpose)
+            print("queryset-purpose", queryset)
+        
+        if psub_type:
+            psub_type = slugify(psub_type.lower())
+            queryset = queryset.filter(psub_type__subtype_name=psub_type)
+            print("queryset-psub_type", queryset)
+            
+        if bedrooms :
+            queryset = queryset.filter(bedrooms=bedrooms)
+            print("queryset-bedrooms", queryset)
+        
+        if bathrooms:
+            queryset = queryset.filter(bathrooms=bathrooms)
+            print("queryset-bathrooms", queryset)
+        if fur:
+            queryset = queryset.filter(furnishing=fur)
+            print("queryset-fur", queryset)
+        
+        if selectedMinPrice and selectedMaxPrice:
+            queryset = queryset.filter(price__range=[selectedMinPrice, selectedMaxPrice])
+            print("queryset-Price", queryset)
+        
+        if selectedMinArea and selectedMaxArea:
+            queryset = queryset.filter(property_size__range=[selectedMinArea, selectedMaxArea]) 
+            print("queryset-Area", queryset)
+        
+        if amenities:
+            for ame in amenities:
+                queryset = queryset.filter(amenities=ame) 
+            print("queryset-amenities", queryset)
+        
+        print("Final queryset=",queryset)
+        
+        
+        
+        #  ordering -- sort 
         # if order == "latest":
         #     queryset = queryset.order_by("-created_at")
         # elif order == "price-asc":
@@ -319,7 +443,6 @@ class ListPropertyByCountryMaintypePurposeAPIView(APIView):
         return Response(
             {
                 "count": queryset.count(),
-                "country": country.country_name,
                 "results": serializer.data,
             },
             status=status.HTTP_200_OK,
