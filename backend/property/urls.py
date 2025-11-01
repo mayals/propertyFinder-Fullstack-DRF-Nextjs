@@ -28,7 +28,7 @@ urlpatterns = [
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
     # SubTypes
-    path('<slug:country_slug>/<slug:maintype_slug>/subtypes/', views.ListSubTypesByCountryMaintypeAPIView.as_view(), name='list-subtypes-by-country-maintype'),
+    path('<slug:country_slug>/<slug:maintype_slug>-<slug:purpose_slug>/subtypes/', views.ListSubTypesByCountryMaintypePurposeAPIView.as_view(), name='list-subtypes-by-country-maintype-purpose'),
     path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
 
 

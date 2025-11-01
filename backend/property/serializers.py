@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import  Country,City,PropertyMainType,PropertySubTypes,PropertyPurpose,Amenity,Property,PropertyImage
 from users.serializers import CustomUserSerializer
-
+from django.utils.text import slugify
 
 
 # Country #######################################################################3
@@ -159,29 +159,81 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
                                     style={'placeholder': 'sub type name here...'},
                                     validators=[UniqueValidator(queryset=PropertySubTypes.objects.all())]
                                     )
-    properties = serializers.SerializerMethodField
+    properties = serializers.SerializerMethodField() # parentheses added
     # properties = PropertySerializer(many=True, read_only=True)  # you can use it if PropertySerializer is before PropertySubTypesSerializer in the same file.
-    
-    
+     
     class Meta:
         model = PropertySubTypes
         fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name', 'properties']
         read_only_fields = ('id', 'created_at', 'updated_at', 'properties',)
 
+
     def get_properties(self, obj):
         from .serializers import PropertySerializer  # now you can import PropertySerializer inside method
-        # get from context
         country_slug = self.context.get('country_slug')
         purpose_slug = self.context.get('purpose_slug')
-        
-        # filter by is_published, country, and purpose
-        published_properties = obj.properties.filter(
+        print("serializer-purpose_slug=",purpose_slug)
+         
+        context = self.context
+        print("serializer-context=",context)
+        queryset = obj.properties.filter(
             is_published=True,
             country__country_slug=country_slug,
             purpose__purpose_slug=purpose_slug
         )
-        return PropertySerializer(published_properties, many=True).data
+        return PropertySerializer(
+            queryset,
+            many=True,
+            context={'request': self.context.get('request')}
+        ).data
+            
+    
+    
+    
+    
+        # filters = self.context.get('filters', {})
+        # print("serializer-filters=",filters)
+        # # Apply filters if provided
+        # city = filters.get("city")
+        # if city:
+        #     queryset = queryset.filter(city__city_slug=slugify(city.lower()))
 
+        # bedrooms = filters.get("bedrooms")
+        # if bedrooms:
+        #     queryset = queryset.filter(bedrooms=bedrooms)
+
+        # bathrooms = filters.get("bathrooms")
+        # if bathrooms:
+        #     queryset = queryset.filter(bathrooms=bathrooms)
+
+        # fur = filters.get("fur")
+        # if fur:
+        #     queryset = queryset.filter(furnishing=fur)
+
+        # # Price range
+        # min_price = filters.get("selectedMinPrice")
+        # max_price = filters.get("selectedMaxPrice")
+        # if min_price and max_price:
+        #     try:
+        #         queryset = queryset.filter(price__range=[float(min_price), float(max_price)])
+        #     except ValueError:
+        #         pass
+
+        # # Area range
+        # min_area = filters.get("selectedMinArea")
+        # max_area = filters.get("selectedMaxArea")
+        # if min_area and max_area:
+        #     try:
+        #         queryset = queryset.filter(property_size__range=[float(min_area), float(max_area)])
+        #     except ValueError:
+        #         pass
+
+        # # Amenities
+        # amenities = filters.get("amenities")
+        # if amenities:
+        #     queryset = queryset.filter(amenities__amenity_name__in=amenities).distinct()
+
+        
 
 
 

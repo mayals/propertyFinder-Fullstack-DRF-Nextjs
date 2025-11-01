@@ -149,7 +149,7 @@ class CreateSubTypesAPIView(APIView):
  
 
 
-class ListSubTypesByCountryMaintypeAPIView(APIView):
+class ListSubTypesByCountryMaintypePurposeAPIView(APIView):
     serializer_class = PropertySubTypesSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -159,8 +159,15 @@ class ListSubTypesByCountryMaintypeAPIView(APIView):
         queryset = PropertySubTypes.objects.filter(main_type=pmain_type)
  
         # ✅ Important line
-        serializer = PropertySubTypesSerializer(queryset, many=True, context={'request': request})
-
+        serializer = PropertySubTypesSerializer(
+                        queryset,
+                        many=True,
+                        context={
+                            'request': request,
+                            'country_slug': kwargs.get('country_slug'), #  or request.GET.get('country_slug'),
+                            'purpose_slug': kwargs.get('purpose_slug')
+                        }
+        )
         return Response(serializer.data,status=status.HTTP_200_OK)
            
 
@@ -170,21 +177,38 @@ class SearchListSubTypesByCountryMaintypeAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
+        print("SubTypes-query_params=",request.query_params)
+        
+        # SubTypes
         queryset = PropertySubTypes.objects.all()
-        print("without filter-SubTypes-queryset=",queryset)
-        print("query_params=",request.query_params)
-        
-        
-        # filtering  -- search
-        # from searchParams -- come from filtering by buyer in frontend 
         type = request.query_params.get("type")  
         if type:
             type = slugify(type.lower())
             queryset = queryset.filter(main_type__maintype_slug=type)
-            print("Final queryset=",queryset)
+            print("SubTypes-queryset=",queryset)
             
-        serializer =PropertySubTypesSerializer(queryset, many=True, context={'request': request})
-
+        serializer = PropertySubTypesSerializer(
+            queryset,
+            many=True,
+            context={
+                'request': request,
+                'country_slug': "sa",
+                
+                # pass property filtering parameters
+                'filters': {
+                    'city': request.query_params.get("selectedCity"),
+                    'purpose': request.query_params.get("purpose"),
+                    'bedrooms': request.query_params.get("beds"),
+                    'bathrooms': request.query_params.get("baths"),
+                    'fur': request.query_params.get("fur"),
+                    'selectedMinPrice': request.query_params.get("selectedMinPrice"),
+                    'selectedMaxPrice': request.query_params.get("selectedMaxPrice"),
+                    'selectedMinArea': request.query_params.get("selectedMinArea"),
+                    'selectedMaxArea': request.query_params.get("selectedMaxArea"),
+                    'amenities': request.query_params.getlist("amenities"),
+                }
+            }
+        )        
         return Response(
             {
                 "count": queryset.count(),
@@ -378,7 +402,8 @@ class ListPropertyByParamsFilteringAPIView(APIView):
         fur = request.query_params.get("fur")
         selectedMinArea = request.query_params.get("selectedMinArea")
         selectedMaxArea= request.query_params.get("selectedMaxArea")
-        amenities = request.query_params.get("amenities")
+        amenitiesList = request.query_params.getlist("amenities")  # use getlist  insteade of get
+        print("amenitiesList =", amenitiesList)   # ['Waters', 'Electricity', 'pool']
         
         # filtering  -- search
         if city_name:
@@ -413,18 +438,28 @@ class ListPropertyByParamsFilteringAPIView(APIView):
             print("queryset-fur", queryset)
         
         if selectedMinPrice and selectedMaxPrice:
-            queryset = queryset.filter(price__range=[selectedMinPrice, selectedMaxPrice])
-            print("queryset-Price", queryset)
+            try:
+                min_price = float(selectedMinPrice)
+                max_price = float(selectedMaxPrice)
+                queryset = queryset.filter(price__range=[min_price, max_price])
+                print("queryset-Price", queryset)
+            except ValueError:
+                print("Invalid price values:", selectedMinPrice, selectedMaxPrice)
+                
         
         if selectedMinArea and selectedMaxArea:
-            queryset = queryset.filter(property_size__range=[selectedMinArea, selectedMaxArea]) 
-            print("queryset-Area", queryset)
+            try:
+                min_area = float(selectedMinArea)
+                max_area = float(selectedMaxArea)
+                queryset = queryset.filter(property_size__range=[min_area, max_area])
+                print("queryset-Area", queryset)
+            except ValueError:
+                print("Invalid area values:", selectedMinArea, selectedMaxArea)
         
-        if amenities:
-            for ame in amenities:
-                queryset = queryset.filter(amenities=ame) 
+        if amenitiesList:
+            queryset = queryset.filter(amenities__amenity_name__in=amenitiesList).distinct()
             print("queryset-amenities", queryset)
-        
+                
         print("Final queryset=",queryset)
         
         
