@@ -1,4 +1,4 @@
-// residential-properties-for-sale/components/Find.tsx
+// search/components/Find.tsx
 "use client";
 
 import axios from "axios";
@@ -9,8 +9,8 @@ import { FiChevronDown } from "react-icons/fi";
 
 export default function Findsection() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
-  
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  
   // Toggle menu open/close
   const toggleMenu = (menu: string) => {
     setActiveMenu((prev) => (prev === menu ? null : menu));

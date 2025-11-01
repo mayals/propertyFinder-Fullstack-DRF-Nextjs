@@ -6,7 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 // components
 import PropertyCard from "../residential-properties-for-sale/components/PropertyCard";
-import Find from "../residential-properties-for-sale/components/Find";
+import Find from "./components/Find";
 import SubTypes from "../residential-properties-for-sale/components/SubTypes";
 import Loading from "../../components/loading/Loading";
 
@@ -154,7 +154,7 @@ export default function SearchPage() {
                         </div>
                     </li>
                 </ol>
-            </nav> 
+              </nav> 
 
               <h1 className="text-xl font-semibold mb-6">
                 Residential Properties for sale in {CountryName}
