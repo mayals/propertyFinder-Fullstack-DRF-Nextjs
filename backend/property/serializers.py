@@ -325,25 +325,52 @@ class PropertySerializer(serializers.ModelSerializer):
     )
     # ✅ Nested with property list
     # ForeignKey fields - make ForeignKey fields as this to get all object informations instesd of only id number of that object
-    owner      = CustomUserSerializer(many=False,read_only=True)
-    country    = CountrySerializer(many=False, read_only=True)
+    owner      = CustomUserSerializer(many=False,read_only=True) # to get object of owner data with response.data
+    country    = CountrySerializer(many=False, read_only=True) # to get object of country data with response.data
     city       = CitySerializer(many=False, read_only=True)
     pmain_type = PropertyMainTypeSerializer(many=False, read_only=True)
     psub_type  = PropertySubTypesSerializer(many=False, read_only=True)
     purpose    = PropertyPurposeSerializer(many=False, read_only=True)
-    images     = PropertyImageSerializer(many=True, read_only=True) # to get images data with response.data
-    amenities  = AmenitySerializer(many=True, read_only=True)
+    images     = PropertyImageSerializer(many=True, read_only=True) # to get list of images data with response.data
+    amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
+    
+    
+    # 👇 Add write-only fields for IDs (because the customer in frontend will insert the id in these foreignkey field )
+    country_id = serializers.PrimaryKeyRelatedField(
+        queryset=Country.objects.all(), write_only=True, source='country'
+    )
+    city_id = serializers.PrimaryKeyRelatedField(
+        queryset=City.objects.all(), write_only=True, source='city'
+    )
+    pmain_type_id = serializers.PrimaryKeyRelatedField(
+        queryset=PropertyMainType.objects.all(), write_only=True, source='pmain_type'
+    )
+    psub_type_id = serializers.PrimaryKeyRelatedField(
+        queryset=PropertySubTypes.objects.all(), write_only=True, source='psub_type'
+    )
+    purpose_id = serializers.PrimaryKeyRelatedField(
+        queryset=PropertyPurpose.objects.all(), write_only=True, source='purpose'
+    )
+    amenities_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Amenity.objects.all(), many=True, write_only=True, source='amenities'
+    )
+
     
     class Meta:
         model = Property
         fields = [
-            'id', 'owner', 'title', 'description', 'country', 'city', 'area',
-            'district', 'plot_number', 'land_number', 'address_detail',
+            'id', 'owner', 'title', 'description',
+            'country', 'country_id',
+            'city', 'city_id',
+            'pmain_type', 'pmain_type_id',
+            'psub_type', 'psub_type_id',
+            'purpose', 'purpose_id',
+            'amenities', 'amenities_ids',
+            'area', 'district', 'plot_number', 'land_number', 'address_detail',
             'latitude', 'longitude', 'is_occupied', 'available_from',
-            'pmain_type','psub_type', 'purpose', 'property_size',
-            'bedrooms', 'bathrooms', 'plot_length', 'plot_width', 'street_width',
-            'facade', 'property_age', 'amenities', 'price', 'currency',
-            'furnishing', 'category', 'is_published','images'
+            'property_size', 'bedrooms', 'bathrooms', 'plot_length',
+            'plot_width', 'street_width', 'facade', 'property_age',
+            'price', 'currency', 'furnishing', 'category', 'is_published','images'
         ]
         read_only_fields = [
             'id', 'is_published','owner', # 👈 add 'owner' here because it come from backend not from frontend -- request.user -- serializer.save(owner=self.request.user) in view.py
@@ -359,6 +386,21 @@ class PropertySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("The Property title must be unique")
         return value
     
+        
+    def create(self, validated_data):
+        # DRF will automatically map *_id fields to FKs
+        # Pop amenities from validated_data because it's M2M
+        amenities_data = validated_data.pop('amenities', [])
+
+        # Create property (without amenities yet)
+        property_instance = Property.objects.create(**validated_data)
+
+        # Then attach amenities
+        if amenities_data:
+            property_instance.amenities.set(amenities_data)
+
+        return property_instance
+
     
     
     

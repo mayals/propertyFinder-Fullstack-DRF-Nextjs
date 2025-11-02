@@ -299,7 +299,10 @@ class CreatePropertyDataAPIView(APIView): # only property data no images  --step
     permission_classes = [IsAuthenticated, IsAllowedToAddProperty]  # 👈 both required
     
     def post(self, request):
+        print('CreatePropertyDataAPIView-request.data=',request.data) 
         serializer = self.serializer_class(data=request.data)
+        print('serializer.initial_data=',serializer.initial_data)
+        
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED) 
