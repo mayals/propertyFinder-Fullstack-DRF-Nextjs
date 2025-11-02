@@ -241,12 +241,12 @@ const Navbar: React.FC = () => {
 
                         {activeMenu === "user_nav" && (
                           <div className="absolute right-0 mt-2 flex flex-col bg-white border rounded-md shadow-lg z-10 w-40">
-                            <Link href="/myProfile/admin" className="text-gray-600 hover:text-gray-900 px-3 py-2">My Admin profile</Link>
-                            <Link href="/myDashboard" className="text-gray-600 hover:text-gray-900 px-3 py-2">My dashboard</Link>
-                            <Link href="/myProperties" className="text-gray-600 hover:text-gray-900 px-3 py-2">My properties</Link>
-                            <Link href="/myFavorites" className="text-gray-600 hover:text-gray-900 px-3 py-2">My favorites</Link>
-                            <Link href="/myReservations" className="text-gray-600 hover:text-gray-900 px-3 py-2">My reservations</Link>
-                            <Link href="/inbox" className="text-gray-600 hover:text-gray-900 px-3 py-2">Inbox</Link>
+                            <Link href="/sa/myProfile/admin" className="text-gray-600 hover:text-gray-900 px-3 py-2">My Admin profile</Link>
+                            <Link href="/sa/myDashboard" className="text-gray-600 hover:text-gray-900 px-3 py-2">My dashboard</Link>
+                            <Link href="/sa/myProperties" className="text-gray-600 hover:text-gray-900 px-3 py-2">My properties</Link>
+                            <Link href="/sa/myFavorites" className="text-gray-600 hover:text-gray-900 px-3 py-2">My favorites</Link>
+                            <Link href="/sa/myReservations" className="text-gray-600 hover:text-gray-900 px-3 py-2">My reservations</Link>
+                            <Link href="/sa/inbox" className="text-gray-600 hover:text-gray-900 px-3 py-2">Inbox</Link>
 
                             <button 
                               onClick={handleLogout} 

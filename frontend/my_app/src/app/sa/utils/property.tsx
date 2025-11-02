@@ -43,10 +43,10 @@ export const addCountry = async(countryName , code) => {
 
 
 // getCountryCitiesList -- all cities list belong to one country //
-export const getCountryCitiesList = async(selectedCountry) => {
+export const getCountryCitiesList = async(selectedCountrySlug) => {
     try {
         const response = await axios.get(     
-            `${API_URL}/property/${selectedCountry}/cities/`,   // endpoint 
+            `${API_URL}/property/${selectedCountrySlug}/cities/`,   // endpoint 
             { withCredentials:true },                           // sending cookies          
         )
         console.log("getCountryCitiesList-response.data=",response.data);

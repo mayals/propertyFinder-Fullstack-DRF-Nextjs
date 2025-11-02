@@ -33,7 +33,7 @@ export default function MyDashboard() {
     );
   }
 
-  if (!user) return null;
+//   if (!user) return null;
 
   return (
     <section className="mx-auto mt-10 mb-20 max-w-6xl px-4 sm:px-6 lg:px-8">

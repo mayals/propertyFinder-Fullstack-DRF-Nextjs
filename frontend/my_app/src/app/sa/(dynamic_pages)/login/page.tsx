@@ -65,7 +65,7 @@ export default function LoginPage() {
                 
                       // ✅ Delay for 3 seconds before redirecting
                       setTimeout(() => {
-                          router.push('/sa/buy');
+                          router.push('/sa/');
                       }, 3000); // 3000 milliseconds = 5 seconds
                 
                 

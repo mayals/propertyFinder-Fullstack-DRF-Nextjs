@@ -73,7 +73,15 @@ export default function AddProperty() {
     
     // models.ForeignKey
     const [countryList,setCountryList] = useState([]);           
-    const [selectedCountry,setSelectedCountry] = useState("")                     // "country"
+        const [selectedCountrySlug,setSelectedCountrySlug] = useState("")
+        const [selectedCountryId,setSelectedCountryId] = useState("")
+        // useState(                    // "country"
+        //                                                         {
+        //                                                             id:"",
+        //                                                             country_name: "",
+        //                                                             code:"",
+        //                                                             country_slug: "", 
+        //                                                         })                     
     
     const [cityList,setCityList] = useState([]);                   
     const [selectedCity,setSelectedCity] = useState("")                           // "city"
@@ -126,6 +134,7 @@ export default function AddProperty() {
             try {
                 const data = await getCountriesList();
                 setCountryList(data);             // ✅ save country list
+                console.log("countryList=", countryList);
                 notify("The Main Types List is now get successfully", "success");
             
             } catch (error: any) {
@@ -186,18 +195,18 @@ export default function AddProperty() {
    
 
 
-
-
-
+    console.log("selectedCountrySlug=",selectedCountrySlug)
+    
+    
     // getCountryCitiesList - send id of selected country to get cities list
     useEffect(() => {     
         // getCountryCitiesList
-        if(selectedCountry){
+        if(selectedCountrySlug){
             setCityList([])
-            const fetchCityListForSelectedCountry = async (selectedCountry) => {
-                console.log("fetchCityListForSelectedCountry-selectedCountry",selectedCountry)
+            const fetchCityListForSelectedCountry = async (selectedCountrySlug) => {
+                console.log("fetchCityListForSelectedCountry-selectedCountry",selectedCountrySlug)
                     try {
-                        const data = await getCountryCitiesList(selectedCountry);
+                        const data = await getCountryCitiesList(selectedCountrySlug);
                         setCityList(data);             // ✅ save the result city list
                         notify("The cities List belong to selected country is now get successfully", "success");
                     
@@ -206,9 +215,9 @@ export default function AddProperty() {
                         console.log(" fetchCityListForSelectedCountry-error =", error);
                     }
             };    
-        fetchCityListForSelectedCountry(selectedCountry);
+        fetchCityListForSelectedCountry(selectedCountrySlug);
         }    
-    }, [selectedCountry]);
+    }, [selectedCountrySlug]);
 
     
     
@@ -262,10 +271,31 @@ export default function AddProperty() {
         setPurpose(e.target.value)
         console.log('onChangePurpose =', e.target.value)
     };
+
+
+
+
     const onChangeSelectedCountry = (e) => {
-        setSelectedCountry(e.target.value);     // this will be country.id
-        console.log("onChangeSelectedCountry=", e.target.value);
-    };
+        const newSlug = e.target.value;
+        setSelectedCountrySlug(newSlug); // update state
+
+        // use the current value directly
+        const foundCountry = countryList.find(
+            (country) => country.country_slug === newSlug
+        );
+
+            if (foundCountry) {
+                setSelectedCountryId(foundCountry.id);
+                console.log("onChangeSelectedCountry-Id=", foundCountry.id);
+            } else {
+                console.log("No country found for slug:", newSlug);
+            }
+
+        console.log("onChangeSelectedCountry-Slug=", newSlug);
+        };
+
+                
+           
     const onChangeSelectedCity= (e) => {
         setSelectedCity(e.target.value)
         console.log('onChangeSelectedCity=', e.target.value)
@@ -377,6 +407,12 @@ export default function AddProperty() {
     //////  SUBMIT ////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('submiting');
+        console.log('selectedCountrySlug=', selectedCountrySlug);
+        console.log('selectedCountryId=', selectedCountryId);
+        console.log('selectedMainType=', selectedMainType);
+        console.log('selectedSubType=', selectedSubType);
+        console.log('purpose=', purpose);
         
         if (!loading && !user){
             router.push('/sa/login');
@@ -384,7 +420,7 @@ export default function AddProperty() {
         
         if (!title || !area || !district || !plotNumber || !landNumber || !addressDetail || !currency || !facade || !bedrooms || !bathrooms
            || !furnishing || !isOccupied || !description || !latitude || !propertyAge|| !longitude || !propertySize || !plotLength 
-           || !plotWidth || !streetWidth || !price || !availableFrom || !selectedCountry || !selectedCity || !selectedMainType
+           || !plotWidth || !streetWidth || !price || !availableFrom || !selectedCountryId || !selectedCity || !selectedMainType
            || !selectedSubType || !purpose || !amenities){
                     notify("Please fill the form fields !","warning");
                     return;
@@ -417,22 +453,29 @@ export default function AddProperty() {
         formData.append("street_width", streetWidth);
         formData.append("price", price);
         formData.append("available_from", availableFrom);
-        formData.append("country", selectedCountry);
-        formData.append("city", selectedCity);
-        formData.append("pmain_type", selectedMainType);
-        formData.append("psub_type", selectedSubType);
-        formData.append("purpose", purpose);
-        amenities.forEach(id => formData.append("amenities", id));  // multiple -- many to many relationship 
+        //  important note : 
+        //  this "country_id" "city_id" "pmain_type_id" "psub_type_id" "purpose_id" "amenities_ids"
+        // not found PropertyModel in database , they are write only fields comes from PropertySerializer only to insert data
+        formData.append("country_id", selectedCountryId);
+        formData.append("city_id", selectedCity);
+        formData.append("pmain_type_id", selectedMainType);
+        formData.append("psub_type_id", selectedSubType);
+        formData.append("purpose_id", purpose);
+        amenities.forEach(id => formData.append("amenities_ids", id));  // multiple -- many to many relationship 
 
 
 
         console.log('formData=', formData);
-        console.log('formData.title=', formData.get('title'));
+        console.log('formData.selectedCountryId=', formData.get('country'));
+        console.log('formData.city=', formData.get('city'));
         console.log('formData.selectedMainType=', formData.get('pmain_type'));
-        console.log('formData.propertySize=', formData.get('property_size'));
-        console.log('formData.price=', formData.get('price'));
-        console.log('formData.bedrooms=', formData.get('bedrooms'));
-        console.log('formData.bathrooms=', formData.get('bathrooms'));
+        console.log('formData.psub_type=', formData.get('psub_type'));
+        console.log('formData.purpose=', formData.get('purpose'));
+
+        // console.log('formData.propertySize=', formData.get('property_size'));
+        // console.log('formData.price=', formData.get('price'));
+        // console.log('formData.bedrooms=', formData.get('bedrooms'));
+        // console.log('formData.bathrooms=', formData.get('bathrooms'));
         
         // console.log('formData.owner=', formData.get('owner'));    ---not need, will add later in backend -- request.user
 
@@ -505,7 +548,7 @@ export default function AddProperty() {
                         <svg className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                         </svg>
-                        <a href="/myDashboard" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">My Dashboard</a>
+                        <a href="/sa/myDashboard" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">My Dashboard</a>
                     </div>
                     </li>
                     <li aria-current="page">
@@ -625,13 +668,13 @@ export default function AddProperty() {
                         <div className="m-2">
                             <label className="block text-sm font-medium">Country</label>
                             <select
-                                value={selectedCountry}
+                                value={selectedCountrySlug}
                                 onChange={onChangeSelectedCountry}
                                 className="mt-2 p-3 w-full border rounded-lg relative z-50 bg-white"
                             >
                                 <option value="">-- Select a Country --</option>
                                 {countryList.map((co) => (
-                                    <option key={co.id} value={co.id}>
+                                    <option key={co.id} value={co.country_slug}>
                                         {co.country_name} ({co.code})
                                     </option>
                                 ))}

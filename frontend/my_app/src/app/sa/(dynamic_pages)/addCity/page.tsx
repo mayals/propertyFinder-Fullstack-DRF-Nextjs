@@ -53,6 +53,7 @@ export default function AddCities() {
                 try {
                     const data = await getCountriesList();
                     setCountryList(data);   // ✅ save the list
+                    console.log("countryList-data =", countryList);
                     notify("The country list is now get successfully", "success");
                 
                 } catch (error: any) {
