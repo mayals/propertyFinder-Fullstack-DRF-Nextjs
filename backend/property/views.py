@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer
 from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
@@ -37,9 +37,6 @@ class ListCountryAPIView(APIView):
        serializer = self.serializer_class(queryset,many=True)
        return Response(serializer.data,status=status.HTTP_200_OK)
   
-  
-  
-  
 class UpdateCountryAPIView(APIView):
     pass 
 class DeleteCountryAPIView(APIView):
@@ -48,6 +45,9 @@ class DeleteCountryAPIView(APIView):
 class PropertyMainTypeAPIView(APIView):
     pass 
     
+
+
+
 
 # City ############
 class CreateCityAPIView(APIView):
@@ -63,7 +63,6 @@ class CreateCityAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class ListCountryCitiesAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -74,9 +73,6 @@ class ListCountryCitiesAPIView(APIView):
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
 class ListCityAPIView(APIView):
     pass 
 class UpdateCityAPIView(APIView):
@@ -85,6 +81,11 @@ class DeleteCityAPIView(APIView):
     pass 
 
 
+
+
+
+
+# MainType
 #  PropertyMainType
 class CreateMainTypeAPIView(APIView):
     serializer_class   = PropertyMainTypeSerializer
@@ -98,8 +99,6 @@ class CreateMainTypeAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED) 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
     
-    
-    
 class ListMainTypeAPIView(APIView):
     serializer_class   = PropertyMainTypeSerializer
     permission_classes = [permissions.AllowAny]
@@ -109,32 +108,16 @@ class ListMainTypeAPIView(APIView):
        return Response(serializer.data,status=status.HTTP_200_OK) 
 
 
-
-
-class ListMaintypeSubTypesAPIView(APIView):
-    permission_classes = [permissions.AllowAny]
-   
-    def get(self, request, main_type_id, *args, **kwargs):
-        try:
-            mainType = get_object_or_404(PropertyMainType, id=main_type_id)
-            subTypes = PropertySubTypes.objects.all().filter(main_type=main_type_id)
-
-        except PropertyMainType.DoesNotExist:
-            print('mainType =', "mainType not found")
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = PropertySubTypesSerializer(subTypes, many=True)
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
 class UpdateMainTypeAPIView(APIView):
     pass 
 class DeleteMainTypeAPIView(APIView):
     pass     
    
-   
-# PropertySubTypes
+
+
+
+
+# SubTypes
 class CreateSubTypesAPIView(APIView):
     serializer_class   = PropertySubTypesSerializer
     permission_classes = [permissions.IsAdminUser]
@@ -149,31 +132,71 @@ class CreateSubTypesAPIView(APIView):
  
 
 
+
+
+
+# SubTypes  - without properties -- for dropdown menu in frontend
+# <slug:country_slug>/<slug:maintype_slug>/subtypes/
+class ListSubTypesByCountryMaintypeAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PropertySubTypesMainTypeSerializer
+    
+    def get(self, request, country_slug, maintype_slug, *args, **kwargs):
+        print("kwargs=",kwargs)
+        try:
+            mainType = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+            # print('mainType =', mainType)
+            subTypes = PropertySubTypes.objects.filter(main_type =mainType.id)
+            # print('mainType-subTypes =', subTypes)
+            serializer = PropertySubTypesMainTypeSerializer(subTypes, many=True)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except PropertyMainType.DoesNotExist:   
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        
+      
+
+
+
+   
+
+# SubTypes  - with properties -- for SubTypes card in frontend in 
+# <slug:country_slug>/<slug:maintype_slug>-<slug:purpose_slug>/subtypes/
 class ListSubTypesByCountryMaintypePurposeAPIView(APIView):
     serializer_class = PropertySubTypesSerializer
     permission_classes = [permissions.AllowAny]
 
-    def get(self, request, maintype_slug, *args, **kwargs):
-        pmain_type = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
-        
-        queryset = PropertySubTypes.objects.filter(main_type=pmain_type)
- 
-        # ✅ Important line
-        serializer = PropertySubTypesSerializer(
-                        queryset,
-                        many=True,
-                        context={
-                            'request': request,
-                            'country_slug': kwargs.get('country_slug'), #  or request.GET.get('country_slug'),
-                            'purpose_slug': kwargs.get('purpose_slug')
-                        }
-        )
-        return Response(serializer.data,status=status.HTTP_200_OK)
-           
+    def get(self, request, country_slug, maintype_slug, purpose_slug, *args, **kwargs):
+        print('country_slug =', country_slug)
+        print('maintype_slug =', maintype_slug)
+        print('purpose_slug =', purpose_slug)
+        try:
+            mainType = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+            subTypes = PropertySubTypes.objects.filter(main_type=mainType.id)
+            print('mainType-subTypes =', subTypes)
+
+            serializer = PropertySubTypesSerializer(
+                subTypes,
+                many=True,
+                context={
+                    'request': request,
+                    'country_slug': country_slug,
+                    'purpose_slug': purpose_slug,
+                }
+            )
+            print("✅ Passing context:", serializer.context)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except PropertyMainType.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
+
 
 
 class SearchListSubTypesByCountryMaintypeAPIView(APIView):
-    serializer_class = PropertySubTypesSerializer
+    serializer_class = SerarchPropertySubTypesSerializer
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
@@ -216,6 +239,11 @@ class SearchListSubTypesByCountryMaintypeAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+
+
+
 
 
 
@@ -337,7 +365,7 @@ class CreatePropertyImageUploadAPIView(APIView):
      
      
         
-  
+# <slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/
 # List all properties in one country only
 class ListPropertyByCountryMaintypePurposeAPIView(APIView):
     serializer_class = PropertySerializer

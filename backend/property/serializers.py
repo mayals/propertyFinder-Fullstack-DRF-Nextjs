@@ -53,8 +53,6 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 
-
-
 class UpdateCountrySerializer(serializers.ModelSerializer):
     country_name = serializers.CharField(required=True, 
                                     max_length=100,
@@ -116,9 +114,6 @@ class CitySerializer(serializers.ModelSerializer):
 
        
 
-
-
-
 class UpdateCitySerializer(serializers.ModelSerializer):
     
     city_name  = serializers.CharField(required=True, 
@@ -135,7 +130,8 @@ class UpdateCitySerializer(serializers.ModelSerializer):
         
        
         
-# PropertyMainType ##################################################################
+        
+# MainType ##################################################################
 class PropertyMainTypeSerializer(serializers.ModelSerializer):
     maintype_label = serializers.CharField(source='get_maintype_name_display', read_only=True)
     class Meta:
@@ -145,7 +141,35 @@ class PropertyMainTypeSerializer(serializers.ModelSerializer):
 
 
 
+#  <slug:country_slug>/<slug:maintype_slug>/subtypes/
+class PropertySubTypesMainTypeSerializer(serializers.ModelSerializer):
+    # must select the primary key of main_type - main_type id - before insert subtype_name
+    main_type = serializers.PrimaryKeyRelatedField(
+                                        queryset=PropertyMainType.objects.all(),
+                                        help_text='Select a property main_type id for this sub type.'
+                                        )
+    subtype_name = serializers.CharField(required=True, 
+                                    max_length=100,
+                                    help_text='property sub type name must be unique.',
+                                    style={'placeholder': 'sub type name here...'},
+                                    validators=[UniqueValidator(queryset=PropertySubTypes.objects.all())]
+                                    )
+   
+     
+    class Meta:
+        model = PropertySubTypes
+        fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name']
+        read_only_fields = ('id', 'created_at', 'updated_at',)
 
+
+    
+            
+    
+    
+
+
+
+#  <slug:country_slug>/<slug:maintype_slug>/<slug:purpose_slug>/subtypes/
 # PropertySubTypes ##################################################################
 class PropertySubTypesSerializer(serializers.ModelSerializer):
     # must select the primary key of main_type - main_type id - before insert subtype_name
@@ -170,12 +194,56 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
 
     def get_properties(self, obj):
         from .serializers import PropertySerializer  # now you can import PropertySerializer inside method
+        context = self.context
+        print("PropertySubTypesSerializer-context=",context)
+        country_slug = self.context.get('country_slug')
+        print("PropertySubTypesSerializer-country_slug=",country_slug)
+        purpose_slug = self.context.get('purpose_slug')
+        print("PropertySubTypesSerializer-purpose_slug=",purpose_slug)
+         
+        
+        queryset = obj.properties.filter(is_published=True,country__country_slug=country_slug,  purpose__purpose_slug=purpose_slug)
+        return PropertySerializer(queryset, many=True,context={'request': self.context.get('request')} ).data
+            
+          
+            
+      
+            
+    
+    
+    
+    
+    
+# this for search page only  # 
+class SerarchPropertySubTypesSerializer(serializers.ModelSerializer):
+    # must select the primary key of main_type - main_type id - before insert subtype_name
+    main_type = serializers.PrimaryKeyRelatedField(
+                                        queryset=PropertyMainType.objects.all(),
+                                        help_text='Select a property main_type id for this sub type.'
+                                        )
+    subtype_name = serializers.CharField(required=True, 
+                                    max_length=100,
+                                    help_text='property sub type name must be unique.',
+                                    style={'placeholder': 'sub type name here...'},
+                                    validators=[UniqueValidator(queryset=PropertySubTypes.objects.all())]
+                                    )
+    properties = serializers.SerializerMethodField() # parentheses added
+    # properties = PropertySerializer(many=True, read_only=True)  # you can use it if PropertySerializer is before PropertySubTypesSerializer in the same file.
+     
+    class Meta:
+        model = PropertySubTypes
+        fields = ['id', 'created_at', 'updated_at', 'main_type','subtype_name', 'properties']
+        read_only_fields = ('id', 'created_at', 'updated_at', 'properties',)
+
+
+    def get_properties(self, obj):
+        from .serializers import PropertySerializer  # now you can import PropertySerializer inside method
         country_slug = self.context.get('country_slug')
         purpose_slug = self.context.get('purpose_slug')
-        print("serializer-purpose_slug=",purpose_slug)
+        print("Serarchserializer-purpose_slug=",purpose_slug)
          
         context = self.context
-        print("serializer-context=",context)
+        print("Serarchserializer-context=",context)
         queryset = obj.properties.filter(
             is_published=True,
             country__country_slug=country_slug,
@@ -187,9 +255,6 @@ class PropertySubTypesSerializer(serializers.ModelSerializer):
             context={'request': self.context.get('request')}
         ).data
             
-    
-    
-    
     
         # filters = self.context.get('filters', {})
         # print("serializer-filters=",filters)

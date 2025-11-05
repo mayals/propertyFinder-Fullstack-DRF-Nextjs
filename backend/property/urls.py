@@ -1,11 +1,29 @@
 # In foo/urls/blog.py
 from django.urls import path
 from . import views
+from django.http import HttpResponse
+
 
 
 app_name="property"
 
+def debug_view(request, *args, **kwargs):
+       return HttpResponse(f"Matched! kwargs={kwargs}")
+
 urlpatterns = [
+    
+    
+    # SubTypes (country_slug, maintype_slug, purpose_slug)
+    # /property/sa/residential-sale/subtypes/
+    # `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-${purposeSlug}/subtypes/`
+    path(
+        '<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/subtypes/',
+        views.ListSubTypesByCountryMaintypePurposeAPIView.as_view(),
+        name='list-subtypes'
+    ),
+    
+    
+    
     
     # Country
     path('create-country/', views.CreateCountryAPIView.as_view(), name='create-country'),
@@ -20,25 +38,27 @@ urlpatterns = [
     path('update-city/<str:id>/', views.UpdateCityAPIView.as_view(), name='update-city'), 
     path('delete-city/<str:id>/', views.DeleteCityAPIView.as_view(), name='delete-city'),
 
-    # PropertyMainType
+    # MainType
     path('create-main-type/', views.CreateMainTypeAPIView.as_view(), name='create-main-type'),
     path('list-main-type/', views.ListMainTypeAPIView.as_view(), name='list-main-type'),
-    
     path('update-main-type/<str:id>/', views.UpdateMainTypeAPIView.as_view(), name='update-main-type'), 
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
-    # SubTypes
-    path('<slug:country_slug>/<slug:maintype_slug>-<slug:purpose_slug>/subtypes/', views.ListSubTypesByCountryMaintypePurposeAPIView.as_view(), name='list-subtypes-by-country-maintype-purpose'),
-    path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
-
-
-
-
+    # SubTypes 
+    # SubTypes (country_slug, maintype_slug)
+    path('<slug:country_slug>/<slug:maintype_slug>/subtypes/',
+         views.ListSubTypesByCountryMaintypeAPIView.as_view(),
+         name='list-subtypes-by-country-maintype'),
+    
+    # path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
     # path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
-    path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
+    #  for dropdown menue in frontend 
+    # path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
+
+
 
     # PropertyPurpose
     path('create-purpose/', views.CreatePurposeAPIView.as_view(), name='create-purpose'),
@@ -52,15 +72,18 @@ urlpatterns = [
     path('update-amenity/<str:id>/', views.UpdateAmenityAPIView.as_view(), name='update-amenity'), 
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
-    
+   
     # Property
     # Property list -- return 4 main type - purpose  Properties in one country --- sa
     # -1 residential-properties-for-sale 
     # -2 residential-properties-for-rent
     # -3 commercial-properties-for-sale 
     # -4 commercial-properties-for-rent
-    path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/', views.ListPropertyByCountryMaintypePurposeAPIView.as_view(), name='list-property-by-country-maintype-purpose'),
+    path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/',
+         views.ListPropertyByCountryMaintypePurposeAPIView.as_view(),
+         name='list-property-by-country-maintype-purpose'),
     
+   
     # property list -- with filtering -- search
     path('<slug:country_slug>/search/', views.ListPropertyByParamsFilteringAPIView.as_view(), name='list-property-with-filtering'),
 
