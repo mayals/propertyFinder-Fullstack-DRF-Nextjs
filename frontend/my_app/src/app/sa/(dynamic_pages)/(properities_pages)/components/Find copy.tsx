@@ -1,138 +1,48 @@
-// search/components/Find.tsx
+// residential-properties-for-sale/components/Find.tsx
 "use client";
-
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
 
 
+
 export default function Findsection() {
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  
-  // Toggle menu open/close
-  const toggleMenu = (menu: string) => {
-    setActiveMenu((prev) => (prev === menu ? null : menu));
-  };
-  const [activeRadioButton, setActiveRadioButton] = useState<string | null>("Buy residential");
-
-
-
-
+ 
   // city
-  const [cityList, setCityList] = useState([]);
-  // const cityList =["khobar","dammam","jeddah"]
-  const [selectedCity, setSelectedCity] = useState({
-                                                     id:"",
-                                                     city_name: "All Cities",
-                                                   });
+  // const [cityList, setCityList] = useState([]);
+  const cityList =["khobar","dammam","jeddah"]
+  const [selectedCity, setSelectedCity] = useState("All cities");
+  // const [activeCityButton, setActiveCityButton] = useState<string | null>("City");
 
-  const handleCitiesOptions = (option) => {
-      setSelectedCity(
-                        {
-                                id: option.id, 
-                          city_name: option.city_name 
-                        });
-                        console.log("selectedCity.city_name=", selectedCity.city_name)
-      setActiveMenu(null); // close dropdown after selecting
-  };
-
-  // Fetch dynamic cityList
-  useEffect(() => {
-  const fetchCityList= async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/cities/`,
-        { withCredentials: true }
-      );
-
-      setCityList(response.data || []);
-      console.log("fetchCityList-cityList=",response.data)
-
-    } catch (error) {
-      console.error("❌ Error fetchCityList:", error);
-    }
-  };
-  fetchCityList();
-  },  [] );
-
+  const handleCitiesOptions = (option: string) =>{
+      setSelectedCity(option);  
+  }
   
-    
-    
-
-
+  
+  
+  
+  
+  
   // buy- resident -- main type button 
   const [maintypePurpose, setMaintypePurpose] = useState("Buy residential");
+  const [activeRadioButton, setActiveRadioButton] = useState<string | null>("Buy residential");
   
   // Handle radio button change -- for MaintypePurpose
-  const handleMaintypePurposeOptions = (option: string) => {
-    setMaintypePurpose(option);
+  const handleActiveRadioButton = (buttonName: string) => {
+    setActiveRadioButton(buttonName);
+    setMaintypePurpose(buttonName);
+    setActiveMenu(null);
   };
   
-
-
-
-
-
-  //  subtypes based on selected purpose (residential/commercial)-- using select and options way 
-  // buy- resident -- filtering buttons
-  const [subtypesList, setSubtypesList] = useState([]);
-  const [selectedSubtype, setSelectedSubtype] = useState({
-                                                          id: "",
-                                                          subtype_name: "Property type",
-                                                        });
-  console.log("selectedSubtype=",selectedSubtype);
-  
-  
- // Fetch subtypes based on selected purpose (residential/commercial)
-  useEffect(() => {
-  const fetchSubTypesList = async () => {
-    try {
-      // const purposeSlug = maintypePurpose.toLowerCase().includes("buy") ? "sale" : "rent";
-      const maintypeSlug = maintypePurpose.toLowerCase().includes("residential")? "residential" : "commercial";
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}/subtypes/`,
-        { withCredentials: true }
-      );
-
-      setSubtypesList(response.data || []);
-
-      // ✅ Reset subtype each time user switches main type/purpose
-      setSelectedSubtype({ id: "", subtype_name: "Property type" });
-    } catch (error) {
-      console.error("❌ Error fetching subtypes:", error);
-    }
-  };
-  fetchSubTypesList();
-}, [maintypePurpose, countrySlug]);
-
-
-const handleSelectSubtypeOptions = (option) => {
-      setSelectedSubtype({
-                            id: option.id, 
-                            subtype_name: option.subtype_name, 
-                          });
-                        console.log("selectedSubtype.subtype_name=", selectedSubtype.subtype_name)
-      setActiveMenu(null); // close dropdown after selecting
-  };
-
-
-
-
-
-
 
 
 
   // Beds & Baths
-  const [studio,setStudio]= useState("");
   const [beds,setBeds]= useState("");
   const [baths,setBaths]= useState("");
   
-  const handleStudio = (optionName: string) => {
-    setStudio(optionName);
-  };
   const handleBedsNumbers = (optionName: string) => {
     setBeds(optionName);
   };
@@ -146,68 +56,54 @@ const handleSelectSubtypeOptions = (option) => {
 
   // price 
   // min price 
-  const [selectedMinPrice,setSelectedMinPrice]= useState("Min. Price");
+  const [selectedMinPrice,setSelectedMinPrice]= useState("Price");
   const onChangeMinPrice = (e)=>{
     setSelectedMinPrice(e.target.value)
     console.log("onChangeMinPrice=",e.target.value)
   }
   // max price 
-  const [selectedMaxPrice,setSelectedMaxPrice]= useState("Max. Price");
+  const [selectedMaxPrice,setSelectedMaxPrice]= useState("Price");
   const onChangeMaxPrice = (e)=>{
     setSelectedMaxPrice(e.target.value)
     console.log("onChangeMinPrice=",e.target.value)
   }
 
 
-  // more 
-  const [more,setMore]= useState("");
-  const [activeMoreButton, setActiveMoreButton] = useState<string | null>("More");
+
+
+// more 
   const handleMoreButton = (buttonName: string) => {
     setMore(buttonName);
   };
+  const [more,setMore]= useState("");
+  const [activeMoreButton, setActiveMoreButton] = useState<string | null>("More");
 
   // Furnishings
-  // const f =  { 
-  //             "Furnished": "furnished" ,
-  //             "Unfurnished":"unfurnished",
-  //             "Partly Furnished": "partly"
-  //           }
   const [fur,setFur]= useState("");
   const handleFurnishingsOption = (option) =>{
-      setFur(option)  
-  };
-
+      setFur(option);  
+  }
   // Area
   // min Area 
-  const [selectedMinArea,setSelectedMinArea]= useState("Min. Area");
+  const [selectedMinArea,setSelectedMinArea]= useState("Area");
   const onChangeMinArea = (e)=>{
     setSelectedMinArea(e.target.value)
     console.log("onChangeMinArea=",e.target.value)
   }
   // max Area 
-  const [selectedMaxArea,setSelectedMaxArea]= useState("Max. Area");
+  const [selectedMaxArea,setSelectedMaxArea]= useState("Area");
   const onChangeMaxArea = (e)=>{
     setSelectedMaxArea(e.target.value)
     console.log("onChangeMinArea=",e.target.value)
   }
-
-  
   // Amenities
-  // const AmenitiesList = ["water","views","pool"]
   const [AmenitiesList,setAmenitiesList]= useState([]);
   const [selectedAmenities,setSelectedAmenities]= useState([]);
-  
-  const handleAmenitiesOptions = (amenityName) => {
-      setSelectedAmenities((prev) => {
-          // If amenity is already selected, remove it
-          if (prev.includes(amenityName)) {
-            return prev.filter((item) => item !== amenityName);
-          }
-          // Otherwise, add it
-          return [...prev, amenityName];
-          });
-  };
-  
+  const handleAmenitiesOptions = (option) =>{
+      setSelectedAmenities(option);  
+  }
+
+  // const AmenitiesList = ["water","views","pool"]
 
    // Fetch dynamic fetchAmenitiesList
   useEffect(() => {
@@ -227,7 +123,7 @@ const handleSelectSubtypeOptions = (option) => {
     }
   };
   fetchAmenitiesList();
-},  [] );
+},  [AmenitiesList] );
 
 
 
@@ -235,9 +131,70 @@ const handleSelectSubtypeOptions = (option) => {
 
 
 
+
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  // Toggle menu open/close
+  const toggleMenu = (menu: string) => {
+    setActiveMenu((prev) => (prev === menu ? null : menu));
+  };
 
   
   
+
+
+
+  //  subtypes based on selected purpose (residential/commercial)-- using select and options way 
+  // buy- resident -- filtering buttons
+  const [subtypesList, setSubtypesList] = useState([]);
+  const [selectedSubtype, setSelectedSubtype] = useState({
+                                                          id: "",
+                                                          subtype_name: "Property type",
+                                                        });
+  console.log("selectedSubtype=",selectedSubtype);
+  
+  
+ // Fetch subtypes based on selected purpose (residential/commercial)
+  useEffect(() => {
+  const fetchSubTypesList = async () => {
+    try {
+      const purposeSlug = maintypePurpose.toLowerCase().includes("buy") ? "sale" : "rent";
+      const maintypeSlug = maintypePurpose.toLowerCase().includes("residential")
+        ? "residential"
+        : "commercial";
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-for-${purposeSlug}/subtypes/`,
+        { withCredentials: true }
+      );
+
+      setSubtypesList(response.data || []);
+
+      // ✅ Reset subtype each time user switches main type/purpose
+      setSelectedSubtype({ id: "", subtype_name: "Property type" });
+    } catch (error) {
+      console.error("❌ Error fetching subtypes:", error);
+    }
+  };
+
+  fetchSubTypesList();
+}, [maintypePurpose, countrySlug]);
+
+
+const handleSelectSubtype = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const selectedValue = e.target.value;
+  const selected = subtypesList.find((sub: any) => String(sub.id) === String(selectedValue));
+
+  setSelectedSubtype(
+    selected
+      ? { id: selected.id, subtype_name: selected.subtype_name }
+      : { id: "", subtype_name: "Property type" }
+  );
+
+  console.log("✅ Selected subtype updated:", selected);
+};
+
+
+
 
 
 
@@ -275,61 +232,15 @@ const containerRef = useRef<HTMLDivElement>(null);
   // Handle search click — builds query like PropertyFinder
   const handleSearch = () => {
     const queryParams = new URLSearchParams();
-    console.log("selectedCity=",selectedCity.city_name);
-    console.log("maintypePurpose=",maintypePurpose);
-    console.log("selectedSubtype=",selectedSubtype.subtype_name);
-    console.log("studio=",studio);
-    console.log("beds=",beds);
-    console.log("baths=",baths);
-    console.log("selectedMinPrice=",selectedMinPrice);
-    console.log("selectedMaxPrice=",selectedMaxPrice);
-    console.log("fur=",fur);
-    console.log("selectedMinArea=",selectedMinArea);
-    console.log("selectedMaxArea=",selectedMaxArea);
-    console.log("selectedAmenities=",selectedAmenities);
-    if (selectedCity.city_name && selectedCity.city_name !== "All Cities") {
-        queryParams.append("selectedCity", selectedCity.city_name);
-    }
-    if (maintypePurpose) queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
-    if (maintypePurpose) queryParams.append("purpose", maintypePurpose.includes("Buy") ? "sale" : "rent");
-    if (selectedSubtype.subtype_name && selectedSubtype.subtype_name !== "Property type") {
-        queryParams.append("selectedSubtype", selectedSubtype.subtype_name);
-    }
-    if (studio) queryParams.append("beds","0");
-    if (beds)queryParams.append("beds",beds);
-    if (baths)queryParams.append("baths",baths);
-    if (selectedMinPrice && selectedMinPrice !== "Min. Price") {
-        queryParams.append("selectedMinPrice",selectedMinPrice);
-    }
-    if (selectedMaxPrice && selectedMaxPrice !== "Max. Price") {
-        queryParams.append("selectedMaxPrice",selectedMaxPrice);
-    }
-    if (fur && fur === "Furnished"){
-       queryParams.append("fur","furnished");
-    };
-    if (fur && fur === "Unfurnished"){
-       queryParams.append("fur","unfurnished");
-    };
-    if (fur && fur === "Partly furnished"){
-       queryParams.append("fur","partly");
-    };
-    if (selectedMinArea && selectedMinArea !== "Min. Area") {
-        queryParams.append("selectedMinArea",selectedMinArea);
-    }
-    if (selectedMaxArea && selectedMaxArea !== "Max. Area") {
-        queryParams.append("selectedMaxArea",selectedMaxArea);
-    }
 
-    if (Array.isArray(selectedAmenities) && selectedAmenities.length > 0) {
-      selectedAmenities.forEach((a) => queryParams.append("amenities", a));
-    }
+    queryParams.append("purpose", maintypePurpose.includes("Buy") ? "buy" : "rent");
+    queryParams.append("type", maintypePurpose.includes("residential") ? "residential" : "commercial");
 
-
-    
+    if (selectedSubtype.id) queryParams.append("subtype", selectedSubtype.id);
 
     // Example of how it would look:
     // /search?purpose=buy&type=residential&subtype=apartment
-    window.location.href = `/sa/search?${queryParams.toString()}`;
+    window.location.href = `/search?${queryParams.toString()}`;
   };
 
 
@@ -353,41 +264,38 @@ const containerRef = useRef<HTMLDivElement>(null);
           />
         </div> */}
 
-
-        {/* Filters */}
-        <div className="flex items-center gap-1">
-
-        
-          {/*city */}
+       {/*city */}
           <div className="relative">
             <button
               onClick={() => toggleMenu("cityMenu")}
               aria-expanded={activeMenu === "cityMenu"}
-              className="capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
+              className={`cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === "city"? "border border-indigo-600 text-indigo-600":""}`}
             >
-             {!selectedCity.id ? "All Cities": selectedCity.city_name}
+              {selectedCity}
               <FiChevronDown
                 className={`ml-1 transition-transform duration-300 ${ activeMenu === "cityMenu" ? "rotate-180" : ""  }`}  
               />
             </button>
 
             {activeMenu === "cityMenu" && (
-              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
-                {cityList.map(
+              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-52 p-2">
+                
+                 
+               {cityList.map(
                   (option) => (
                     <label
-                      key={option.id}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedCity.city_name === option.city_name ? "bg-indigo-200" : "" }`}
-                      onClick={() => handleCitiesOptions(option)}
+                      key={option}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedCity === option ? "bg-indigo-200" : "" }`}
+                      onClick={() => handleActiveRadioButton(option)}
                     >
                       <input
                         type="radio"
-                        name="selectedCity"
-                        checked={activeRadioButton === option.city_name}
-                        onChange={() => handleCitiesOptions(option)}
+                        name="maintypePurpose"
+                        checked={activeRadioButton === option}
+                        onChange={() => handleActiveRadioButton(option)}
                         className="hidden"
                       />
-                      <span className="capitalize">{option.city_name}</span>
+                      <span>{option}</span>
                     </label>
                   )
                 )}
@@ -395,8 +303,10 @@ const containerRef = useRef<HTMLDivElement>(null);
             )}
           </div>
 
+ 
 
-
+        {/* Filters */}
+        <div className="flex items-center gap-1">
 
 
 
@@ -406,11 +316,13 @@ const containerRef = useRef<HTMLDivElement>(null);
             <button
               onClick={() => toggleMenu("maintypePurposeMenu")}
               aria-expanded={activeMenu === "maintypePurposeMenu"}
-              className={`cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === "Buy residential"?"border border-indigo-600 text-indigo-600":""}`}
+              className={`cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none ${activeRadioButton === "Buy residential"?" border border-indigo-600 text-indigo-600":""}`}
             >
               {maintypePurpose}
               <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${activeMenu === "maintypePurposeMenu" ? "rotate-180" : ""}`}
+                className={`ml-1 transition-transform duration-300 ${
+                  activeMenu === "maintypePurposeMenu" ? "rotate-180" : ""
+                }`}
               />
             </button>
 
@@ -420,14 +332,16 @@ const containerRef = useRef<HTMLDivElement>(null);
                   (option) => (
                     <label
                       key={option}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ maintypePurpose === option ? "bg-indigo-200" : ""  }`}
-                      onClick={() => handleMaintypePurposeOptions(option)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                        activeRadioButton === option ? "bg-indigo-200" : ""
+                      }`}
+                      onClick={() => handleActiveRadioButton(option)}
                     >
                       <input
                         type="radio"
                         name="maintypePurpose"
                         checked={activeRadioButton === option}
-                        onChange={() => handleMaintypePurposeOptions(option)}
+                        onChange={() => handleActiveRadioButton(option)}
                         className="hidden"
                       />
                       <span>{option}</span>
@@ -442,42 +356,24 @@ const containerRef = useRef<HTMLDivElement>(null);
 
 
 
-          
-          {/*subtypeMenu */}
+          {/* Subtype Dropdown */}
           <div className="relative">
-            <button
-              onClick={() => toggleMenu("subtypeMenu")}
-              aria-expanded={activeMenu === "subtypeMenu"}
-              className="capitalize cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
+            <select
+              value={selectedSubtype.id}
+              onChange={handleSelectSubtype}
+              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg focus:outline-none hover:bg-gray-200"
             >
-             {!selectedSubtype.id ? "Property type": selectedSubtype.subtype_name}
-              <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${ activeMenu === "subtypeMenu" ? "rotate-180" : ""  }`}  
-              />
-            </button>
-
-            {activeMenu === "subtypeMenu" && (
-              <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
-                {subtypesList.map(
-                  (option) => (
-                    <label
-                      key={option.id}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ selectedSubtype.subtype_name === option.subtype_name ? "bg-indigo-200" : "" }`}
-                      onClick={() => handleSelectSubtypeOptions(option)}
-                    >
-                      <input
-                        type="radio"
-                        name="selectedSubtype"
-                        checked={activeRadioButton === option.subtype_name }
-                        onChange={() => handleSelectSubtypeOptions(option)}
-                        className="hidden"
-                      />
-                      <span className="capitalize">{option.subtype_name}</span>
-                    </label>
-                  )
-                )}
-              </div>
-            )}
+            {/* Show placeholder only when nothing is selected */}
+                  {!selectedSubtype.id && (
+                    <option value="">{selectedSubtype.subtype_name}</option>
+                  )}
+                  
+                  {subtypesList.map((sub: any) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.subtype_name}
+                    </option>
+                  ))}
+            </select>
           </div>
 
 
@@ -491,7 +387,7 @@ const containerRef = useRef<HTMLDivElement>(null);
               aria-expanded={activeMenu === "bedsBathsMenu"}
               className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none"
             >
-              {studio},{beds}Beds, {baths}Baths
+              {beds}Beds, {baths}Baths
               <FiChevronDown
                 className={`ml-1 transition-transform duration-300 ${
                   activeMenu === "bedsBathsMenu" ? "rotate-180" : ""
@@ -503,33 +399,12 @@ const containerRef = useRef<HTMLDivElement>(null);
               <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-[450px] h-[250px] p-2">
                 Bedrooms
                 <div className="flex p-2 mb-6">
-                {["studio"].map(
+                {["studio","1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
                   (option) => (
                     <label
                         key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${studio === option ? "bg-indigo-200" : ""}`}
-                        onClick={() => handleStudio(option)}
-                    >
-                        <input
-                          type="radio"
-                          name="studio"
-                          checked={activeRadioButton === option}
-                          onChange={() => handleStudio(option)}
-                          className="hidden"
-                        />
-                        <span className="flex rounded rounded-full p-1">{option}</span>
-                    </label>
-                  )
-                )}
-                
-                
-               
-                {["1", "2", "3", "4", "5", "6", "7" ,"+7"].map(
-                  (option) => (
-                    <label
-                        key={option}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100  ${
-                          beds === option ? "bg-indigo-200" : ""
+                        className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                          activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
                         onClick={() => handleBedsNumbers(option)}
                     >
@@ -552,7 +427,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                     <label
                         key={option}
                         className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
-                          baths === option ? "bg-indigo-200" : ""
+                          activeRadioButton === option ? "bg-indigo-200" : ""
                         }`}
                         onClick={() => handleBathsNumbers(option)}
                     >
@@ -677,7 +552,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                       {/* Modal  */}
                       <div className="relative cursor-pointer pointer-events-none transition my-auto p-4 w-[800px] mx-auto">
                           <div className="w-full py-2 bg-white cursor-default pointer-events-auto  relative rounded-xl">
-                              {/*  close button */}
+
                               <button 
                                       onClick={() => toggleMenu("moreMenu")}
                                       aria-expanded={activeMenu === "moreMenu"} 
@@ -703,12 +578,13 @@ const containerRef = useRef<HTMLDivElement>(null);
                                       <hr></hr>
                                       <p className="text-gray-500 pt-2">Furnishing</p>
                                         <div className="flex">
-                                          
-                                            {["Furnished", "Unfurnished", "Partly furnished"].map(
+                                            {["All furnishings","Furnished", "Unfurnished", "Partly furnished"].map(
                                               (option) => (
                                                 <label
                                                     key={option}
-                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${ fur === option ? "bg-indigo-200" : "" }`}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                                                      activeRadioButton === option ? "bg-indigo-200" : ""
+                                                    }`}
                                                     onClick={() => handleFurnishingsOption(option)}
                                                 >
                                                     <input
@@ -775,26 +651,30 @@ const containerRef = useRef<HTMLDivElement>(null);
 
                                         <hr ></hr>
                                         <p className="text-gray-500 pt-2">Amenities</p>
-                                        <div className="flex flex-wrap gap-2">
-                                          {AmenitiesList.map((amenity) => (
-                                            <label
-                                              key={amenity.id}
-                                              className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer border ${
-                                                selectedAmenities.includes(amenity.amenity_name)
-                                                  ? "bg-indigo-200 border-indigo-400"
-                                                  : "border-gray-300"
-                                              }`}
-                                            >
-                                              <input
-                                                type="checkbox"
-                                                checked={selectedAmenities.includes(amenity.amenity_name)}
-                                                onChange={() => handleAmenitiesOptions(amenity.amenity_name)}
-                                                className="cursor-pointer"
-                                              />
-                                              <span className="capitalize">{amenity.amenity_name}</span>
-                                            </label>
-                                          ))}
+                                        <div className="flex">
+                                            {AmenitiesList.map(
+                                              (amenity) => (
+                                                <label
+                                                    key={amenity.id}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer hover:bg-indigo-100 ${
+                                                      activeRadioButton === amenity.amenity_name
+                                                      ? "bg-indigo-200" : ""
+                                                    }`}
+                                                    onClick={() => handleAmenitiesOptions(amenity.amenity_name)}
+                                                >
+                                                    <input
+                                                      type="checkbox"
+                                                      name="Amenities"
+                                                      // checked={activeRadioButton === option}
+                                                      onChange={() => handleAmenitiesOptions(amenity.amenity_name)}
+                                                      className=""
+                                                    />
+                                                    <span className="flex p-1 capitalize">{amenity.amenity_name}</span>
+                                                </label>
+                                              )
+                                            )}
                                         </div>
+
 
                                         <hr></hr>
                                         <p className="text-gray-500 pt-2">Keywords</p>
@@ -807,14 +687,22 @@ const containerRef = useRef<HTMLDivElement>(null);
                                           />
                                         </div>
 
-                                        {/* Show filtering results button */}
+                                        {/* Show results button */}
                                         <button
-                                          onClick={() => toggleMenu("moreMenu")}
+                                          // onClick={handleSearch}
                                           className="rounded-xl cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
                                         >
-                                          Apply filter
+                                          Show results
                                         </button>
-                                       
+                                        {/* <button type="submit"
+                                            className="inline-flex items-center justify-center py-1 gap-1 font-medium rounded-lg border transition-colors outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset dark:focus:ring-offset-0 min-h-[2.25rem] px-4 text-sm text-white shadow focus:ring-white border-transparent bg-[#4d1b80] hover:bg-[#7127BA] focus:bg-[#11071F] focus:ring-offset-[#11071F]">
+
+                                            <span className="flex items-center gap-1">
+                                              <span className="">
+                                               Show results
+                                              </span>
+                                            </span>
+                                        </button> */}
 
 
                                   </div>
@@ -836,7 +724,7 @@ const containerRef = useRef<HTMLDivElement>(null);
         onClick={handleSearch}
         className="cursor-pointer px-4 py-3  bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition"
       >
-        Find
+        Search
       </button>
       </div>
       </div>
