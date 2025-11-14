@@ -45,22 +45,27 @@ urlpatterns = [
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
     # SubTypes 
-    # SubTypes (country_slug, maintype_slug)
+    # SubTypes (country_slug, maintype_slug) -- for dropdown menue in frontend -- Findsection page 
     path('<slug:country_slug>/<slug:maintype_slug>/subtypes/',
          views.ListSubTypesByCountryMaintypeAPIView.as_view(),
          name='list-subtypes-by-country-maintype'),
     
-    # path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
+    
+    
+    
+    # subtypes- 
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
     # path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
-    #  for dropdown menue in frontend 
     # path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
 
 
 
-    # PropertyPurpose
+
+
+
+    # Purpose
     path('create-purpose/', views.CreatePurposeAPIView.as_view(), name='create-purpose'),
     path('list-purposes/', views.ListPurposeAPIView.as_view(), name='list-purpose'),
     path('update-purpose/<str:id>/', views.UpdatePurposeAPIView.as_view(), name='update-purpose'), 
@@ -73,7 +78,7 @@ urlpatterns = [
     path('delete-amenity/<str:id>/', views.DeleteAmenityAPIView.as_view(), name='delete-amenity'),
 
    
-    # Property
+    # Property -- for DynamicPropertiesClient page  in frontend 
     # Property list -- return 4 main type - purpose  Properties in one country --- sa
     # -1 residential-properties-for-sale 
     # -2 residential-properties-for-rent
@@ -82,11 +87,18 @@ urlpatterns = [
     path('<slug:country_slug>/<slug:maintype_slug>-for-<slug:purpose_slug>/',
          views.ListPropertyByCountryMaintypePurposeAPIView.as_view(),
          name='list-property-by-country-maintype-purpose'),
+    path('property-details-<str:id>/', views.PropertyDetailsAPIView.as_view(), name='property-details'),
     
-   
+    
+    # search ----
     # property list -- with filtering -- search
     path('<slug:country_slug>/search/', views.ListPropertyByParamsFilteringAPIView.as_view(), name='list-property-with-filtering'),
 
+    # subtypes-  for search ressult page in frontend
+    path('<slug:country_slug>/subtypes/search/', views.SearchListSubTypesByCountryMaintypeAPIView.as_view(), name='search-subtibes-by-maintype'),
+    
+    
+    
     
     path('create-property-data/', views.CreatePropertyDataAPIView.as_view(), name='create-property-data'),
     path('update-property/<str:id>/', views.UpdatePropertyAPIView.as_view(), name='update-property'), 

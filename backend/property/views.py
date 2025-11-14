@@ -519,6 +519,27 @@ class ListPropertyByParamsFilteringAPIView(APIView):
 
     
      
+class PropertyDetailsAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request, id, *args, **kwargs):
+        print("kwargs=",kwargs)
+        try:
+            property = get_object_or_404(Property, id=id)
+            # print('property =', property)
+            serializer = PropertySerializer(property, many=False)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Property.DoesNotExist:   
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+        
+    
+    
+
+
+
+
 class UpdatePropertyAPIView(APIView):
     pass 
 class DeletePropertyAPIView(APIView):

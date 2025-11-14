@@ -344,7 +344,10 @@ class AmenitySerializer(serializers.ModelSerializer):
 ## CREATE PROPERTY  way-1 ##################################################################################################################################
 #  add images to property selected of params property.id
 class PropertyImageSerializer(serializers.ModelSerializer):
-    images = serializers.ImageField()
+    images = serializers.ImageField(use_url=True)   # use_url=True  -- absolute URL   --  Next.js requires full absolute URL, not relative.
+   
+
+
 
     class Meta:
         model = PropertyImage
@@ -368,11 +371,13 @@ class PropertyImageSerializer(serializers.ModelSerializer):
         return PropertyImage.objects.create(property=property_obj, **validated_data)
 
     def to_representation(self, instance):
+        data = super().to_representation(instance)
         request = self.context.get("request")
-        representation = super().to_representation(instance)
-        if request and instance.images:
-            representation["images"] = request.build_absolute_uri(instance.images.url)
-        return representation
+        if request and data.get("images"):
+            data["images"] = request.build_absolute_uri(data["images"])
+        return data
+    #  Now the API returns:
+    # "http://127.0.0.1:8000/media/property_images/2025/10/13/1.jpg"
     
     
 
