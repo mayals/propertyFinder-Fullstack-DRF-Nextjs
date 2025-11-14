@@ -1,11 +1,17 @@
+// next.config.js
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-
-            images: {
-                domains: ['127.0.0.1'], // or 'localhost'  // your backend domain
-            },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/media/**',
+      },
+    ],
+  },
 };
 
-export default nextConfig;
-
-
+export default nextConfig; // ✅ Use ES module export
