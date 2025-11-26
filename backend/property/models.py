@@ -222,8 +222,8 @@ class Property(models.Model):
     address_detail = models.CharField(max_length=255, blank=True, null=True)
     
     # on google map location
-    latitude = models.DecimalField(max_digits=12, decimal_places=8, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=12, decimal_places=8, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=25, decimal_places=18, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=25, decimal_places=18, null=True, blank=True)
 
     # Status
     is_occupied = models.BooleanField(default=False)
