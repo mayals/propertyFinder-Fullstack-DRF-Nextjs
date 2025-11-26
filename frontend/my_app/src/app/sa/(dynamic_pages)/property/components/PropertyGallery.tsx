@@ -16,7 +16,7 @@ export default function PropertyGallery({ images }: { images: ImageObj[] }) {
     );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 relative bg-yellow-300">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 relative bg-white">
       {/* Main Image */}
       <div className="col-span-1 md:col-span-2 relative">
         <Image

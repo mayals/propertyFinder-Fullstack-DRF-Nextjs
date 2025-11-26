@@ -10,6 +10,8 @@ import PropertyHeader from "../components/PropertyHeader";
 import PropertyDetails from "../components/PropertyDetails";
 import { useParams } from "next/navigation";
 import Loading from "../../../components/loading/Loading";
+import Footer from "../../../components/footer/Footer"
+
 
 
 export default function PropertyPage() {
@@ -89,10 +91,13 @@ export default function PropertyPage() {
 
 
     return (
-        <main className="container mx-auto p-4">
+        <section>
+        <main className="container mx-auto px-20">
             <PropertyGallery images={property.images} />
             <PropertyHeader property={property} />
             <PropertyDetails property={property} />
         </main>
+            <Footer/>
+        </section>
     );
 }
