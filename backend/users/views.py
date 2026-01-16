@@ -2,13 +2,15 @@
 from django.contrib.auth import get_user_model, tokens
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse, JsonResponse
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+
+
 # DRF
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
