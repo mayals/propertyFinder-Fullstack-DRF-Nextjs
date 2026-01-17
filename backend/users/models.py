@@ -162,8 +162,8 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
 
 ################################### PROFILE #######################################################################33
 class GenderType(models.TextChoices):
-    MALE   = 'Male'
-    FEMALE = 'Female'
+    MALE   = 'male'
+    FEMALE = 'female'
     
     
 class BuyerProfile(models.Model):
