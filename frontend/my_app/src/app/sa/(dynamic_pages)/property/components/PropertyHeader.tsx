@@ -13,7 +13,7 @@ export default function PropertyHeader({ property }: { property: Property }) {
     console.log("PropertyHeader-property=",property)
     const apiURL = process.env.NEXT_PUBLIC_API_URL;
     const imageURL = property.owner?.profile?.profile_picture 
-? `${apiURL}${property.owner?.profile?.profile_picture}`.replace(/\/+/, "/")
+    ? `${apiURL}${property.owner?.profile?.profile_picture}`.replace(/\/+/, "/")
     : null;
     console.log("PropertyHeader-imageURL=",property.owner?.profile?.profile_picture)
 

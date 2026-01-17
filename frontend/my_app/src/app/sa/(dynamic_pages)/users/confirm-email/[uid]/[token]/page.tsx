@@ -1,3 +1,4 @@
+// users\confirm-email\[uid]\[token]\page.tsx
 'use client'
 
 import { useEffect, useState } from 'react';
@@ -30,6 +31,9 @@ export default function ConfirmEmailPage() {
 
   useEffect(() => {
     if (uid && token) {
+      // data inserted in fields
+      console.log('uid=', uid);
+      console.log('token=', token);
       axios
         .get(`http://127.0.0.1:8000/users/confirm-email/${uid}/${token}/`)
         .then(() => {

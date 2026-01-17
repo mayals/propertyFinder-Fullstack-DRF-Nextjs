@@ -70,7 +70,7 @@ export default function HomePage() {
       >
         {countryList.map((country, index) => (
           <motion.div
-            key={country.slug}
+            key={country.id}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 200 }}
