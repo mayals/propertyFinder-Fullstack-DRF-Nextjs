@@ -83,4 +83,11 @@ Admins oversee the entire platform, review role requests, and manage users and p
 
 
 ## System Architecture:
-
+| Component     | Technology              |
+| ------------- | ----------------------- |
+| Backend       | Django 5.x              |
+| API Framework | Django REST Framework   |
+| Auth          | JWT (Simple JWT)        |
+| Database      | PostgreSQL (via Docker) |
+| Deployment    | Docker & Docker Compose |
+| HTTP cookies  |  Http Only Cookies      |
