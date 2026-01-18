@@ -3,6 +3,19 @@ This is a full-stack property finder web application, inspired by platforms like
 It allows users to search, list, and manage properties for sale or rent, with features tailored to different types of users.
 
 
+## Project Technology :
+
+| Component     | Technology              |
+| ------------- | ----------------------- |
+| Backend       | Django 5.x              |
+| API Framework | Django REST Framework   |
+| Auth          | JWT (Simple JWT)        |
+| Database      | PostgreSQL (via Docker) |
+| Deployment    | Docker & Docker Compose |
+| Frontend      | NextJS                  |
+| HTTP cookies  |  Http Only Cookies      |
+
+
 ## System Architecture:
 ![System Architecture](assets/propertyFinderFullstackProject.png)
 
@@ -82,12 +95,4 @@ Agents respond on behalf of Brokers or Developers.
 Admins oversee the entire platform, review role requests, and manage users and properties.
 
 
-## System Architecture:
-| Component     | Technology              |
-| ------------- | ----------------------- |
-| Backend       | Django 5.x              |
-| API Framework | Django REST Framework   |
-| Auth          | JWT (Simple JWT)        |
-| Database      | PostgreSQL (via Docker) |
-| Deployment    | Docker & Docker Compose |
-| HTTP cookies  |  Http Only Cookies      |
+
