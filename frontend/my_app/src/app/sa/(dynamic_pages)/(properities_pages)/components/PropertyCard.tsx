@@ -10,11 +10,12 @@ import { PiBathtub } from "react-icons/pi";
 import { RxDimensions } from "react-icons/rx";
 import { FiPhone, FiMail, FiHeart, FiShare2, FiMoreVertical, FiFlag, FiMessageCircle } from "react-icons/fi";
  
-
+import axiosInstance from "../../../../sa/lib/axios";
 
 
 
 export default function PropertyCard({ property }: any) {
+  const [loading, setLoading] = useState(false);
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
   // console.log('apiURL=',apiURL)
@@ -30,6 +31,7 @@ export default function PropertyCard({ property }: any) {
 
   const handleTouchStart = (e: React.TouchEvent) => (touchStartX.current = e.changedTouches[0].screenX);
   const handleTouchMove = (e: React.TouchEvent) => (touchEndX.current = e.changedTouches[0].screenX);
+  
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const deltaX = touchStartX.current - touchEndX.current;
@@ -40,9 +42,44 @@ export default function PropertyCard({ property }: any) {
     touchEndX.current = null;
   };
 
+   
+  const [liked, setLiked] = useState(property.is_liked);
+
+ 
+
+  const toggleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (loading) return;
+
+    setLoading(true);
+    setLiked((prev) => !prev); // optimistic UI
+
+    try {
+        const response = await axiosInstance.post( 
+          `/property/property_like/${property.id}/like/`,
+           { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies                                   
+        );
+        console.log("toggleLike-response.data=",response.data);
+        setLiked(response.data.liked);
+
+
+    } catch (err) {
+        setLiked((prev) => !prev); // rollback if error
+        console.error(err);
+
+    } finally {
+        setLoading(false);
+    }
+  };
 
   // console.log('property.owner.profile.profile_picture=',property.owner.profile.profile_picture)
   // console.log('my image bakend url=',apiURL+property.owner.profile.profile_picture)
+
+
+
+
 
 
   return (
@@ -172,7 +209,15 @@ export default function PropertyCard({ property }: any) {
                 <button><FiPhone /></button>
                 <button><FiMail /></button>
                 <button><FiMessageCircle /></button>
-                <button><FiHeart /></button>
+                <button
+                    onClick={toggleLike}
+                    className={`transition-colors ${
+                      liked ? "text-green-500" : "text-white"
+                    }`}
+                  >
+                    <FiHeart fill={liked ? "currentColor" : "none"} />
+                </button>
+
                 <div className="relative">
                   <button onClick={() => setMenuOpen(!menuOpen)}>
                     <FiMoreVertical />

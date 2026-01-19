@@ -7,8 +7,6 @@ import { getCountriesList } from "../app/sa/utils/property";
 
 
 
-
-
 export default function HomePage() {
   const [countryList, setCountryList] = useState([]);
   
@@ -19,6 +17,7 @@ export default function HomePage() {
   //   { country_name: "Egypt"               , country_slug: "eg" , code: "🇪🇬" },
   // ];
 
+  
   
   useEffect(() => {
         const fetchCountries = async () => {
