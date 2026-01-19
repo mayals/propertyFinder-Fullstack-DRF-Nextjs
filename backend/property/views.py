@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer
-from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property
+from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -515,6 +515,22 @@ class ListPropertyByParamsFilteringAPIView(APIView):
         )
 
 
+
+
+
+
+class TogglePropertyLikeAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, property_id, *args, **kwargs):
+        user = request.user    
+        property_obj = Property.objects.get(id=property_id)
+        like, created = PropertyLike.objects.get_or_create(user=user,property=property_obj)
+        if not created:
+            like.delete()
+            return Response({"liked": False}, status=status.HTTP_200_OK)
+
+        return Response({"liked": True}, status=status.HTTP_201_CREATED)
 
 
     

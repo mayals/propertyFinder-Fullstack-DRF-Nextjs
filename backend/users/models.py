@@ -90,13 +90,8 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
 
     
         
-    
-    
-    
-    
     @property
     def profile_picture(self):
-        
         if self.role == "buyer" :
             try:
                 profile_picture = BuyerProfile.objects.get(id=self.id).profile_picture

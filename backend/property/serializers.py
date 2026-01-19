@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import  Country,City,PropertyMainType,PropertySubTypes,PropertyPurpose,Amenity,Property,PropertyImage
+from .models import  Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike
 from users.serializers import CustomUserSerializer
 from django.utils.text import slugify
 
@@ -424,7 +424,7 @@ class PropertySerializer(serializers.ModelSerializer):
     amenities_ids = serializers.PrimaryKeyRelatedField(
         queryset=Amenity.objects.all(), many=True, write_only=True, source='amenities'
     )
-
+    is_liked = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
@@ -440,7 +440,7 @@ class PropertySerializer(serializers.ModelSerializer):
             'latitude', 'longitude', 'is_occupied', 'available_from',
             'property_size', 'bedrooms', 'bathrooms', 'plot_length',
             'plot_width', 'street_width', 'facade', 'property_age',
-            'price', 'currency', 'furnishing', 'category', 'is_published','images'
+            'price', 'currency', 'furnishing', 'category', 'is_published','images', 'is_liked'
         ]
         read_only_fields = [
             'id', 'is_published','owner', # 👈 add 'owner' here because it come from backend not from frontend -- request.user -- serializer.save(owner=self.request.user) in view.py
@@ -471,9 +471,39 @@ class PropertySerializer(serializers.ModelSerializer):
 
         return property_instance
 
+    def get_is_liked(self, obj):
+        user = self.context["request"].user
+        if user.is_anonymous:
+            return False
+        return PropertyLike.objects.filter(user=user, property=obj).exists()
     
     
-    
+class PropertyLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyLike
+        fields = "__all__"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage
+from .models import  PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage,PropertyLike
 
 @admin.register(PropertyMainType)
 class PropertyMainTypeAdmin(admin.ModelAdmin):
@@ -60,4 +60,9 @@ class PropertyImageAdmin(admin.ModelAdmin):
     search_fields = ( "images", )
     
     
-
+@admin.register(PropertyLike)
+class PropertyLikeAdmin(admin.ModelAdmin):
+    list_display  = ("id", "user", "property", "created_at")
+    list_filter   = ( "user", "property",)
+    search_fields = ( "user", "property", )
+ 
