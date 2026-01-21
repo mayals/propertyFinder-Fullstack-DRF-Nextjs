@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, PropertyLikeSerializer
 from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
@@ -533,6 +533,32 @@ class TogglePropertyLikeAPIView(APIView):
         return Response({"liked": True}, status=status.HTTP_201_CREATED)
 
 
+class PropertiesLikedAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        queryset = PropertyLike.objects.filter(user=user)
+
+        serializer = PropertySerializer(
+            [like.property for like in queryset],
+            many=True,
+            context={"request": request},
+        )
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+            
+   
+   
     
      
 class PropertyDetailsAPIView(APIView):

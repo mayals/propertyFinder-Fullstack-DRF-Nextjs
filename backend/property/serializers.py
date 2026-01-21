@@ -472,10 +472,16 @@ class PropertySerializer(serializers.ModelSerializer):
         return property_instance
 
     def get_is_liked(self, obj):
-        user = self.context["request"].user
-        if user.is_anonymous:
+        request = self.context.get("request")
+
+        if not request or not request.user.is_authenticated:
             return False
-        return PropertyLike.objects.filter(user=user, property=obj).exists()
+
+        return PropertyLike.objects.filter(user=request.user, property=obj).exists()
+           
+           
+      
+
     
     
 class PropertyLikeSerializer(serializers.ModelSerializer):

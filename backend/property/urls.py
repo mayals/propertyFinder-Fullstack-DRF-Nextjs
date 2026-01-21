@@ -110,6 +110,8 @@ urlpatterns = [
     # path('create-property-image/', views.CreatePropertyImageAPIView.as_view(), name='create-property-image'),
     path('list-property-image/', views.ListPropertyImageAPIView.as_view(), name='list-property-image'),
     path('update-property-image/<str:id>/', views.UpdatePropertyImageAPIView.as_view(), name='update-property-image'), 
-    path('delete-property-image/<str:id>/',views. DeletePropertyImageAPIView.as_view(), name='delete-property-image'),
-    path("property_like/<uuid:property_id>/like/",views. TogglePropertyLikeAPIView.as_view(), name='property_like'),
+    path('delete-property-image/<str:id>/',views.DeletePropertyImageAPIView.as_view(), name='delete-property-image'),
+    path("property-like/<uuid:property_id>/like/",views.TogglePropertyLikeAPIView.as_view(), name='property-like'),
+    path("properties-liked/",views.PropertiesLikedAPIView.as_view(), name='properties-liked'),
+         
 ]
