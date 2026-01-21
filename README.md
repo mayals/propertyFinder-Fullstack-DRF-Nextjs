@@ -2,6 +2,19 @@
 This is a full-stack property finder web application, inspired by platforms like Property Finder Saudi Arabia (you can change to any country).
 It allows users to search, list, and manage properties for sale or rent, with features tailored to different types of users.
 
+## Screen shoot :
+<img width="1894" height="794" alt="Screenshot 2026-01-21 200302" src="https://github.com/user-attachments/assets/1ece4c9a-b10b-43db-aa68-b25b8d925e4f" />
+
+
+<img width="1894" height="827" alt="Screenshot 2026-01-21 200337" src="https://github.com/user-attachments/assets/fef67872-98ef-4e72-bbfa-f3ae9a6e4e61" />
+
+<img width="1890" height="820" alt="Screenshot 2026-01-21 200427" src="https://github.com/user-attachments/assets/5434134c-4561-49e9-bbe0-dd68ddb4bfde" />
+
+<img width="1877" height="822" alt="Screenshot 2026-01-21 200530" src="https://github.com/user-attachments/assets/6ac61042-e047-4496-bc01-e2c902a4f46d" />
+
+<img width="1875" height="823" alt="Screenshot 2026-01-21 200602" src="https://github.com/user-attachments/assets/06ee1ff1-f07a-4c61-b993-8cd378a31a23" />
+
+<img width="1867" height="820" alt="Screenshot 2026-01-21 200802" src="https://github.com/user-attachments/assets/810d2884-5b90-4b6d-adef-1d65ecb754be" />
 
 ## Project Technology :
 
