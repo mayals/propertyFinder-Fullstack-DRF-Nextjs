@@ -6,7 +6,7 @@ export default function HomePage() {
     
     
     return(
-            <section>
+            <section >
               <Findsection/>
               <ExploreSection/>
               <Footer/>

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CiLocationOn } from "react-icons/ci";
@@ -9,12 +9,15 @@ import { LiaBedSolid } from "react-icons/lia";
 import { PiBathtub } from "react-icons/pi";
 import { RxDimensions } from "react-icons/rx";
 import { FiPhone, FiMail, FiHeart, FiShare2, FiMoreVertical, FiFlag, FiMessageCircle } from "react-icons/fi";
- 
+import { useAuth } from "../../../context/AuthContext";
 import axiosInstance from "../../../../sa/lib/axios";
-
-
+import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
+ 
 
 export default function PropertyCard({ property }: any) {
+  const { user } = useAuth();
+  
   const [loading, setLoading] = useState(false);
   const countrySlug = process.env.NEXT_PUBLIC_COUNTRY_SLUG;
   const apiURL = process.env.NEXT_PUBLIC_API_URL;
@@ -32,6 +35,24 @@ export default function PropertyCard({ property }: any) {
   const handleTouchStart = (e: React.TouchEvent) => (touchStartX.current = e.changedTouches[0].screenX);
   const handleTouchMove = (e: React.TouchEvent) => (touchEndX.current = e.changedTouches[0].screenX);
   
+  const router = useRouter()
+  const [liked, setLiked] = useState(property.is_liked);
+  
+  
+  // useEffect(() => {
+  //   if (!loading && !user) {
+  //     router.push("/sa/login");
+  //   }
+  // }, [user, loading, router]);
+
+  // if (loading) {
+  //   return (
+  //     <div className="text-center mt-20">
+  //       <Loading />
+  //     </div>
+  //   );
+  // }
+
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const deltaX = touchStartX.current - touchEndX.current;
@@ -43,7 +64,7 @@ export default function PropertyCard({ property }: any) {
   };
 
    
-  const [liked, setLiked] = useState(property.is_liked);
+  
 
  
 
@@ -58,8 +79,8 @@ export default function PropertyCard({ property }: any) {
 
     try {
         const response = await axiosInstance.post( 
-          `/property/property_like/${property.id}/like/`,
-           { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies                                   
+          `/property/property-like/${property.id}/like/`,
+          { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies                                   
         );
         console.log("toggleLike-response.data=",response.data);
         setLiked(response.data.liked);
@@ -84,13 +105,13 @@ export default function PropertyCard({ property }: any) {
 
   return (
     <Link href={`/${countrySlug}/property/${property.id}`}>
-        <motion.div
+        {/* <motion.div
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200, damping: 15 }}
           className="rounded-lg"
-        >
+        > */}
         
-          <div className="flex flex-col sm:flex-row bg-white shadow-md hover:shadow-xl transition-all overflow-hidden">
+          <div className="flex flex-col rounded-t-lg border border-gray-300 sm:flex-row bg-white shadow-md  transition-all overflow-hidden hover:bg-[#f3f4f6]">
               
               {/* Left Side: Image */}
               <div
@@ -203,40 +224,61 @@ export default function PropertyCard({ property }: any) {
 
 
           {/* Footer under image  */}
-          <div className="rounded-b-lg bottom-0 left-0 right-0 bg-[#ea3934] text-white text-xs px-3 py-1 flex justify-between items-center">
-              <span>Listed {property?.created_at|| "3 months ago"}</span>
-              <div className="flex gap-2 text-lg">
-                <button><FiPhone /></button>
-                <button><FiMail /></button>
-                <button><FiMessageCircle /></button>
-                <button
-                    onClick={toggleLike}
-                    className={`transition-colors ${
-                      liked ? "text-green-500" : "text-white"
-                    }`}
-                  >
-                    <FiHeart fill={liked ? "currentColor" : "none"} />
-                </button>
+          <div className="rounded-b-lg bottom-0 left-0 right-0 bg-[#e5e7eb] text-gray-500 text-xs px-3 py-1 flex justify-between items-center">
+              <span>
+                Listed {property?.available_from
+                  ? formatDistanceToNow(new Date(property.available_from), {
+                      addSuffix: true,
+                    })
+                  : "—"}
+              </span>
 
+              
+              
+              <div className="flex gap-2 text-lg items-center">
+                <button className="bg-white text-[#5842f6] text-center  border-1 border-[#5842f6] rounded-md flex items-center py-2 px-3"><FiPhone className="text-[#5842f6]"/><text className="ml-2 text-[#5842f6]">  Call</text></button>
+                <button className="bg-white text-[#5842f6] text-center  border-1 border-[#5842f6] rounded-md flex items-center py-2 px-3"><FiMail  className="text-[#5842f6]"/><text className="ml-2 text-[#5842f6]"> Email</text></button>
+                <button className="bg-white text-[#5842f6] text-center  border-1 border-[#5842f6] rounded-md flex items-center py-2 px-3"><FiMessageCircle className="text-[#5842f6]"/><text className="ml-2 text-[#5842f6]">Whatsapp</text></button>
+                
+                <text className="text-gray-500 items-center">|</text>
+
+                {/* like button */}
+                {user && (
+                    <button
+                        onClick={toggleLike}
+                        className={`transition-colors ${
+                          liked ? "text-green-500" : "text-white"
+                        }`}
+                      >
+                        <FiHeart fill={liked ? "currentColor" : "none"} />
+                    </button>
+                )}
+
+
+                {/* dots  */}
                 <div className="relative">
-                  <button onClick={() => setMenuOpen(!menuOpen)}>
-                    <FiMoreVertical />
-                  </button>
-                  {menuOpen && (
-                    <div className="absolute right-0 top-6 bg-white shadow-lg rounded-md border text-gray-700 text-sm w-32">
-                      <button className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full">
-                        <FiShare2 /> Share
-                      </button>
-                      <button className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full">
-                        <FiFlag /> Report
-                      </button>
-                    </div>
-                  )}
+                    <button 
+                      className="bg-white text-[#5842f6] text-center border-1 border-[#5842f6] rounded-md flex items-center py-3 px-3"
+                      onClick={() => setMenuOpen(!menuOpen)}
+                    >
+                        <FiMoreVertical className="text-[#5842f6]"/>
+                    </button>
+
+                    {menuOpen && (
+                      <div className="absolute right-0 top-6 bg-white shadow-lg rounded-md border text-gray-700 text-sm w-32">
+                        <button className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full">
+                          <FiShare2 /> Share
+                        </button>
+                        <button className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 w-full">
+                          <FiFlag /> Report
+                        </button>
+                      </div>
+                    )}
                 </div>
               </div>
           </div>
             
-        </motion.div>
+        {/* </motion.div> */}
     
    </Link>
   );

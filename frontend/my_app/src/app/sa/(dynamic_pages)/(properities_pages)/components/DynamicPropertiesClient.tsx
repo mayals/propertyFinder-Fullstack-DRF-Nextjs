@@ -6,7 +6,7 @@ import PropertyCard from "./PropertyCard";
 import Breadcrumb from "./Breadcrumb";
 import SubTypesCard from "./SubTypesCard";
 import Findsection from "./Findsection";
-
+import Footer from "../../../components/footer/Footer";
 
 
 export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
@@ -90,13 +90,16 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
 
     // ✅ Success
     return (
-            <main className="min-h-screen bg-gray-50">
+            <main className="min-h-screen bg-white">
                 <section className="max-w-6xl mx-auto px-4">
+                    <br></br> <br></br><br></br> <br></br>
                     
                     <Findsection 
                         mainType={maintypeSlug} 
                         purpose={purposeSlug} 
                     />
+                 
+                    
 
                     <Breadcrumb
                         maintypeSlug={maintypeSlug}
@@ -125,6 +128,9 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
                             />
                         ))}
                     </div>
+                </section>
+                <section className="mt-8">
+                    <Footer/>
                 </section>
             </main>
     );

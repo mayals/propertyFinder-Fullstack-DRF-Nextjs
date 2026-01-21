@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import Loading from "../../components/loading/Loading";
+import { FcLike } from "react-icons/fc";
 
 export default function MyDashboard() {
   const { user, loading } = useAuth();
@@ -65,6 +66,8 @@ export default function MyDashboard() {
                 </p>
                 </Link>
 
+
+
                 {/* Change Password */}
                 <Link
                     href="/sa/changePassword"
@@ -82,6 +85,27 @@ export default function MyDashboard() {
                         Secure your account by changing your password anytime.
                     </p>
                 </Link>
+
+
+
+                {/* Saved Properties */}
+                <Link
+                    href="/sa/saved-properties"
+                    className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                >
+                    <FcLike className="h-20 w-20 text-[#ef5e4e] transition group-hover:scale-105"/>
+                    <h3 className="mt-4 text-xl">Saved Properties</h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                        Browse through properties and click the heart icon to save your favorites for easy access later.
+                    </p>
+                </Link>
+
+
+
+
+
+
+
 
                 {/* Role Management (Admin only) */}
                 {user.role === "admin" && (

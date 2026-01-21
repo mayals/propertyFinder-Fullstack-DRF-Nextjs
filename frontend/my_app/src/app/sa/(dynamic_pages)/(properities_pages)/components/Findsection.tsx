@@ -376,7 +376,7 @@ const containerRef = useRef<HTMLDivElement>(null);
 
 
   return (
-    <section className="p-2 bg-[#f9fafb] py-2">
+    <section className="p-2">
         {/* Main div container */}
         <div
           ref={containerRef}

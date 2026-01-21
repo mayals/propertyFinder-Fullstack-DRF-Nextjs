@@ -94,7 +94,7 @@ const Navbar: React.FC = () => {
 
       
       {/* Desktop Navbar */}
-      <section className="hidden md:block w-full px-8 text-gray-700 bg-white shadow-md">
+      <section className="hidden md:block w-full px-8 text-gray-700 bg-white shadow-md border-l border-b border-gray-200 fixed top-0 right-0 left-0 z-100">
         <div className="flex justify-between">
           
           <div className="flex items-center space-x-6 my-0">
@@ -184,7 +184,7 @@ const Navbar: React.FC = () => {
 
           {/* row down */}
           <div className="">
-              <nav className="flex text-wrap  gap-2 bg-gray-100 mx-0 my-0">
+              <nav className="flex text-wrap gap-2 bg-gray-100 mx-0 my-0">
                 
                     {/* normal links type */}
                     {navMobItems.map(({ label, href }) => (
