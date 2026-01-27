@@ -180,7 +180,6 @@ export const getMainTypesList = async() => {
     
 
 
-
 // getMainTypeSubTypesList -- all Sub TypesList belong to one MainType //
 export const getMainTypeSubTypesList = async(selectedMainType) => {
     try {

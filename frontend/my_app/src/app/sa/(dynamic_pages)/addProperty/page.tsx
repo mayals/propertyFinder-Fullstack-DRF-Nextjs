@@ -231,6 +231,7 @@ export default function AddProperty() {
                 console.log("fetchSubTypesListForSelectedMainType-selectedMainType",selectedMainType)
                     try {
                         const data = await getMainTypeSubTypesList(selectedMainType);
+                        console.log("fetchSubTypesListForSelectedMainType-selectedMainType",data)
                         setSubTypeList(data);             // ✅ save the result SubType List
                         notify("SubType List belong to selected MainType is now get successfully", "success");
                     

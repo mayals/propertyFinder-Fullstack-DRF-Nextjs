@@ -145,14 +145,14 @@ export default function PropertyCard({ property }: any) {
 
                     {/* Right button - nextImage */}
                     <button
-                      onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                nextImage();
-                              }}
-                      className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1 rounded-full"
-                    >
-                      <ChevronRight size={18} />
+                        onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  nextImage();
+                                }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1 rounded-full"
+                      >
+                        <ChevronRight size={18} />
                     </button>
                   </>
                 )}
