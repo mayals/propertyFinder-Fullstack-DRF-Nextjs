@@ -45,10 +45,11 @@ urlpatterns = [
     path('delete-main-type/<str:id>/', views.DeleteMainTypeAPIView.as_view(), name='delete-main-type'),
 
     # SubTypes 
+    # ${API_URL}/property/${selectedMainType}/sub-types/
     # SubTypes (country_slug, maintype_slug) -- for dropdown menue in frontend -- Findsection page 
-    path('<slug:country_slug>/<slug:maintype_slug>/subtypes/',
-         views.ListSubTypesByCountryMaintypeAPIView.as_view(),
-         name='list-subtypes-by-country-maintype'),
+    # path('<slug:country_slug>/<slug:maintype_slug>/subtypes/',
+    #      views.ListSubTypesByCountryMaintypeAPIView.as_view(),
+    #      name='list-subtypes-by-country-maintype'),
     
     
     
@@ -56,7 +57,7 @@ urlpatterns = [
     # subtypes- 
     path('create-sub-types/', views.CreateSubTypesAPIView.as_view(), name='create-sub-types'),
     # path('list-sub-types/', views.ListSubTypesAPIView.as_view(), name='list-sub-types'),
-    # path('<str:main_type_id>/sub-types/', views.ListMaintypeSubTypesAPIView.as_view(), name='list-maintype-subtypes'),
+    path('<str:main_type_id>/sub-types/', views.ListSubTypesByMaintypeAPIView.as_view(), name='list-maintype-subtypes'),
     path('update-sub-types/<str:id>/', views.UpdateSubTypesAPIView.as_view(), name='update-sub-types'), 
     path('delete-sub-types/<str:id>/', views.DeleteSubTypesAPIView.as_view(), name='delete-sub-types'),
 

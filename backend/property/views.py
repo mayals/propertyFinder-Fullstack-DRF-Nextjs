@@ -137,14 +137,14 @@ class CreateSubTypesAPIView(APIView):
 
 # SubTypes  - without properties -- for dropdown menu in frontend
 # <slug:country_slug>/<slug:maintype_slug>/subtypes/
-class ListSubTypesByCountryMaintypeAPIView(APIView):
+class ListSubTypesByMaintypeAPIView(APIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = PropertySubTypesMainTypeSerializer
     
-    def get(self, request, country_slug, maintype_slug, *args, **kwargs):
+    def get(self, request, main_type_id, *args, **kwargs):
         print("kwargs=",kwargs)
         try:
-            mainType = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
+            mainType = get_object_or_404(PropertyMainType, id=main_type_id)
             # print('mainType =', mainType)
             subTypes = PropertySubTypes.objects.filter(main_type =mainType.id)
             # print('mainType-subTypes =', subTypes)
