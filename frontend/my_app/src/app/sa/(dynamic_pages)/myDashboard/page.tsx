@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import Loading from "../../components/loading/Loading";
-import { FcLike } from "react-icons/fc";
+import { FcLike  } from "react-icons/fc";
+import { FaBuildingUser } from "react-icons/fa6";
+
 
 export default function MyDashboard() {
   const { user, loading } = useAuth();
@@ -26,6 +28,8 @@ export default function MyDashboard() {
     }
   }, [user, loading, router]);
 
+
+  
   if (loading) {
     return (
       <div className="text-center mt-20">
@@ -101,7 +105,17 @@ export default function MyDashboard() {
                 </Link>
 
 
-
+                {/* My owned Properties */}
+                <Link
+                    href="/sa/my-properties"
+                    className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                >
+                    <FaBuildingUser  className="h-20 w-20 text-[#ef5e4e] transition group-hover:scale-105"/>
+                    <h3 className="mt-4 text-xl">My Properties</h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                        All properities add by you.
+                    </p>
+                </Link>
 
 
 

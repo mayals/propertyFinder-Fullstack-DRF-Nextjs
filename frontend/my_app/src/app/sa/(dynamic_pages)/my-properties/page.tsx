@@ -1,6 +1,5 @@
-// src/app/sa/(dynamic_pages)/saved-properties/page.tsx
+// src/app/sa/(dynamic_pages)/my-properities/page.tsx
 "use client";
-
 
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
@@ -17,14 +16,15 @@ interface Property {
   city?: string;
 }
 
-export default function SavedPropertiesPage() {
+export default function MyProperitiesPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  
+
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/sa/login");
@@ -33,23 +33,28 @@ export default function SavedPropertiesPage() {
 
 
 
+
   useEffect(() => {
     const fetchSavedProperties = async () => {
-        try {
-          const res = await axiosInstance.get(
-          "/property/properties-liked",
-          { withCredentials:true }, 
-          )
-          setProperties(res.data.results); // ✅ IMPORTANT
-        } catch (err) {
-          setError("Failed to load saved properties");
-        };
+      try {
+        const res = await axiosInstance.get(
+        "/property/my-properties",
+        { withCredentials:true }, 
+        )
+        setProperties(res.data.results); // ✅ IMPORTANT
+      } catch (err) {
+        setError("Failed to load my properties");
+      } finally {
+        // setLoading(false);
+      }
     };
+
     fetchSavedProperties();
   }, []);
 
 
 
+ 
 
   if (loading) {
     return (
@@ -64,11 +69,11 @@ export default function SavedPropertiesPage() {
   return (
     <section className="min-h-screen p-6 mt-20">
       <h1 className="text-2xl  mb-6">
-        Properties you liked ({properties.length})
+        Your owned properties ({properties.length})
       </h1>
 
       {properties.length === 0 ? (
-        <p className="text-gray-500">No saved properties yet.</p>
+        <p className="text-gray-500">You not have owned properties yet.</p>
       ) : (
         <div className="space-y-6 my-8">
                 {properties.map((property) => (
@@ -83,3 +88,5 @@ export default function SavedPropertiesPage() {
     </section>
   );
 }
+
+
