@@ -1,14 +1,15 @@
-# In foo/urls/blog.py
-from django.urls import path
-from . import views
-from django.http import HttpResponse
 
+from django.urls import path
+from django.http import HttpResponse
+from . import views
 
 
 app_name="property"
 
 def debug_view(request, *args, **kwargs):
        return HttpResponse(f"Matched! kwargs={kwargs}")
+
+
 
 urlpatterns = [
     
@@ -114,5 +115,5 @@ urlpatterns = [
     path('delete-property-image/<str:id>/',views.DeletePropertyImageAPIView.as_view(), name='delete-property-image'),
     path("property-like/<uuid:property_id>/like/",views.TogglePropertyLikeAPIView.as_view(), name='property-like'),
     path("properties-liked/",views.PropertiesLikedAPIView.as_view(), name='properties-liked'),
-         
+    path("my-properties/",views.MyPropertiesAPIView.as_view(), name='my-properties'),    
 ]

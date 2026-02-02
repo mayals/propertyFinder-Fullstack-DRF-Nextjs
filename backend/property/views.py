@@ -557,6 +557,23 @@ class PropertiesLikedAPIView(APIView):
 
 
             
+
+class MyPropertiesAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        owner = request.user
+        queryset = Property.objects.filter(owner=owner)
+
+        serializer = PropertySerializer(queryset, many=True,context={"request": request})
+        return Response(
+            {
+                "count": queryset.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
    
    
     
