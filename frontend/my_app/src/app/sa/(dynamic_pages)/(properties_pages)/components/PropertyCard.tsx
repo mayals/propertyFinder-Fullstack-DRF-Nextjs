@@ -15,6 +15,11 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
  
 
+
+
+
+
+
 export default function PropertyCard({ property }: any) {
   const { user } = useAuth();
   
@@ -111,7 +116,7 @@ export default function PropertyCard({ property }: any) {
           className="rounded-lg"
         > */}
         
-          <div className="flex flex-col rounded-t-lg border border-gray-300 sm:flex-row bg-white shadow-md  transition-all overflow-hidden hover:bg-[#f3f4f6]">
+          <div className="flex flex-col rounded-t-lg border border-gray-300 sm:flex-row bg-white shadow-md transition-all overflow-hidden hover:bg-[#f3f4f6]">
               
               {/* Left Side: Image */}
               <div
@@ -191,14 +196,22 @@ export default function PropertyCard({ property }: any) {
                       {property.owner.first_name|| "Property Owner"}
                     </span>
                     
+
+                    
                       {property.owner.profile.profile_picture && (
-                        <Image
-                          src={`${apiURL}${property.owner.profile.profile_picture}`}
-                          alt="Owner logo"
-                          width={32}
-                          height={32}
-                          className="rounded-full mt-1"
-                        />
+                        <Link
+                            href={`http://localhost:3000/${countrySlug}/owned-properties/${property.owner.id}`}
+                            onClick={(e) => e.stopPropagation()} // prevents property link click
+                        >
+                              <Image
+                                src={`${apiURL}${property.owner.profile.profile_picture}`}
+                                alt="Owner logo"
+                                width={32}
+                                height={32}
+                                className="rounded-full mt-1"
+                              />
+
+                        </Link>
                       )} 
                   </div>
                 </div>
@@ -246,9 +259,7 @@ export default function PropertyCard({ property }: any) {
                 {user && (
                     <button
                         onClick={toggleLike}
-                        className={`transition-colors ${
-                          liked ? "text-green-500" : "text-white"
-                        }`}
+                        className={`transition-colors ${liked ? "text-green-500" : "text-white" }`}
                       >
                         <FiHeart fill={liked ? "currentColor" : "none"} />
                     </button>

@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
 import Loading from "../../components/loading/Loading";
-import PropertyCard from "../(properities_pages)/components/PropertyCard";
+import PropertyCard from "../(properties_pages)/components/PropertyCard";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 

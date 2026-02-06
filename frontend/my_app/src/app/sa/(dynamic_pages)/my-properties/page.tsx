@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
 import Loading from "../../components/loading/Loading";
-import PropertyCard from "../(properities_pages)/components/PropertyCard";
+import PropertyCard from "../(properties_pages)/components/PropertyCard";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +16,7 @@ interface Property {
   city?: string;
 }
 
-export default function MyProperitiesPage() {
+export default function MyPropertiesPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -35,7 +35,7 @@ export default function MyProperitiesPage() {
 
 
   useEffect(() => {
-    const fetchSavedProperties = async () => {
+    const fetchMyProperties = async () => {
       try {
         const res = await axiosInstance.get(
         "/property/my-properties",
@@ -49,7 +49,7 @@ export default function MyProperitiesPage() {
       }
     };
 
-    fetchSavedProperties();
+    fetchMyProperties();
   }, []);
 
 
