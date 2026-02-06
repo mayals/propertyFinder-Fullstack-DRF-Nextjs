@@ -12,8 +12,6 @@ def debug_view(request, *args, **kwargs):
 
 
 urlpatterns = [
-    
-    
     # SubTypes (country_slug, maintype_slug, purpose_slug)
     # /property/sa/residential-sale/subtypes/
     # `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}-${purposeSlug}/subtypes/`
