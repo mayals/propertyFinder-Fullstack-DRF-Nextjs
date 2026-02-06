@@ -92,7 +92,7 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
     return (
             <main className="min-h-screen bg-white">
                 <section className="max-w-6xl mx-auto px-4">
-                    <br></br> <br></br><br></br> <br></br>
+                    
                     
                     <Findsection 
                         mainType={maintypeSlug} 
@@ -129,9 +129,9 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
                         ))}
                     </div>
                 </section>
-                <section className="mt-8">
+                {/* <section className="mt-8">
                     <Footer/>
-                </section>
+                </section> */}
             </main>
     );
 }

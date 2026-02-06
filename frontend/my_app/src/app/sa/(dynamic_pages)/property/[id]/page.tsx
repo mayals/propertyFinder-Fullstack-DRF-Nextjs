@@ -97,7 +97,7 @@ export default function PropertyPage() {
             <PropertyHeader property={property} />
             <PropertyDetails property={property} />
         </main>
-            <Footer/>
+            {/* <Footer/> */}
         </section>
     );
 }
