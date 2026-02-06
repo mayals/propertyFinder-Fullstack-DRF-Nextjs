@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, PropertyLikeSerializer
 from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike
+from users.models import CustomUser
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -9,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAllowedToAddProperty
 from django.utils.text import slugify
-
+from django.conf import settings
 
 
 # Country ############
@@ -575,6 +576,33 @@ class MyPropertiesAPIView(APIView):
             status=status.HTTP_200_OK,
         )
    
+   
+   
+   
+
+class OwnerPropertiesAPIView(APIView):
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, country_slug, owner_id, *args, **kwargs):
+        country = get_object_or_404(Country, country_slug=country_slug)
+        print("country=",country)
+        owner = get_object_or_404(CustomUser, id=owner_id)
+        print("owner=",owner)
+        queryset = Property.objects.filter(country=country, owner= owner, is_published=True)
+        serializer = PropertySerializer(queryset, many=True, context={'request': request})
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "country": country.country_name,
+                "owner": owner.get_full_name(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+   
+       
    
     
      

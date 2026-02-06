@@ -115,5 +115,7 @@ urlpatterns = [
     path('delete-property-image/<str:id>/',views.DeletePropertyImageAPIView.as_view(), name='delete-property-image'),
     path("property-like/<uuid:property_id>/like/",views.TogglePropertyLikeAPIView.as_view(), name='property-like'),
     path("properties-liked/",views.PropertiesLikedAPIView.as_view(), name='properties-liked'),
-    path("my-properties/",views.MyPropertiesAPIView.as_view(), name='my-properties'),    
+    path("my-properties/",views.MyPropertiesAPIView.as_view(), name='my-properties'),
+    path("<slug:country_slug>/owner-properties/<uuid:owner_id>/",views.OwnerPropertiesAPIView.as_view(), name='owner-properties'), 
 ]
+                   # GET /sa/owner-properties/495620ef-1604-46a1-ad61-1d07cfccb931 404 in 94ms    
