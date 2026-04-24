@@ -2,6 +2,7 @@
 
 "use client"
 import { useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { loginUser, handleResendEmail } from "../../utils/auth";
 // react-toastify
 import notify from "../../common/useNotification"
@@ -15,7 +16,8 @@ const API_URL = "http://127.0.0.1:8000";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
     // const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorConfirmEmailMsg, setErrorConfirmEmailMsg] = useState('');
     
@@ -122,8 +124,8 @@ export default function LoginPage() {
 
 	  return (
       <>
-        <section className="min-h-screen bg-[#F2F2F2] flex flex-col justify-center items-center px-4 py-8">
-            <div className="text-gray-600 font-bold text-2xl sm:text-3xl my-3 text-center">
+        <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center items-center px-4 py-8">
+            <div className="text-gray-800 font-bold text-3xl sm:text-4xl my-4 text-center">
               <h1>Login</h1>
             </div>
 
@@ -166,16 +168,16 @@ export default function LoginPage() {
             <form
               noValidate
               onSubmit={handleSubmit}
-              className="bg-[#B6B09F] p-6 sm:p-8 rounded-lg w-full max-w-md md:max-w-lg lg:max-w-xl space-y-4"
+              className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md md:max-w-lg lg:max-w-xl space-y-6"
             >
               
 
               
               {/* email field  */}
               <div className="flex flex-col">
-                <label className="mb-1 text-sm sm:text-base">Email</label>
+                <label className="mb-1 text-sm sm:text-base font-medium text-gray-700">Email</label>
                 <input
-                  className="text-gray-600 bg-gray-100 p-2 rounded"
+                  className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="Enter your email address"
                   type="email"
                   value={email}
@@ -186,28 +188,33 @@ export default function LoginPage() {
 
               {/* password field  */}
               <div className="flex flex-col">
-                <label className="mb-1 text-sm sm:text-base">Password</label>
-                <input
-                  className="text-gray-600 bg-gray-100 p-2 rounded"
-                  placeholder="Enter your password"
-                  type="password"
-                  value={password}
-                  required
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <label className="mb-1 text-sm sm:text-base font-medium text-gray-700">Password</label>
+                <div className="relative">
+                    <input
+                      className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="Enter your password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      required
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500" onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
               </div>
 
               {/* . submit button  */}
               <div className="flex justify-between items-center">
                   <button
-                  className="bg-gray-600 hover:bg-sky-700 text-white p-2 rounded transition-colors duration-200"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200"
                   type="submit"
                   >
                     Login
                   </button>
                   <p>
                       <Link href="/forgotPassword">
-                        <span className="no-underline text-gray-600 hover:underline hover:text-blue-600"> Forgot Password?</span>
+                        <span className="no-underline text-blue-600 hover:underline hover:text-blue-700"> Forgot Password?</span>
                       </Link>
                   </p>
               </div>

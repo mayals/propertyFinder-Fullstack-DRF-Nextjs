@@ -1,4 +1,4 @@
-// (dynamic_pages)/(properities_pages)/components/Findsection.tsx
+// (dynamic_pages)/(properties_pages)/components/Findsection.tsx
 "use client";
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
@@ -116,18 +116,17 @@ export default function Findsection({purpose, mainType}) {
   const maintypeSlug = maintypeSelected
  
   useEffect(() => {
-  // Only fetch when we have a valid maintypeSlug and countrySlug
-  if (!maintypeSlug || !countrySlug) {
-    return;
-  }
   const fetchSubTypesList = async () => {
-    try {
+    try { 
       const response = await axios.get(
          `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}/subtypes/`,
         { withCredentials: true }
       );
       setSubtypesList(response.data || []);
       console.log("fetchSubTypesList-subTypesList=",response.data);
+
+      
+    
     } catch (error) {
       console.error("❌ Error fetching subtypes:", error);
     }

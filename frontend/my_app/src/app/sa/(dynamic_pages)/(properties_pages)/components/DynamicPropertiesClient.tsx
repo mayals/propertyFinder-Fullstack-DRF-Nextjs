@@ -90,7 +90,7 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
 
     // ✅ Success
     return (
-            <main className="min-h-screen bg-white">
+            <main className="min-h-screen bg-white ">
                 <section className="max-w-6xl mx-auto px-4">
                     
                     

@@ -29,7 +29,7 @@ export default function MyDashboard() {
   }, [user, loading, router]);
 
 
-  
+
   if (loading) {
     return (
       <div className="text-center mt-20">
@@ -113,7 +113,7 @@ export default function MyDashboard() {
                     <FaBuildingUser  className="h-20 w-20 text-[#ef5e4e] transition group-hover:scale-105"/>
                     <h3 className="mt-4 text-xl">My Properties</h3>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
-                        All properities add by you.
+                        All properties add by you.
                     </p>
                 </Link>
 
@@ -122,7 +122,7 @@ export default function MyDashboard() {
 
 
                 {/* Role Management (Admin only) */}
-                {user.role === "admin" && (
+                {user?.role === "admin" && (
                     <Link
                         href="/sa/roleLinks"
                         className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
@@ -149,7 +149,7 @@ export default function MyDashboard() {
             <h2 className="text-center py-3 mt-8 text-2xl">Property Form Managment</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 
-                {user.role === "admin" && (
+                {user?.role === "admin" && (
                 <>
                     <Link
                         href="/sa/addCountry"
@@ -258,7 +258,7 @@ export default function MyDashboard() {
             <h2 className="text-center py-3 mt-8 text-2xl">Add Property</h2>
             <div className="">
                 
-                {(user.role === "admin"  ||  user.role === "developer" ||  user.role === "broker" || user.role === "agent" ) &&(
+                {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
                 <>
                     <Link
                         href="/sa/addProperty"

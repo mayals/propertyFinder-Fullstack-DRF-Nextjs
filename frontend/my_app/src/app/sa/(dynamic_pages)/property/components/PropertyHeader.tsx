@@ -64,9 +64,9 @@ export default function PropertyHeader({ property }: { property: Property }) {
 
            
 
-                <h3 className="ont-semibold text-gray-900 text-lg mb-3">Agent</h3>
+                <h3 className="ont-semibold text-gray-900 text-lg mb-3">Provider</h3>
 
-                {/* AGENT NAME */}
+                {/* owner NAME */}
                 <p className="text-gray-900 font-bold mt-1">
                     {property.owner?.full_name || "Not Provided"}
                 </p>

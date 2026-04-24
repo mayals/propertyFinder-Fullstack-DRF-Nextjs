@@ -26,7 +26,7 @@ export default function EditAdminProfile() {
     const [lastName, setLastName] = useState('');  
     
     const [brokerName, setBrokerName] = useState('');
-    
+        
     const [bio, setBio] = useState('');
     
     const [website,setWebsite]            = useState('');
@@ -57,11 +57,11 @@ export default function EditAdminProfile() {
         if (!loading && user){
             setFirstName(user.first_name);
             setLastName(user.last_name);
-            setBrokerName(user.brokerName || "");
+            setBrokerName(user.broker_name || "");
             setBio(user.bio || "");
             setWebsite(user.website || "")
             setTwitter(user.twitter || "")
-            setContactEmail(user.contactEmail)
+            setContactEmail(user.contact_email)
             setPhone(user.phone_number || "");
             setCountry(user.country || "");
             setAddress(user.address || "");
@@ -184,31 +184,16 @@ export default function EditAdminProfile() {
             // setIsSubmitting(false);
             return;
           }
-          //  check brokerName field is not empty
-          if (!brokerName) {
-            notify("Please enter gender !","warning");
-            return;
-          }
-          //  check bio is not empty
-          if (!bio) {
-            notify("Please enter bio !","warning");
-            return;
-          }
-          //  check website is not empty
-          if (!website) {
-            notify("Please enter website !","warning");
-            return;
-          }
-          //  check contactEmail is not empty
-          if (!contactEmail) {
-            notify("Please enter contact Email !","warning");
-            return;
-          }
-          //  check twitter field is not empty
-          if (!twitter) {
-            notify("Please enter twitter !","warning");
-            return;
-          }
+          //  check brokerName field is not empty (optional - allow empty)
+          // Removed validation to allow brokerName to be optional
+          //  check bio is not empty (optional - allow empty)
+          // Removed validation to allow bio to be optional
+          //  check website is not empty (optional - allow empty)
+          // Removed validation to allow website to be optional
+          //  check contactEmail is not empty (optional - allow empty)
+          // Removed validation to allow contactEmail to be optional
+          //  check twitter field is not empty (optional - allow empty)
+          // Removed validation to allow twitter to be optional
           //  check phone is not empty
           if (!phone) {
             notify("Please enter contact phone !","warning");
