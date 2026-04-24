@@ -385,7 +385,7 @@ class BuyerProfileSerializer(serializers.ModelSerializer):
 
 # BuyerPublicProfile
 class BuyerPublicProfileSerializer(BuyerProfileSerializer):
-    """ Child class that inherit from it's parents and changing Meta class properities """
+    """ Child class that inherit from it's parents and changing Meta class properties """
     class Meta(BuyerProfileSerializer.Meta):
         exclude = [
             "date_of_birth","phone_number",
@@ -881,7 +881,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 #         exclude = ['user']
 
 # class InstructorPublicProfileSerializer(InstructorProfileSerializer):
-#     """ Child class that inherit from it's parents and changing Meta class properities """
+#     """ Child class that inherit from it's parents and changing Meta class properties """
 #     class Meta(InstructorProfileSerializer.Meta):
 #         exclude = [
 #             "date_of_birth","phone_number",
