@@ -18,7 +18,7 @@ export default function RolesLinksPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-4xl">
         {/* Developer */}
         <Link
-          href="/register/developer"
+          href="/sa/register/developer"
           className="flex flex-col items-center justify-center bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition transform duration-200"
         >
           <Code className="w-10 h-10 text-[#ea3934] mb-4" />
@@ -32,7 +32,7 @@ export default function RolesLinksPage() {
 
         {/* Broker */}
         <Link
-          href="/register/broker"
+          href="/sa/register/broker"
           className="flex flex-col items-center justify-center bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition transform duration-200"
         >
           <Building2 className="w-10 h-10 text-[#ea3934]  mb-4" />
@@ -46,7 +46,7 @@ export default function RolesLinksPage() {
 
         {/* Agent */}
         <Link
-          href="/register/agent"
+          href="/sa/register/agent"
           className="flex flex-col items-center justify-center bg-white shadow-md rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition transform duration-200"
         >
           <Users className="w-10 h-10 text-[#ea3934]  mb-4" />

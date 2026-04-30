@@ -112,18 +112,16 @@ export default function Findsection({purpose, mainType}) {
 
 
 
-  // Fetch subtypes based on selected main type only(residential/commercial) -- for dropdown menu --no purpose need 
-  const maintypeSlug = maintypeSelected
- 
+  // Fetch subtypes based on selected main type and purpose -- matches backend URL pattern
   useEffect(() => {
-  // Only fetch when we have a valid maintypeSlug and countrySlug
-  if (!maintypeSlug || !countrySlug) {
+  // Only fetch when we have valid maintypeSelected, countrySlug and purpose
+  if (!maintypeSelected || !countrySlug || !purpose) {
     return;
   }
   const fetchSubTypesList = async () => {
     try {
       const response = await axios.get(
-         `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSlug}/subtypes/`,
+         `${process.env.NEXT_PUBLIC_API_URL}/property/${countrySlug}/${maintypeSelected}-for-${purpose}/subtypes/`,
         { withCredentials: true }
       );
       setSubtypesList(response.data || []);
@@ -133,7 +131,7 @@ export default function Findsection({purpose, mainType}) {
     }
   };
   fetchSubTypesList();
-}, [maintypeSlug, countrySlug]);
+}, [maintypeSelected, countrySlug, purpose]);
 
 
 //  subtypes based on selected maintype (residential/commercial)-- using select and options way 
@@ -377,11 +375,11 @@ const containerRef = useRef<HTMLDivElement>(null);
 
 
   return (
-    <section className="p-2">
+    <section className="p-2 bg-red-600">
         {/* Main div container */}
         <div
           ref={containerRef}
-          className="flex items-center w-full bg-white  justify-between "
+          className="flex flex-wrap items-center gap-2 w-full bg-white justify-start md:justify-between p-2 rounded-lg"
         >
                 {/* Search input */}
                 {/* <div className="">
@@ -399,7 +397,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                 {/* Filters */}
 
                 {/*city */}
-                <div className="relative">
+                <div className="relative bg-green-500">
                   <button
                     onClick={() => toggleMenu("cityMenu")}
                     aria-expanded={activeMenu === "cityMenu"}
@@ -412,7 +410,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                   </button>
 
                   {activeMenu === "cityMenu" && (
-                    <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 p-2">
+                    <div className="absolute z-50 left-0 top-full bg-gray-100 border rounded-lg shadow-md w-32 sm:w-40 p-2">
                       {cityList.map(
                         (option) => (
                           <label

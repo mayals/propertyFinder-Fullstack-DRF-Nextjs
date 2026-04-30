@@ -5,6 +5,7 @@ import { LiaBedSolid } from "react-icons/lia";
 import { PiBathtub } from "react-icons/pi";
 import { RxDimensions } from "react-icons/rx";
 import { Phone, Mail, MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 
 
@@ -127,6 +128,15 @@ export default function PropertyHeader({ property }: { property: Property }) {
                         <Mail size={18} />
                         Email
                     </a>
+
+                    {/* MESSAGE - In-App - Primary Button */}
+                    <Link
+                        href={`/sa/send-message?receiver=${property.owner?.id || ""}&name=${encodeURIComponent(property.owner?.full_name || "Owner")}&property=${property.id}&title=${encodeURIComponent(property.title || "")}`}
+                        className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium shadow-md hover:shadow-lg"
+                    >
+                        <MessageCircle size={18} />
+                        Message {property.owner?.full_name || "Owner"}
+                    </Link>
                 </div>
         </aside>
 

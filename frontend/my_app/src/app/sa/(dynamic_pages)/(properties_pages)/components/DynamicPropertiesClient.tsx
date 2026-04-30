@@ -1,3 +1,4 @@
+// /sa/(dynamic_pages)/(properties_pages)/components/DynamicPropertiesClient.tsx
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -90,7 +91,7 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
 
     // ✅ Success
     return (
-            <main className="min-h-screen bg-white ">
+            <main className="min-h-screen bg-white">
                 <section className="max-w-6xl mx-auto px-4">
                     
                     
@@ -129,9 +130,6 @@ export default function DynamicPropertiesClient({ maintypeSlug, purposeSlug }) {
                         ))}
                     </div>
                 </section>
-                {/* <section className="mt-8">
-                    <Footer/>
-                </section> */}
             </main>
     );
 }

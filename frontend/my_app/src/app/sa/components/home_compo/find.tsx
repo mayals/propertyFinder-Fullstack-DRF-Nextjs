@@ -1,283 +1,200 @@
-// home page
-// src/app/components/home_compo/find.tsx
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { FiChevronDown } from "react-icons/fi";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FiChevronDown, FiSearch } from "react-icons/fi";
+import { Home, Building2, TrendingUp, Users } from "lucide-react";
+import DynamicPropertiesClient from "../../(dynamic_pages)/(properties_pages)/components/DynamicPropertiesClient";
+
+type PropertyCategory = "residential" | "commercial" | null;
+type PurposeType = "sale" | "rent" | null;
+
+
 
 export default function Findsection() {
-  const [activeRadioButton, setActiveRadioButton] = useState<string | null>(null);
-  // const [buyrentAction, setBuyrentAction] = useState<string | null>(null);
-  // const [commercialAction, setCommercialAction] = useState<string | null>(null);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const router = useRouter();
+  const [activeCategory, setActiveCategory] = useState<PropertyCategory>("residential");
+  const [activePurpose, setActivePurpose] = useState<PurposeType>("sale");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showPurposeMenu, setShowPurposeMenu] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-
-
   useEffect(() => {
-      setActiveRadioButton("buy")     
-  }, []);
+    setShowPurposeMenu(false);
+  }, [activeCategory]);
 
-
-  // buy button - rent button - comercial button
-  const handleactiveRadioButton = (buttonName: string) =>{
-    setActiveRadioButton(buttonName)
-  }
-  
-  
-
-
-
-  //  property type menue - beds&bath menue 
-  const toggleMenu = (menu: string) => {
-    setActiveMenu((prev) => (prev === menu ? null : menu));
-  };
-
-
-
-  // close on click outside
+  // Close on click outside
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setActiveMenu(null);
+        setShowPurposeMenu(false);
       }
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSearch = () => {
+    if (!activeCategory || !activePurpose) return;
+    const purposeSlug = activePurpose === "sale" ? "sale" : "rent";
+    const categorySlug = activeCategory === "residential" ? "residential" : "commercial";
+    router.push(`/sa/${categorySlug}-properties-for-${purposeSlug}${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ""}`);
+  };
 
-
-  // close on Esc
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setActiveMenu(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-
-
-
-
+  const purposeOptions =
+    activeCategory === "residential"
+      ? [
+          { value: "sale", label: "Buy", icon: <Home className="w-4 h-4" /> },
+          { value: "rent", label: "Rent", icon: <Building2 className="w-4 h-4" /> },
+        ]
+      : [
+          { value: "sale", label: "Buy", icon: <TrendingUp className="w-4 h-4" /> },
+          { value: "rent", label: "Rent", icon: <Building2 className="w-4 h-4" /> },
+        ];
 
   return (
-    <section className="relative min-h-[450px] bg-cover bg-center bg-[url('https://static-assets.propertyfinder.com/images/homepage/hero/sa-desktop.jpg')]">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
+    <>
+      {/* Hero Section */}
+      <section className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1600596542813-7f8c3a6b5c9?w=1920&q=80')",
+          }}
+        />
+        {/* Multi-layer overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-indigo-800/75 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-      {/* Title */}
-      <h1 className="relative z-10 text-center text-white text-5xl pt-20 pb-12">
-        Find every home here
-      </h1>
+        {/* Content */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-white/90 text-xs sm:text-sm mb-4 sm:mb-6">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })} - Top Properties
+          </div>
 
-      {/* main container */}
-      <div
-        ref={containerRef}
-        className="relative z-10 bg-black/20 backdrop-blur-sm px-2 py-5 rounded-[24px] mx-4 md:mx-10 lg:mx-[170px]"
-      >
+          {/* Main Heading */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
+            Find Your Perfect
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">
+              Dream Property
+            </span>
+          </h1>
 
-        {/* Toggle Radio Button group -----buy-------rent------commercial-----*/}
-        <div className="flex items-center justify-center max-w-xl mx-auto mb-4">
-          
-          {/* buy ----- */}
-          <label 
-            className="text-center w-full border-l border-t border-b text-base font-medium rounded-l-2xl text-black bg-white hover:bg-gray-100 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] px-4 py-1 cursor-pointer"
-            htmlFor="buy">
+          <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl">
+            Discover residential and commercial properties for sale or rent. Your next home or investment is just a search away.
+          </p>
+
+          {/* Search Card */}
+          <div
+            ref={containerRef}
+            className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-md sm:max-w-lg md:max-w-4xl mx-auto"
+          >
+            {/* Category Tabs */}
+            <div className="flex flex-wrap gap-2 mb-6 sm:gap-4">
+              {(["residential", "commercial"] as PropertyCategory[]).map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setShowPurposeMenu(false);
+                  }}
+                  role="tab"
+                  aria-label={`Filter by ${cat}`}
+                  className={`flex-1 min-w-[80px] md:min-w-[120px] min-h-[48px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
+                    activeCategory === cat
+                      ? "bg-indigo-600 text-white shadow-lg scale-[1.02]"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {cat === "residential" ? (
+                    <Home className="w-4 h-4" />
+                  ) : (
+                    <Building2 className="w-4 h-4" />
+                  )}
+                  {cat?.charAt(0).toUpperCase() + cat?.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Purpose Selection */}
+            <div className="flex flex-wrap gap-2 mb-6 sm:gap-4">
+              {purposeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setActivePurpose(opt.value as PurposeType)}
+                  role="tab"
+                  aria-label={`Purpose: ${opt.label}`}
+                  className={`flex-1 min-w-[120px] min-h-[48px] flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 ${
+                    activePurpose === opt.value
+                      ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-600"
+                      : "bg-gray-50 text-gray-600 border-2 border-transparent hover:bg-gray-100 hover:text-gray-700"
+                  }`}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Input & Button */}
+            <div className="flex flex-wrap gap-3">
+              <div className="flex-1 min-w-[0] relative">
+                <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                type="radio"
-                name="options"
-                id="buy" 
-                onChange={() => handleactiveRadioButton("buy")}
-                checked={activeRadioButton === "buy"}
-                className="hidden"   //  hides the blue circle
-                
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  placeholder="Search by city, community, or building..."
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-900 placeholder-gray-400"
                 />
-                Buy
-          </label>
-            
-          {/* rent ------ */}
-          <label 
-              className="text-center w-full border text-base font-medium text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
-              htmlFor="rent">
-              <input
-                type="radio"
-                name="options"
-                id="rent"
-                onChange={() => handleactiveRadioButton("rent")}
-                checked={activeRadioButton === "rent"}
-                className="hidden"   //  hides the blue circle
-              />
-              Rent
-          </label>
-          
-          {/* commercial ------ */}
-          <label 
-              className="text-center w-full border-t border-b border-r text-base font-medium rounded-r-2xl text-black bg-white hover:bg-gray-100 px-4 py-1 has-checked:bg-[#e7e5f4] has-checked:text-[#423884] cursor-pointer"
-              htmlFor="commercial">
-              <input
-                  type="radio"
-                  name="options"
-                  id="commercial"
-                  onChange={() => handleactiveRadioButton("commercial")}
-                  checked={activeRadioButton === "commercial"}
-                  className="hidden"   //  hides the blue circle
-              />
-              Commercial
-          </label>
-        </div>
-
-
-
-
-
-        {/* Search fields container   ---- */}
-        <div className="flex items-center w-full max-w-4xl mx-auto bg-white rounded-[24px] shadow-md overflow-visible">
-         
-         {/* search by word field */}
-          <input
-            type="text"
-            placeholder="City, community or building"
-            className="flex-1 px-4 py-3 text-gray-700 focus:outline-none"
-          />
-
-
-          {/* search by choose  */}
-          {/* Property type dropdown menu*/}
-          <div className="relative">
-            
-            {/* Property type -- button */}
-            <button
-              onClick={() => toggleMenu("property_type")}
-              aria-expanded={activeMenu === "property_type"}
-              className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
-            >
-              Property type
-              <FiChevronDown
-                className={`ml-1 transition-transform duration-300 ${
-                  activeMenu === "property_type" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {/* Property type -- for  buy rent  -- menue */}
-            {activeMenu === "property_type" && activeRadioButton !== "commercial" && (
-              <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Apartment</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Villa</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Farm</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Rest House</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Compound</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Duplex</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Whole Building</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Hotel / Hotel Apartment
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Full Floor</li>
-              </ul>
-            )}
-            {/* Property type -- for  commercial  -- menu */}
-            {activeMenu === "property_type" && activeRadioButton === "commercial" && (
-              <ul className="absolute left-0 top-full mt-1 w-52 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Office Space</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Retail</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Warehouse</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Villa</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Show Room</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Bulk Units</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Factory</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Hotel / Hotel Apartment
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Labor Camp</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Staff Acomodation</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Shop</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Land</li>
-              </ul>
-            )}
-          </div>
-
-
-
-
-          {/* Beds & Baths  button ---  Area(sqm) button */}
-          <div className="relative">
-           { activeRadioButton !== "commercial" && 
-              (<button
-                onClick={() => toggleMenu("bed_bath")}
-                aria-expanded={activeMenu === "bed_bath"}
-                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+              </div>
+              <button
+                onClick={handleSearch}
+                className="flex-shrink-0 px-6 py-3 text-white font-medium bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
               >
-                Beds & Baths
-                <FiChevronDown
-                  className={`ml-1 transition-transform duration-300 ${
-                    activeMenu === "bed_bath" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>)
-            }
-            { activeRadioButton === "commercial" && 
-              (<button
-                onClick={() => toggleMenu("area-sqm")}
-                aria-expanded={activeMenu === "area-sqm"}
-                className="cursor-pointer flex items-center px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none"
+                Search
+              </button>
+            </div>
+
+            {/* Quick Links */}
+            <div className="flex flex-wrap gap-4 sm:gap-6 mt-4 pt-4 border-t border-gray-100">
+              <Link
+                href="/sa/newProjects"
+                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
               >
-                Area(sqm)
-                <FiChevronDown
-                  className={`ml-1 transition-transform duration-300 ${
-                    activeMenu === "area-sqm" ? "rotate-180" : ""
-                  }`}
-                />
-              </button>)
-            }
-
-            {activeMenu === "bed_bath" && activeRadioButton !== "commercial" &&  (
-              <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
-                  Bedrooms
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Studio</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">5+</li>
-
-                <li className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase border-t">
-                  Bathrooms
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">5+</li>
-              </ul>
-            )}
-            
-             {activeMenu === "area-sqm" && activeRadioButton === "commercial" &&  (
-              <ul className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-lg shadow-lg z-50">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Min Area</li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Max Area</li>
-              </ul>
-            )}
-
-
+                <TrendingUp className="w-4 h-4" />
+                New Projects
+              </Link>
+              <Link
+                href="/sa/findAgent"
+                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Find Agent
+              </Link>
+            </div>
 
 
           </div>
-
-          
-          
-          
-          
-          
-          
-          {/* Search button */}
-          <button className="cursor-pointer px-6 py-3 rounded-r-3xl bg-[#ea3934] text-white font-semibold hover:bg-[#97211e] transition">
-            Search
-          </button>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Results Section (if applicable) */}
+      {activeCategory && activePurpose && (
+        <section className="bg-gray-50 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <DynamicPropertiesClient
+              maintypeSlug={activeCategory}
+              purposeSlug={activePurpose === "sale" ? "sale" : "rent"}
+            />
+          </div>
+        </section>
+      )}
+    </>
   );
 }
