@@ -307,6 +307,37 @@ class PropertyLike(models.Model):
         unique_together = ("user", "property")
 
 
+class Message(models.Model):
+    """
+    In-app messaging between users (buyer, broker, agent, developer, admin).
+    Messages can be linked to a property for context.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name="sent_messages"
+    )
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name="received_messages"
+    )
+    property = models.ForeignKey(
+        Property, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="messages"
+    )
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver} - {self.subject}"
+
+
 
 #  Another way of coding 
 # class Amenity(models.Model):

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import  Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike
+from .models import  Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike, Message
 from users.serializers import CustomUserSerializer
+from users.models import CustomUser
 from django.utils.text import slugify
 
 
@@ -488,6 +489,56 @@ class PropertyLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyLike
         fields = "__all__"
+
+
+class MessagePropertySerializer(serializers.ModelSerializer):
+    """Minimal property serializer for message context."""
+    class Meta:
+        model = Property
+        fields = ['id', 'title']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    """Serializer for reading messages - includes sender/receiver details."""
+    sender = CustomUserSerializer(read_only=True)
+    receiver = CustomUserSerializer(read_only=True)
+    property = MessagePropertySerializer(read_only=True, allow_null=True)
+
+    class Meta:
+        model = Message
+        fields = [
+            'id', 'sender', 'receiver', 'property',
+            'subject', 'body', 'is_read',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = fields
+
+
+class MessageCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating/sending a new message."""
+    receiver_id = serializers.PrimaryKeyRelatedField(
+        queryset=CustomUser.objects.all(), source='receiver',
+        help_text='UUID of the user to receive this message.'
+    )
+    property_id = serializers.PrimaryKeyRelatedField(
+        queryset=Property.objects.all(), source='property',
+        required=False, allow_null=True,
+        help_text='Optional: UUID of the property this message relates to.'
+    )
+
+    class Meta:
+        model = Message
+        fields = ['receiver_id', 'property_id', 'subject', 'body']
+
+    def validate_subject(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("Subject is required.")
+        return value.strip()
+
+    def validate_body(self, value):
+        if not value or not value.strip():
+            raise serializers.ValidationError("Message body is required.")
+        return value.strip()
 
 
 

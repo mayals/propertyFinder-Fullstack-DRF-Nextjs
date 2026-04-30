@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, PropertyLikeSerializer
-from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, PropertyLikeSerializer, MessageSerializer, MessageCreateSerializer
+from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike, Message
 from users.models import CustomUser
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
@@ -642,4 +642,86 @@ class ListPropertyImageAPIView(APIView):
 class UpdatePropertyImageAPIView(APIView):
     pass 
 class DeletePropertyImageAPIView(APIView):
-    pass 
+    pass
+
+
+# ---------------------------------------------------------------------------
+# Messaging API Views
+# ---------------------------------------------------------------------------
+
+class ReceivedMessagesAPIView(APIView):
+    """List all messages received by the authenticated user."""
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        messages = Message.objects.filter(
+            receiver=request.user
+        ).select_related('sender', 'receiver', 'property')
+        serializer = self.serializer_class(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SentMessagesAPIView(APIView):
+    """List all messages sent by the authenticated user."""
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        messages = Message.objects.filter(
+            sender=request.user
+        ).select_related('sender', 'receiver', 'property')
+        serializer = self.serializer_class(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MessageDetailAPIView(APIView):
+    """Retrieve a single message and mark it as read if the current user is the receiver."""
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, message_id):
+        message = get_object_or_404(
+            Message.objects.select_related('sender', 'receiver', 'property'),
+            id=message_id
+        )
+        # Only sender or receiver can view the message
+        if request.user not in (message.sender, message.receiver):
+            return Response(
+                {"detail": "You do not have permission to view this message."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        # Mark as read if the current user is the receiver
+        if request.user == message.receiver and not message.is_read:
+            message.is_read = True
+            message.save(update_fields=["is_read"])
+        serializer = self.serializer_class(message)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SendMessageAPIView(APIView):
+    """Send a new message to another user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = MessageCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set sender to current user
+            message = serializer.save(sender=request.user)
+            # Return full message data using read serializer
+            return Response(
+                MessageSerializer(message).data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UnreadMessagesCountAPIView(APIView):
+    """Return the count of unread messages for the authenticated user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        count = Message.objects.filter(
+            receiver=request.user, is_read=False
+        ).count()
+        return Response({"unread_count": count}, status=status.HTTP_200_OK) 
