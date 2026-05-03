@@ -1,13 +1,13 @@
 // src/app/sa/(properties_pages)/owned-properties/[ownerId]/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import PropertyCard from "../../../components/PropertyCard";
 import Loading from "../../../components/Loading";
 import Footer from "../../../components/Footer";
-import { Phone, Mail, MessageCircle, Share2, Check } from "lucide-react";
+import { Phone, Mail, MessageCircle, Share2, Check, Copy, Link2 } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import notify from "../../../common/useNotification";
 
@@ -34,15 +34,9 @@ export default function OwnerPropertiesPage() {
   const [properties, setProperties] = useState<any[]>([]);
   const [ownerData, setOwnerData] = useState<OwnerData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isSharing, setIsSharing] = useState(false);
-  const [isShared, setIsShared] = useState(false);
-
-  // State for sharing content
-  const [shareContent, setShareContent] = useState({
-    url: '',
-    formattedText: '',
-    ownerName: ''
-  });
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
 
   // Helper to build absolute URLs for images
   const getImageUrl = (path: string | undefined | null): string | null => {
@@ -53,10 +47,24 @@ export default function OwnerPropertiesPage() {
     return `${apiUrl}${cleanPath}`;
   };
 
+  // Get current page URL for sharing
+  const getPageUrl = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.href;
+    }
+    return `http://localhost:3000/sa/owned-properties/${ownerId}/`;
+  };
+
+  // Get share message
+  const getShareMessage = () => {
+    const ownerName = ownerData?.full_name || 'Owner';
+    const count = properties.length;
+    return `Check out ${ownerName}'s ${count} propert${count !== 1 ? 'ies' : 'y'} on PropertyFinder`;
+  };
+
   useEffect(() => {
     async function fetchOwnerProperties() {
       try {
-        // Fetch from Django backend API
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/property/owner-properties/${ownerId}/share`;
         const res = await fetch(apiUrl, {
           credentials: 'include'
@@ -64,8 +72,6 @@ export default function OwnerPropertiesPage() {
         if (!res.ok) throw new Error('Failed to fetch share data');
 
         const data = await res.json();
-        console.log('Share data received:', data);
-
         setProperties(data.properties || []);
 
         if (data.owner) {
@@ -76,16 +82,6 @@ export default function OwnerPropertiesPage() {
             profile: data.owner.profile || {}
           });
         }
-
-        // Generate share link locally using frontend URL
-        const shareLink = `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/sa/owned-properties/${ownerId}/`;
-
-        setShareContent({
-          url: shareLink,
-          formattedText: data.formatted_share_text || '',
-          ownerName: data.owner?.full_name || 'Owner'
-        });
-
       } catch (err) {
         console.error('Failed to fetch properties:', err);
       } finally {
@@ -98,39 +94,57 @@ export default function OwnerPropertiesPage() {
     }
   }, [ownerId]);
 
-  const handleShare = async () => {
-    setIsSharing(true);
-    setIsShared(false);
+  // Close share menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShareMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
+  const copyLink = async () => {
     try {
-      const { formattedText, url } = shareContent;
-
-      if (!formattedText || !url) {
-        throw new Error('Share data not available');
-      }
-
-      await navigator.clipboard.writeText(formattedText);
-      setIsShared(true);
-      notify("Properties copied to clipboard!", "success");
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: `${shareContent.ownerName}'s Properties`,
-            text: formattedText,
-            url: url,
-          });
-        } catch (err) {
-          console.log('Share dialog cancelled or failed');
-        }
-      }
-    } catch (err) {
-      console.error("Failed to share:", err);
-      notify("Sharing failed. Please try again.", "error");
-    } finally {
+      await navigator.clipboard.writeText(getPageUrl());
+      setLinkCopied(true);
+      notify("Link copied to clipboard!", "success");
       setTimeout(() => {
-        setIsSharing(false);
-      }, 3000);
+        setLinkCopied(false);
+        setShareMenuOpen(false);
+      }, 2000);
+    } catch (err) {
+      notify("Failed to copy link", "error");
+    }
+  };
+
+  const shareViaWhatsApp = () => {
+    const url = getPageUrl();
+    const text = getShareMessage();
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank');
+    setShareMenuOpen(false);
+  };
+
+  const shareViaEmail = () => {
+    const url = getPageUrl();
+    const subject = `${ownerData?.full_name || 'Owner'}'s Properties`;
+    const body = `${getShareMessage()}\n\n${url}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setShareMenuOpen(false);
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${ownerData?.full_name || 'Owner'}'s Properties`,
+          text: getShareMessage(),
+          url: getPageUrl(),
+        });
+      } catch (err) {
+        // User cancelled or share failed
+      }
     }
   };
 
@@ -145,88 +159,142 @@ export default function OwnerPropertiesPage() {
   return (
     <section>
       <main className="container mx-auto mt-5 px-4 py-10">
-        <div className="p-6 flex flex-col md:flex-row items-center justify-center gap-6 bg-white mb-5 mx-auto max-w-4xl">
-          <div className="flex items-center">
+        <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-white mb-5 mx-auto max-w-4xl rounded-xl shadow-sm">
+          <div className="flex items-center gap-6">
             {ownerData?.profile?.profile_picture ? (
               <Image
                 src={getImageUrl(ownerData.profile.profile_picture) || '/placeholder-avatar.jpg'}
                 alt="Owner photo"
-                width={150}
-                height={150}
+                width={120}
+                height={120}
                 className="rounded-full object-cover"
                 onError={(e) => {
-                  console.log('Image load error:', e);
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             ) : (
-              <div className="w-[150px] h-[150px] rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
+              <div className="w-[120px] h-[120px] rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-sm">
                 No Photo
               </div>
             )}
-          </div>
-          <div className="ml-2 flex flex-col">
-            <p className="text-xl text-gray-900 font-bold">{ownerData?.full_name} [{ownerData?.role}]</p>
-            <p>({properties.length}) properties</p>
-            <p className="text-lg text-gray-600">Address: {ownerData?.profile?.address}-{ownerData?.profile?.country}</p>
-          </div>
-          <div className="mt-4 w-full space-y-3">
-            {/* CALL + WHATSAPP SIDE BY SIDE */}
-            <div className="flex gap-2 w-full">
-              {/* CALL */}
-              <a
-                href={`tel:${ownerData?.profile?.phone_number || ""}`}
-                className="flex-1 flex items-center justify-center gap-1 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-              >
-                <Phone size={18} />
-                Call
-              </a>
-
-              {/* WHATSAPP */}
-              <a
-                href={`https://wa.me/${ownerData?.profile?.phone_number || ""}`}
-                className="flex-1 flex items-center justify-center gap-1 p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-              >
-                <MessageCircle size={18} />
-                WhatsApp
-              </a>
+            <div className="flex flex-col">
+              <p className="text-xl text-gray-900 font-bold">{ownerData?.full_name} <span className="text-gray-500 font-normal">[{ownerData?.role}]</span></p>
+              <p className="text-gray-600">({properties.length}) {properties.length === 1 ? 'property' : 'properties'}</p>
+              {ownerData?.profile?.address && (
+                <p className="text-sm text-gray-500 mt-1">{ownerData.profile.address}{ownerData?.profile?.country ? `, ${ownerData.profile.country}` : ''}</p>
+              )}
             </div>
-            <div className="flex gap-2 w-full">
-              {/* EMAIL */}
-              <a
-                href={`mailto:${ownerData?.email || ""}`}
-                className="flex items-center justify-center gap-1 w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
-              >
-                <Mail size={18} />
-                Email
-              </a>
+          </div>
+
+          <div className="flex gap-2">
+            {/* CALL */}
+            <a
+              href={`tel:${ownerData?.profile?.phone_number || ""}`}
+              className="flex items-center justify-center gap-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              <Phone size={18} />
+              <span className="hidden sm:inline">Call</span>
+            </a>
+
+            {/* WHATSAPP */}
+            <a
+              href={`https://wa.me/${ownerData?.profile?.phone_number || ""}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+            >
+              <MessageCircle size={18} />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </a>
+
+            {/* EMAIL */}
+            <a
+              href={`mailto:${ownerData?.email || ""}`}
+              className="flex items-center justify-center gap-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+            >
+              <Mail size={18} />
+              <span className="hidden sm:inline">Email</span>
+            </a>
+
+            {/* SHARE BUTTON WITH DROPDOWN */}
+            <div className="relative" ref={shareMenuRef}>
               <button
-                onClick={handleShare}
-                disabled={isSharing || !shareContent.formattedText}
-                className="flex items-center justify-center gap-1 w-full py-2 text-white border border-gray-300 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition disabled:opacity-50"
+                onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                className="flex items-center justify-center gap-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
               >
-                {isSharing && (
-                  <span className="inline-flex items-center">
-                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span className="ml-1">Sharing...</span>
-                  </span>
-                )}
-                {!isSharing && isShared && (
-                  <>
-                    <Check size={18} className="text-green-400" />
-                    <span className="ml-1">Shared!</span>
-                  </>
-                )}
-                {!isSharing && !isShared && (
-                  <>
-                    <Share2 size={18} />
-                    <span className="ml-1">Share Properties</span>
-                  </>
-                )}
+                <Share2 size={18} />
+                <span className="hidden sm:inline">Share</span>
               </button>
+
+              {/* Share Menu - Instagram/Facebook Style */}
+              {shareMenuOpen && (
+                <div className="absolute right-0 top-12 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                  <p className="px-4 py-2 text-sm text-gray-500 font-medium">Share this page</p>
+
+                  {/* Copy Link */}
+                  <button
+                    onClick={copyLink}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                      <Copy size={18} className="text-gray-700" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {linkCopied ? 'Copied!' : 'Copy link'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {linkCopied ? 'Link copied to clipboard' : 'Copy page link to clipboard'}
+                      </p>
+                    </div>
+                    {linkCopied && <Check size={16} className="text-green-500 ml-auto" />}
+                  </button>
+
+                  {/* WhatsApp */}
+                  <button
+                    onClick={shareViaWhatsApp}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <MessageCircle size={18} className="text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">WhatsApp</p>
+                      <p className="text-xs text-gray-500">Share via WhatsApp</p>
+                    </div>
+                  </button>
+
+                  {/* Email */}
+                  <button
+                    onClick={shareViaEmail}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Mail size={18} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Email</p>
+                      <p className="text-xs text-gray-500">Share via email</p>
+                    </div>
+                  </button>
+
+                  {/* Native Share (Mobile) */}
+                  {typeof navigator !== 'undefined' && 'share' in navigator && (
+                    <button
+                      onClick={handleNativeShare}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition text-left border-t border-gray-100 mt-2 pt-4"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <Share2 size={18} className="text-gray-700" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">More options</p>
+                        <p className="text-xs text-gray-500">Open native share menu</p>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -238,37 +306,6 @@ export default function OwnerPropertiesPage() {
             {properties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
-          </div>
-        )}
-
-        {/* Share Content Display */}
-        {shareContent.formattedText && (
-          <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Share Content Preview</h3>
-            <div className="bg-white p-4 rounded-lg border border-gray-300 mb-4">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans">
-                {shareContent.formattedText}
-              </pre>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(shareContent.formattedText);
-                  notify("Copied to clipboard!", "success");
-                }}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-              >
-                Copy Share Text
-              </button>
-              <a
-                href={shareContent.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition"
-              >
-                View Share Link
-              </a>
-            </div>
           </div>
         )}
       </main>
