@@ -1,21 +1,14 @@
 // src/app/layout.tsx
 "use client"
 
-import './globals.css'; // ✅ THIS LINE IS IMPORTANT
+import "../globals.css"
 import { Poetsen_One } from "next/font/google";
 
 import { usePathname } from "next/navigation";
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/navbar/Navbar';
 
-// src/app/layout.tsx
-// import "react-toastify/dist/ReactToastify.css";
-// import { ToastContainer } from "react-toastify";
 
-// import LoginModal from "./components/modals/LoginModal";
-// import SearchModal from "./components/modals/SearchModal";
-// import SignupModal from "./components/modals/SignupModal";
-// import AddPropertyModal from "./components/modals/AddPropertyModal";
 
 
 // google font
@@ -24,6 +17,8 @@ const poetsenOne = Poetsen_One(
     subsets: ["latin"]
   }
 );
+
+
 
 export const Metadata = {
   title: {
@@ -105,10 +100,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const hideNavbar = 
       pathname === "/login" ||
       // pathname === "/register/buyer" || 
-      pathname === "/forgotPassword" ||
-      pathname === "/noteCheckEmail" ||
-      pathname === "/notePasswordResetComplete" ||
-      pathname === "/changePassword" ||
+      pathname === "/forgot-password" ||
+      pathname === "/note-check-email" ||
+      pathname === "/note-password-reset-complete" ||
+      pathname === "/change-password" ||
       pathname.startsWith("/setNewPassword/") ||      // for the dynamic path "/setNewPassword/[uid]/[token]"
       pathname.startsWith("/users/confirm-email/") ||  // for the dynamic path "/users/confirm-email/[uid]/[token]"
       pathname.startsWith("/register")              // for the dynamic path "/register/[role]"

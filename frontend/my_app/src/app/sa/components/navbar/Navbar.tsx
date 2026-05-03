@@ -117,8 +117,8 @@ const Navbar: React.FC = () => {
 
   // Nav items
   const navItems: NavItem[] = [
-    { label: "New Projects", href: "/sa/newProjects" },
-    { label: "Find Agent", href: "/sa/findAgent" },
+    { label: "New Projects", href: "/sa/new-projects" },
+    { label: "Find Agent", href: "/sa/find-agent" },
     { label: "Blog", href: "/sa/blog" },
     { label: "About", href: "/sa/about" },
   ];
@@ -266,7 +266,9 @@ const Navbar: React.FC = () => {
                   <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-xl shadow-lg shadow-black/5 py-2 z-50 min-w-[180px] animate-fade-in">
                     <Link href="/sa/explore" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Explore</Link>
                     <Link href="/sa/mortgages" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Mortgages</Link>
-                    <Link href="/sa/roleLinks" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Role Links</Link>
+                    {user?.role === "admin" && (
+                      <Link href="/sa/roleLinks" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Role Links</Link>
+                    )}
                   </div>
                 )}
               </div>
@@ -295,7 +297,7 @@ const Navbar: React.FC = () => {
 
                 {/* Add Property Button */}
                 <Link
-                  href="/sa/addProperty"
+                  href="/sa/add-property"
                   className="hidden sm:block px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-sm hover:shadow"
                 >
                   Add Property
@@ -559,7 +561,7 @@ const Navbar: React.FC = () => {
 
                   {/* Add Property */}
                   <Link
-                    href="/sa/addProperty"
+                    href="/sa/add-property"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 bg-indigo-600 text-white rounded-lg justify-center transition-all hover:bg-indigo-700"
                   >

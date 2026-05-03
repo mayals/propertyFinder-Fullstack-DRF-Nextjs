@@ -92,7 +92,7 @@ const UserAgentNav = ({user}) => {
                             <MenuLink
                                 label='My Agent profile'
                                 onClick={() => {
-                                    router.push('/sa/myProfile/agent');
+                                    router.push('/sa/my-profile/agent');
                                     setIsOpen(false);
                                 }}
                             />
@@ -100,7 +100,7 @@ const UserAgentNav = ({user}) => {
                             <MenuLink
                                 label='My dashboard'
                                 onClick={() => {
-                                    router.push('/sa/myDashboard');
+                                    router.push('/sa/my-dashboard');
                                     setIsOpen(false);
                                 }}
                             />
@@ -108,7 +108,7 @@ const UserAgentNav = ({user}) => {
                             <MenuLink
                                 label='My properties'
                                 onClick={() => {
-                                    router.push('/sa/myProperties');
+                                    router.push('/sa/my-properties');
                                     setIsOpen(false);
                                 }}
                             />
@@ -116,7 +116,7 @@ const UserAgentNav = ({user}) => {
                             <MenuLink
                                 label='My favorites'
                                 onClick={() => {
-                                    router.push('/sa/myFavorites');
+                                    router.push('/sa/my-favorites');
                                     setIsOpen(false);
                                 }}
                             />
@@ -124,7 +124,7 @@ const UserAgentNav = ({user}) => {
                             <MenuLink
                                 label='My reservations'
                                 onClick={() => { 
-                                    router.push('/sa/myReservations');
+                                    router.push('/sa/my-reservations');
                                     setIsOpen(false);
                                 }}
                             />

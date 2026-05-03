@@ -11,12 +11,6 @@ export default function HomePage() {
   const [countryList, setCountryList] = useState([]);
   
   
-  // const countries = [
-  //   { country_name: "Saudi Arabia"        , country_slug: "sa" , code: "🇸🇦" },
-  //   { country_name: "United Arab Emirates", country_slug: "uae", code: "🇦🇪" },
-  //   { country_name: "Egypt"               , country_slug: "eg" , code: "🇪🇬" },
-  // ];
-
   
   
   useEffect(() => {
