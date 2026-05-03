@@ -586,21 +586,81 @@ class OwnerPropertiesAPIView(APIView):
 
     def get(self, request, country_slug, owner_id, *args, **kwargs):
         country = get_object_or_404(Country, country_slug=country_slug)
-        print("country=",country)
         owner = get_object_or_404(CustomUser, id=owner_id)
-        print("owner=",owner)
-        queryset = Property.objects.filter(country=country, owner= owner, is_published=True)
+        queryset = Property.objects.filter(country=country, owner=owner, is_published=True)
         serializer = PropertySerializer(queryset, many=True, context={'request': request})
 
         return Response(
             {
                 "count": queryset.count(),
                 "country": country.country_name,
-                "owner": owner.get_full_name(),
+                "owner": {
+                    "id": owner.id,
+                    "full_name": owner.get_full_name(),
+                    "email": owner.email,
+                    "role": owner.role,
+                    "profile": owner.profile if hasattr(owner, 'profile') else None
+                },
                 "results": serializer.data,
             },
             status=status.HTTP_200_OK,
         )
+
+
+class OwnerPropertiesShareAPIView(APIView):
+    """Dedicated endpoint for sharing owner properties"""
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, owner_id, *args, **kwargs):
+        # Get ALL properties for the owner (not just published)
+        owner = get_object_or_404(CustomUser, id=owner_id)
+        properties = Property.objects.filter(
+            owner=owner
+        ).select_related('country', 'pmain_type', 'purpose').order_by('-created_at')
+
+        # Serialize properties
+        serializer = PropertySerializer(properties, many=True, context={'request': request})
+
+        # Prepare shareable data (frontend will generate the share link)
+        from users.serializers import CustomUserSerializer
+        owner_data = CustomUserSerializer(owner, context={'request': request}).data
+        share_data = {
+            'count': properties.count(),
+            'owner': owner_data,
+            'properties': serializer.data,
+            'formatted_share_text': self._generate_share_text(owner, properties, serializer.data)
+        }
+
+        return Response(share_data, status=status.HTTP_200_OK)
+
+    def _generate_share_text(self, owner, properties, serialized_properties):
+        """Generate formatted text for sharing"""
+        lines = [
+            f"🏠 Discover {owner.get_full_name()}'s Properties 🏠",
+            f"Total Properties: {properties.count()}",
+            "",
+            "Property Details:",
+        ]
+
+        for prop in serialized_properties[:5]:  # Limit to first 5 properties
+            lines.append(f"📍 {prop.get('title', 'Property')}")
+            if prop.get('description'):
+                desc = prop['description'][:100].replace('\n', ' ')
+                lines.append(f"   {desc}...")
+            if prop.get('price'):
+                lines.append(f"   💰 Price: ${prop['price']}")
+            if prop.get('property_size'):
+                lines.append(f"   📏 Size: {prop['property_size']} sqft")
+            lines.append("")  # empty line between properties
+
+        if properties.count() > 5:
+            lines.append(f"... and {properties.count() - 5} more properties!")
+
+        lines.append("")
+        lines.append("View all properties: [Frontend will generate the link]")
+
+        return "\n".join(lines)
    
        
    

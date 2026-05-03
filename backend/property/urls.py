@@ -50,7 +50,7 @@ urlpatterns = [
     #      views.ListSubTypesByCountryMaintypeAPIView.as_view(),
     #      name='list-subtypes-by-country-maintype'),
     
-    # contentInt.js:1  GET http://127.0.0.1:8000/property/sa/residential/subtypes/
+
     
     
     # subtypes- 
@@ -115,12 +115,14 @@ urlpatterns = [
     path("properties-liked/",views.PropertiesLikedAPIView.as_view(), name='properties-liked'),
     path("my-properties/",views.MyPropertiesAPIView.as_view(), name='my-properties'),
     path("<slug:country_slug>/owner-properties/<uuid:owner_id>/",views.OwnerPropertiesAPIView.as_view(), name='owner-properties'),
+    path("owner-properties/<uuid:owner_id>/share",views.OwnerPropertiesShareAPIView.as_view(), name='owner-properties-share'),
 
+    
+    
     # Messaging endpoints
     path("messages/received/", views.ReceivedMessagesAPIView.as_view(), name='messages-received'),
     path("messages/sent/", views.SentMessagesAPIView.as_view(), name='messages-sent'),
     path("messages/unread-count/", views.UnreadMessagesCountAPIView.as_view(), name='messages-unread-count'),
     path("messages/send/", views.SendMessageAPIView.as_view(), name='messages-send'),
     path("messages/<uuid:message_id>/", views.MessageDetailAPIView.as_view(), name='messages-detail'),
-]
-                   # GET /sa/owner-properties/495620ef-1604-46a1-ad61-1d07cfccb931 404 in 94ms    
+]   

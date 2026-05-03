@@ -402,7 +402,7 @@ class PropertySerializer(serializers.ModelSerializer):
     pmain_type = PropertyMainTypeSerializer(many=False, read_only=True)
     psub_type  = PropertySubTypesSerializer(many=False, read_only=True)
     purpose    = PropertyPurposeSerializer(many=False, read_only=True)
-    images     = PropertyImageSerializer(many=True, read_only=True) # to get list of images data with response.data
+    images     = PropertyImageSerializer(many=True, read_only=True)
     amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
     
     
