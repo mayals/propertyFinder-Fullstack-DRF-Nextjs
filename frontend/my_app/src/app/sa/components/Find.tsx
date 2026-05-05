@@ -379,7 +379,7 @@ const containerRef = useRef<HTMLDivElement>(null);
 
 
   return (
-    <section className="p-2 bg-red-600">
+    <section className="p-2">
         {/* Main div container */}
         <div
           ref={containerRef}
@@ -401,7 +401,7 @@ const containerRef = useRef<HTMLDivElement>(null);
                 {/* Filters */}
 
                 {/*city */}
-                <div className="relative bg-green-500">
+                <div className="relative">
                   <button
                     onClick={() => toggleMenu("cityMenu")}
                     aria-expanded={activeMenu === "cityMenu"}

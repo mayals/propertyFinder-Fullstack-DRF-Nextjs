@@ -243,7 +243,7 @@ const Navbar: React.FC = () => {
               ))}
 
               {/* More Dropdown */}
-              <div className="relative">
+              {/* <div className="relative">
                 <button
                   onClick={() => toggleMenu("more")}
                   className={`flex items-center gap-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -267,11 +267,12 @@ const Navbar: React.FC = () => {
                     <Link href="/sa/explore" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Explore</Link>
                     <Link href="/sa/mortgages" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Mortgages</Link>
                     {user?.role === "admin" && (
-                      <Link href="/sa/roleLinks" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Role Links</Link>
+                      <Link href="/sa/role-links" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-gray-900 transition-colors">Role Links</Link>
                     )}
                   </div>
                 )}
-              </div>
+              </div> */}
+            
             </nav>
           </div>
 

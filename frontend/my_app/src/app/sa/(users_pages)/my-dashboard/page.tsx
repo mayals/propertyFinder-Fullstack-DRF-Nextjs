@@ -125,7 +125,7 @@ export default function MyDashboard() {
                 {/* Role Management (Admin only) */}
                 {user?.role === "admin" && (
                     <Link
-                        href="/sa/roleLinks"
+                        href="/sa/role-links"
                         className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
                     >
                         <svg

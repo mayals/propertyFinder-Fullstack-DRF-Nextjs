@@ -377,7 +377,7 @@ class ListPropertyByCountryMaintypePurposeAPIView(APIView):
         pmain_type = get_object_or_404(PropertyMainType, maintype_slug=maintype_slug)
         purpose = get_object_or_404(PropertyPurpose, purpose_slug=purpose_slug)
         
-        queryset = Property.objects.filter(country=country, pmain_type=pmain_type, purpose=purpose, is_published=True)
+        queryset = Property.objects.filter(country=country, pmain_type=pmain_type, purpose=purpose)
         serializer = PropertySerializer(queryset, many=True, context={'request': request})
 
         return Response(
@@ -418,7 +418,7 @@ class ListPropertyByParamsFilteringAPIView(APIView):
 
     def get(self, request, country_slug, *args, **kwargs):
         country = get_object_or_404(Country, country_slug=country_slug)
-        queryset = Property.objects.filter(country=country, is_published=True)
+        queryset = Property.objects.filter(country=country)
         print("without filter-queryset=",queryset)
         print("query_params=",request.query_params)
         

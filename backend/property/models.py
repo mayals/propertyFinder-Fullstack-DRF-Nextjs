@@ -289,11 +289,10 @@ class PropertyImage(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # If property has at least one image, mark as published
+        # Always mark property as published when an image is uploaded
         if self.property and not self.property.is_published:
-            if self.property.images.exists():
-                self.property.is_published = True
-                self.property.save(update_fields=["is_published"])
+            self.property.is_published = True
+            self.property.save(update_fields=["is_published"])
 
 
 
