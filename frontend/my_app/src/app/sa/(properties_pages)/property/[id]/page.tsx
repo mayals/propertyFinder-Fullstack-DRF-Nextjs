@@ -92,7 +92,15 @@ export default function PropertyPage() {
 
     return (
         <section>
-        <main className="container mx-auto px-20">
+        <main className="container mx-auto px-20 pt-10">
+            {/* Title at top */}
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
+                <p className="text-gray-500 mt-1">
+                    {property.pmain_type?.maintype_name} {property.purpose?.purpose_name && `for ${property.purpose.purpose_name}`}
+                </p>
+            </div>
+
             <PropertyGallery images={property.images} />
             <PropertyHeader property={property} />
             <PropertyDetails property={property} />
