@@ -13,6 +13,42 @@ import { ToastContainer, toast } from 'react-toastify';
 import { moveMessagePortToContext } from "worker_threads";
 import Link from "next/link";
 
+// Role badge colors
+const getRoleBadgeColor = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "bg-indigo-600";
+    case "buyer":
+      return "bg-blue-600";
+    case "broker":
+      return "bg-amber-600";
+    case "agent":
+      return "bg-emerald-600";
+    case "developer":
+      return "bg-rose-600";
+    default:
+      return "bg-gray-600";
+  }
+};
+
+// Role icon
+const getRoleIcon = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "👑";
+    case "buyer":
+      return "🛒";
+    case "broker":
+      return "🏢";
+    case "agent":
+      return "🏠";
+    case "developer":
+      return "🏗️";
+    default:
+      return "👤";
+  }
+};
+
 
 
 
@@ -87,8 +123,8 @@ export default function MyBrokerProfile() {
                                 {/* broker name */}
                                 {userProfile?.broker_name }
                             </div>
-                            <h2 className="bg-green-500 text-white p-1 rounded-b-lg">
-                                {userProfile?.role}
+                            <h2 className={`${getRoleBadgeColor(userProfile?.role || "")} text-white p-1 px-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1`}>
+                                {getRoleIcon(userProfile?.role || "")} {userProfile?.role}
                             </h2> 
                           </div>
 

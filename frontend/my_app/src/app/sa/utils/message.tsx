@@ -1,8 +1,5 @@
 // src/app/utils/message.tsx
 import axiosInstance from "../lib/axios";
-import axios from "axios";
-
-const API_URL = "http://127.0.0.1:8000";
 
 export interface Message {
   id: string;
@@ -43,10 +40,7 @@ export interface SendMessageData {
 // Get received messages
 export const getReceivedMessages = async (): Promise<Message[]> => {
   try {
-    const response = await axios.get(
-      `${API_URL}/property/messages/received/`,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.get("/property/messages/received/");
     return response.data;
   } catch (e) {
     console.log("getReceivedMessages-e=", e);
@@ -57,10 +51,7 @@ export const getReceivedMessages = async (): Promise<Message[]> => {
 // Get sent messages
 export const getSentMessages = async (): Promise<Message[]> => {
   try {
-    const response = await axios.get(
-      `${API_URL}/property/messages/sent/`,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.get("/property/messages/sent/");
     return response.data;
   } catch (e) {
     console.log("getSentMessages-e=", e);
@@ -71,10 +62,7 @@ export const getSentMessages = async (): Promise<Message[]> => {
 // Get message detail
 export const getMessageDetail = async (messageId: string): Promise<Message> => {
   try {
-    const response = await axios.get(
-      `${API_URL}/property/messages/${messageId}/`,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.get(`/property/messages/${messageId}/`);
     return response.data;
   } catch (e) {
     console.log("getMessageDetail-e=", e);
@@ -85,11 +73,7 @@ export const getMessageDetail = async (messageId: string): Promise<Message> => {
 // Send a new message
 export const sendMessage = async (data: SendMessageData): Promise<Message> => {
   try {
-    const response = await axiosInstance.post(
-      "/property/messages/send/",
-      data,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.post("/property/messages/send/", data);
     return response.data;
   } catch (e) {
     console.log("sendMessage-e=", e);
@@ -100,10 +84,7 @@ export const sendMessage = async (data: SendMessageData): Promise<Message> => {
 // Get unread messages count
 export const getUnreadCount = async (): Promise<{ unread_count: number }> => {
   try {
-    const response = await axios.get(
-      `${API_URL}/property/messages/unread-count/`,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.get("/property/messages/unread-count/");
     return response.data;
   } catch (e) {
     console.log("getUnreadCount-e=", e);

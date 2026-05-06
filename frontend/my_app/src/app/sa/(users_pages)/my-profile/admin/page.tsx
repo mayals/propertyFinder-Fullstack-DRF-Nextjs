@@ -7,6 +7,42 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { updateRequestUserProfile } from "../../../utils/auth";
 
+// Role badge colors
+const getRoleBadgeColor = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "bg-indigo-600";
+    case "buyer":
+      return "bg-blue-600";
+    case "broker":
+      return "bg-amber-600";
+    case "agent":
+      return "bg-emerald-600";
+    case "developer":
+      return "bg-rose-600";
+    default:
+      return "bg-gray-600";
+  }
+};
+
+// Role icon
+const getRoleIcon = (role: string) => {
+  switch (role) {
+    case "admin":
+      return "👑";
+    case "buyer":
+      return "🛒";
+    case "broker":
+      return "🏢";
+    case "agent":
+      return "🏠";
+    case "developer":
+      return "🏗️";
+    default:
+      return "👤";
+  }
+};
+
 // react-toastify
 import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
@@ -149,8 +185,8 @@ export default function MyAdminProfile() {
                                   {user?.first_name} {user?.last_name}
                                 </span>
                             </div>
-                            <h2 className="bg-green-500 text-white p-1 rounded-b-lg">
-                                {user?.role}
+                            <h2 className={`${getRoleBadgeColor(user?.role || "")} text-white p-1 px-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1`}>
+                                {getRoleIcon(user?.role || "")} {user?.role}
                             </h2>
                       
                             {/* <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">All-in-one platform</p>
