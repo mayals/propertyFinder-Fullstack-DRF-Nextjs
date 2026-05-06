@@ -36,7 +36,7 @@ export default function PropertyDetails({ property }: { property: Property }) {
             <div className="lg:col-span-2 space-y-8">
 
                 {/* TITLE */}
-                <div className="bg-white p-2"> 
+                <div className="bg-white p-6 rounded-lg shadow"> 
                     <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
                     <p className="text-gray-500 mt-1">{property.pmain_type.maintype_label} {property.psub_type.subtype_name}</p>
                     <p className="text-gray-500 mt-1">{property.area} Area-{property.district} District</p>
@@ -48,7 +48,7 @@ export default function PropertyDetails({ property }: { property: Property }) {
 
                 {/* DESCRIPTION */}
                 <h2 className="text-2xl font-semibold mb-2">Description</h2>
-                <div className="bg-white p-2">
+                <div className="bg-white p-6 rounded-lg shadow">
                     <p className="text-gray-700 leading-relaxed">
                         {property.description || "No description available."}
                     </p>
@@ -61,67 +61,67 @@ export default function PropertyDetails({ property }: { property: Property }) {
                 {/* Property details */}
 
                 <h2 className="text-2xl font-semibold mb-2">Property details</h2>
-                <div className="bg-white p-2">
+                <div className="bg-white p-6 rounded-lg shadow">
                     
-                    <div className="flex gap-[400px] w-full">
-                        <div>
-                            <table className="w-full">
+                    <div className="w-full">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[600px]">
                                 <tbody>
                                     <tr >
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><BsBuildings className="text-2xl mr-3 font-light" />Property Type</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.psub_type.subtype_name}</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><BsBuildings className="text-2xl mr-3 font-light" />Property Type</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.psub_type.subtype_name}</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Property Size</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.property_size} m²</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Property Size</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.property_size} m²</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><LiaBedSolid className="text-2xl mr-3 font-light" />Bedrooms</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.bedrooms}</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><LiaBedSolid className="text-2xl mr-3 font-light" />Bedrooms</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.bedrooms}</td>
                                    
-                                        <td className="ml-[100px]  text-lg flex px-3 py-4 font-normal text-gray-900"><PiBathtub className="text-2xl mr-3 font-light" />Bathrooms</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.bathrooms}</td>
+                                        <td className="pl-4 md:pl-8  text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><PiBathtub className="text-2xl mr-3 font-light" />Bathrooms</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.bathrooms}</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Plot length</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.plot_length} m</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Plot length</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.plot_length} m</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Plot width</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.plot_width} m</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><RxDimensions className="text-2xl mr-3 font-light" />Plot width</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.plot_width} m</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><AiOutlineColumnWidth className="text-2xl mr-3 font-light" />Street width</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.street_width} m</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><AiOutlineColumnWidth className="text-2xl mr-3 font-light" />Street width</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.street_width} m</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><GiMultiDirections className="text-2xl mr-3 font-light" />Facade</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.facade}</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><GiMultiDirections className="text-2xl mr-3 font-light" />Facade</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.facade}</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><BsBuildingGear className="text-2xl mr-3 font-light" />Property age</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.property_age}  yrs</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><BsBuildingGear className="text-2xl mr-3 font-light" />Property age</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.property_age}  yrs</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><SlGrid className="text-2xl mr-3 font-light" />Category</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.category}</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><SlGrid className="text-2xl mr-3 font-light" />Category</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.category}</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />City</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.city.city_name}</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />City</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.city.city_name}</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />Area</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.area}</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />Area</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.area}</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />District</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.district}</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><SlLocationPin  className="text-2xl mr-3 font-light" />District</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.district}</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><HiOutlineDocumentText className="text-2xl mr-3 font-light" />Plot Number</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.plot_number}</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><HiOutlineDocumentText className="text-2xl mr-3 font-light" />Plot Number</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.plot_number}</td>
                                     </tr>
                                     <tr>
-                                        <td className="text-lg flex px-3 py-4 font-normal text-gray-900"><HiOutlineDocumentText className="text-2xl mr-3 font-light" />Land Number</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.land_number}</td>
+                                        <td className="text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><HiOutlineDocumentText className="text-2xl mr-3 font-light" />Land Number</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.land_number}</td>
                                     
-                                        <td className="ml-[100px] text-lg flex px-3 py-4 font-normal text-gray-900"><MdOutlineEventAvailable className="text-2xl mr-3 font-light" />Available from</td>
-                                        <td className="px-3 py-4 text-lg text-gray-900 font-semibold">{property.available_from}</td>
+                                        <td className="pl-4 md:pl-8 text-sm md:text-base flex px-3 py-3 md:py-4 font-normal text-gray-900"><MdOutlineEventAvailable className="text-2xl mr-3 font-light" />Available from</td>
+                                        <td className="px-3 py-4 text-sm md:text-base text-gray-900 font-semibold">{property.available_from}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -136,7 +136,7 @@ export default function PropertyDetails({ property }: { property: Property }) {
 
                 {/* AMENITIES */}
                 <h2 className="text-2xl font-semibold mb-2">Amenities</h2>
-                <div className="bg-white p-2">
+                <div className="bg-white p-6 rounded-lg shadow">
                 {property.amenities && property.amenities.length > 0 ? (
                     <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                     {property.amenities.map((item) => (
@@ -163,7 +163,7 @@ export default function PropertyDetails({ property }: { property: Property }) {
                 <hr className="text-gray-300"></hr>
 
                 <h2 className="text-2xl font-semibold mb-2">Location</h2>
-                <div className="bg-white p-2 mb-0">
+                <div className="bg-white p-6 rounded-lg shadow">
                     <p className="text-gray-700">
                         {property.address_detail || "No location available."}
                     </p>  
@@ -175,28 +175,28 @@ export default function PropertyDetails({ property }: { property: Property }) {
                 
 
                 {/* map-preview */}
-                <div className="mb-10 relative">
+                <div className="mb-10 relative w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                     <Image
-                              width={1000}
-                              height={600}
+                              fill
                               src="/map-preview.jpg"
                               alt="map preview"
-                              className=""
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                     />
                     {/* absolute position card */}
                     <Link
                     href={`https://www.google.com/maps?q=${property.latitude},${property.longitude}`}
                     target="_blank"
                     >
-                    <div className="z-50 absolute bottom-6 left-8 bg-white h-35 w-165 rounded-2xl content-center p-4">
-                        <div className="flex justify-between">
-                            <div className="flex items-center font-semibold">
-                               <span><GrLocation className="mr-2 font-light text-2xl"/></span>{property.district}, {property.area}, {property.city.city_name}
+                    <div className="z-50 absolute bottom-4 left-4 md:bottom-6 md:left-8 bg-white rounded-xl shadow-lg p-3 md:p-4 max-w-[280px] md:max-w-[320px]">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                            <div className="flex items-center font-semibold text-sm md:text-base">
+                               <span><GrLocation className="mr-2 font-light text-xl md:text-2xl"/></span>{property.district}, {property.area}, {property.city.city_name}
                             </div>
-                            <div className="flex items-center hover:bg-indigo-100 p-2 rounded text-[#3c3280] font-semibold">
-                                view on map<span className="ml-2">  <GoArrowRight /></span> 
+                            <div className="flex items-center hover:bg-indigo-100 p-2 rounded text-[#3c3280] font-semibold text-sm md:text-base whitespace-nowrap">
+                                view on map<span className="ml-2">  <GoArrowRight /></span>
                             </div>
-                        </div>    
+                        </div>
                     </div>
                     </Link>
                 </div>
@@ -206,25 +206,25 @@ export default function PropertyDetails({ property }: { property: Property }) {
 
                 <h2 className="text-2xl font-semibold mb-2">Provided by</h2>
 
-                <div className="p-6 flex items-center justify-between bg-gray-200 mb-30">
-                    <div className="flex items-center">
+                <div className="p-6 flex flex-col items-center gap-6 bg-gray-200 mb-10 max-w-2xl mx-auto rounded-xl">
+                    <div className="flex flex-col items-center text-center">
                         {property.owner?.profile?.profile_picture && (
                                       <Image
                                         src={imageURL}
                                         alt="Agent photo"
                                         width={80}
                                         height={80}
-                                        className="rounded-full mt-2 object-cover"
+                                        className="rounded-full object-cover"
                                       />
                         )}
-                        <div className="ml-2 flex flex-col">
-                            <div className="text-xl text-gray-900 font-bold">{property.owner.full_name}</div>
-                            <div className="text-lg text-gray-600">{property.owner.email}</div>
+                        <div className="flex flex-col items-center mt-3">
+                            <div className="text-lg font-semibold text-gray-900">{property.owner.full_name}</div>
+                            <div className="text-sm text-gray-600">{property.owner.email}</div>
                         </div>
                     </div>
                     <Link
                         href={`/sa/owned-properties/${property.owner.id}`}
-                        className="inline-flex items-center justify-center cursor-pointer h-20 px-3 text-md font-bold text-blue-400 border border-blue-400 rounded-full hover:bg-blue-100"
+                        className="flex items-center justify-center px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                     >
                         See owner properties
                     </Link>

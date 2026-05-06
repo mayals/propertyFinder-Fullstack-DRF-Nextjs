@@ -60,86 +60,85 @@ export default function PropertyHeader({ property }: { property: Property }) {
         {/* ============================
              RIGHT: AGENT BOX
         =============================== */}
-        <aside className="border rounded-2xl p-4 shadow-sm flex flex-col bg-gray-50">
+        <div className="col-span-1 flex items-center justify-center">
+              <aside className="border rounded-2xl p-4 shadow-sm flex flex-col bg-gray-50 w-full max-w-md">
+        
 
+                      <h3 className="ont-semibold text-gray-900 text-lg mb-3">Provider</h3>
 
-           
+                      {/* owner NAME */}
+                      {/* <p className="text-gray-900 font-bold mt-1">
+                          {property.owner?.full_name || "Not Provided"}
+                      </p> */}
 
-                <h3 className="ont-semibold text-gray-900 text-lg mb-3">Provider</h3>
+                      
+                  
 
-                {/* owner NAME */}
-                <p className="text-gray-900 font-bold mt-1">
-                    {property.owner?.full_name || "Not Provided"}
-                </p>
 
                 
-            
 
+                {/* Owner info */}
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-medium text-gray-700">
+                    {property.owner?.first_name || "Property Owner"}
+                  </span>
 
-          
+                  {property.owner?.profile?.profile_picture && (
+                    <Image
+                      src={imageURL}
+                      alt="Agent photo"
+                      width={80}
+                      height={80}
+                      className="rounded-full mt-2 object-cover"
+                    />
+                  )}
+                  </div>
+                  {/* Buttons */}
+                  {/* AGENT CONTACT BUTTONS */}
+                      <div className="mt-4 w-full space-y-3">
 
-          {/* Owner info */}
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium text-gray-700">
-              {property.owner?.first_name || "Property Owner"}
-            </span>
+                          {/* CALL + WHATSAPP SIDE BY SIDE */}
+                          <div className="flex gap-2 w-full">
+                              
+                              {/* CALL */}
+                              <a
+                                  href={`tel:${property.owner?.profile?.phone_number || ""}`}
+                                  className="flex-1 flex items-center justify-center gap-1 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                              >
+                                  <Phone size={18} />
+                                  Call
+                              </a>
 
-            {property.owner?.profile?.profile_picture && (
-              <Image
-                src={imageURL}
-                alt="Agent photo"
-                width={80}
-                height={80}
-                className="rounded-full mt-2 object-cover"
-              />
-            )}
-            </div>
-            {/* Buttons */}
-            {/* AGENT CONTACT BUTTONS */}
-                <div className="mt-4 w-full space-y-3">
+                              {/* WHATSAPP */}
+                              <a
+                                  href={`https://wa.me/${property.owner?.profile?.phone_number|| ""}`}
+                                  className="flex-1 flex items-center justify-center gap-1 p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                              >
+                                  <MessageCircle size={18} />
+                                  WhatsApp
+                              </a>
+                          </div>
 
-                    {/* CALL + WHATSAPP SIDE BY SIDE */}
-                    <div className="flex gap-2 w-full">
-                        
-                        {/* CALL */}
-                        <a
-                            href={`tel:${property.owner?.profile?.phone_number || ""}`}
-                            className="flex-1 flex items-center justify-center gap-1 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                        >
-                            <Phone size={18} />
-                            Call
-                        </a>
+                          {/* EMAIL */}
+                          <a
+                              href={`mailto:${property.owner?.email || ""}`}
+                              className="flex items-center justify-center gap-1 w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+                          >
+                              <Mail size={18} />
+                              Email
+                          </a>
 
-                        {/* WHATSAPP */}
-                        <a
-                            href={`https://wa.me/${property.owner?.profile?.phone_number|| ""}`}
-                            className="flex-1 flex items-center justify-center gap-1 p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                        >
-                            <MessageCircle size={18} />
-                            WhatsApp
-                        </a>
-                    </div>
-
-                    {/* EMAIL */}
-                    <a
-                        href={`mailto:${property.owner?.email || ""}`}
-                        className="flex items-center justify-center gap-1 w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
-                    >
-                        <Mail size={18} />
-                        Email
-                    </a>
-
-                    {/* MESSAGE - In-App - Primary Button */}
-                    <Link
-                        href={`/sa/send-message?receiver=${property.owner?.id || ""}&name=${encodeURIComponent(property.owner?.full_name || "Owner")}&property=${property.id}&title=${encodeURIComponent(property.title || "")}`}
-                        className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium shadow-md hover:shadow-lg"
-                    >
-                        <MessageCircle size={18} />
-                        Message {property.owner?.full_name || "Owner"}
-                    </Link>
-                </div>
-        </aside>
-
+                          {/* MESSAGE - In-App - Primary Button */}
+                          <Link
+                              href={`/sa/send-message?receiver=${property.owner?.id || ""}&name=${encodeURIComponent(property.owner?.full_name || "Owner")}&property=${property.id}&title=${encodeURIComponent(property.title || "")}`}
+                              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium shadow-md hover:shadow-lg"
+                          >
+                              <MessageCircle size={18} />
+                              Message {property.owner?.full_name || "Owner"}
+                          </Link>
+                      </div>
+              </aside>   
+        </div>
       </div>
     </div>
   );
