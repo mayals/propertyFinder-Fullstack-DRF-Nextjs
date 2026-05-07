@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation'
 
 // react-toastify@
-import notify from "../../../../../common/useNotification"
+import notify from "../../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 

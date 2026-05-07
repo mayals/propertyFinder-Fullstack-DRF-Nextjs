@@ -12,6 +12,7 @@ import axiosInstance from "../../../lib/axios";
 // react-toastify
 import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
+import Loading from "../../../components/Loading";
 
 
 
@@ -75,8 +76,13 @@ export default function EditAdminProfile() {
     }, [user, loading, router]);
     
     
+    
     if (loading) {
-       return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
     }
 
     // While checking auth, avoid flicker

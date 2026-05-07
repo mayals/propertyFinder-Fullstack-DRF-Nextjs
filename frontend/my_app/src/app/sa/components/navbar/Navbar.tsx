@@ -297,12 +297,14 @@ const Navbar: React.FC = () => {
                 </Link>
 
                 {/* Add Property Button */}
+                {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
                 <Link
                   href="/sa/add-property"
                   className="hidden sm:block px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all shadow-sm hover:shadow"
                 >
                   Add Property
                 </Link>
+                )}
 
                 {/* User Menu */}
                 <div className="relative">
@@ -561,6 +563,7 @@ const Navbar: React.FC = () => {
                   </Link>
 
                   {/* Add Property */}
+                 {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
                   <Link
                     href="/sa/add-property"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -571,6 +574,10 @@ const Navbar: React.FC = () => {
                     </svg>
                     <span className="text-sm font-medium">Add Property</span>
                   </Link>
+                  )}
+
+
+
 
                   {/* Logout */}
                   <button

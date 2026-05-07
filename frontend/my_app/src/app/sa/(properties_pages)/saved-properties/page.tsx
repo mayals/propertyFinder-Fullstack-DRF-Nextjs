@@ -8,6 +8,7 @@ import Loading from "../../components/Loading";
 import PropertyCard from "../../components/PropertyCard";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
+import Footer from "../../components/Footer";
 
 
 interface Property {
@@ -62,7 +63,8 @@ export default function SavedPropertiesPage() {
 
 
   return (
-    <section className="min-h-screen p-6 mt-20">
+    <>
+    <section className="min-h-screen pt-10  px-4">
       <h1 className="text-2xl  mb-6">
         Properties you liked ({properties.length})
       </h1>
@@ -80,6 +82,10 @@ export default function SavedPropertiesPage() {
                 ))}
         </div>
       )}
+
     </section>
+    
+    <Footer />
+    </>
   );
 }

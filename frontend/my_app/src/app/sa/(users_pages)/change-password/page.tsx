@@ -10,6 +10,7 @@ import notify from "../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
 
 import { useAuth } from "../../context/AuthContext";
+import Loading from "../../components/Loading";
 import axiosInstance from "../../lib/axios";
 
 // import { updateRequestUserProfile } from "../../utils/auth";
@@ -40,7 +41,11 @@ export default function ChangePassword() {
 
     //  still loading ..
     if (loading) {
-       return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
     }
 
 
@@ -51,6 +56,14 @@ export default function ChangePassword() {
 
     
     // submit form 
+    if (loading) {
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
        

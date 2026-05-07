@@ -13,6 +13,7 @@ import axiosInstance from "../../../lib/axios";
 // react-toastify
 import notify from "../../../common/useNotification"
 import { ToastContainer, toast } from 'react-toastify';
+import Loading from "../../../components/Loading";
 
 
 
@@ -76,8 +77,13 @@ export default function EditAdminProfile() {
     }, [user, loading, router]);
     
     
+    
     if (loading) {
-       return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
     }
 
     // While checking auth, avoid flicker
@@ -228,7 +234,7 @@ export default function EditAdminProfile() {
                 
                 // ✅ Delay for 3 seconds before redirecting
                 setTimeout(() => {
-                    router.push('/sa/myProfile/admin');
+                    router.push('/sa/my-profile/buyer');
                 }, 3000); // 3000 milliseconds = 3 seconds
           
 

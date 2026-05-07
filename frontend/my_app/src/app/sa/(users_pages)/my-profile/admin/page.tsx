@@ -7,6 +7,19 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { updateRequestUserProfile } from "../../../utils/auth";
 
+// react-toastify
+import notify from "../../../common/useNotification"
+import { ToastContainer, toast } from 'react-toastify';
+import { moveMessagePortToContext } from "worker_threads";
+import Link from "next/link";
+import Loading from "../../../components/Loading";
+
+
+
+
+
+
+
 // Role badge colors
 const getRoleBadgeColor = (role: string) => {
   switch (role) {
@@ -42,12 +55,6 @@ const getRoleIcon = (role: string) => {
       return "👤";
   }
 };
-
-// react-toastify
-import notify from "../../../common/useNotification"
-import { ToastContainer, toast } from 'react-toastify';
-import { moveMessagePortToContext } from "worker_threads";
-import Link from "next/link";
 
 
 
@@ -107,8 +114,13 @@ export default function MyAdminProfile() {
       }, [user, loading, router]); // Add dependencies here
 
     
+    
     if (loading) {
-       return <p className="text-center mt-20">Loading...</p>; // spinner/loader
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
     }
         
     return (
@@ -116,7 +128,7 @@ export default function MyAdminProfile() {
             <section className="my-4 bg-gray-100 flex items-center">
                 <div className="lg:w-3/4 w-[95%] mx-auto bg-white shadow-2xl rounded-2xl p-6">
                     <div className="flex place-content-end">
-                      <Link href="/sa/editMyProfile/admin"
+                      <Link href="/sa/edit-my-profile/admin"
                          className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
                         <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                                 stroke="currentColor" className="w-6 h-6">
