@@ -8,11 +8,12 @@ from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse, JsonResponse
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
+from django.db import models
 from django.template.loader import render_to_string
 
 
 # DRF
-from rest_framework import views, permissions, status, generics
+from rest_framework import views, permissions, status, generics, serializers
 from rest_framework.response import Response
 # JWT
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
@@ -45,25 +46,30 @@ class UserProfileRegisterAPIView(views.APIView):
         return queryset
       
     def post(self, request, *args, **kwargs):
-        print('register-request.data=',request.data)
+        print('register-request.data=', request.data)
         serializer = self.serializer_class(data=request.data)
-        print('serializer.initial_data=',serializer.initial_data)
+        print('serializer.initial_data=', serializer.initial_data)
         if serializer.is_valid():
-            print('valid serializer=',serializer)
-            serializer.save()
+            print('valid serializer=', serializer)
+            try:
+                serializer.save()
+            except serializers.ValidationError as e:
+                return Response(e.detail if hasattr(e, 'detail') else str(e), status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             user = serializer.data
-            print('user=',user)
-            
-            # send user otp to email 
+            print('user=', user)
+
+            # send user otp to email
             # modifySendOTPToEmail(user.get('email'), request)
             return Response({
                 'user': user,
-                'register_message': 'Thanks for signing up. Email conirmation link has been sent to verify your email.'
+                'register_message': 'Thanks for signing up. Email confirmation link has been sent to verify your email.'
             }, status=status.HTTP_201_CREATED)
-            
+
         if not serializer.is_valid():
             print("Serializer errors:", serializer.errors)  # Log the errors
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
            
        
 
@@ -784,8 +790,11 @@ class ChangePasswordView(views.APIView):
 class BrokerListAPIView(generics.ListAPIView):
     """
     Return a list of brokers (id, broker_name, user.first_name, user.last_name) for agent registration.
+    Only show brokers that have a broker_name set.
     """
-    queryset = BrokerProfile.objects.select_related('user').all()
+    queryset = BrokerProfile.objects.filter(
+        models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
+    ).select_related('user').order_by('broker_name')
     serializer_class = BrokerProfileSerializer
     permission_classes = [permissions.AllowAny]  # or IsAuthenticated if you want only logged-in users to see
 

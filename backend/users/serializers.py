@@ -9,6 +9,7 @@ from django.utils.encoding import force_str, smart_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.urls import reverse
 from django.conf import settings
+from django.db import transaction
 # DRF
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
@@ -33,6 +34,7 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
     password       = serializers.CharField(max_length=68, min_length=6, write_only=True)
     password2      = serializers.CharField(max_length=68, min_length=6, write_only=True)
     broker_id      = serializers.UUIDField(required=False, write_only=True)
+    broker_name    = serializers.CharField(required=False, write_only=True)
     # profiles
     admin_profile  = serializers.SerializerMethodField()
     buyer_profile  = serializers.SerializerMethodField()
@@ -43,7 +45,7 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'id', 'email', 'first_name', 'last_name', 'password', 'password2',
-            'role', 'broker_id',   # 👈 keep role here so frontend can send it; broker_id for agents
+            'role', 'broker_id', 'broker_name',   # 👈 keep role here so frontend can send it; broker_id for agents
             'admin_profile','buyer_profile', 'developer_profile','broker_profile','agent_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
             'is_superuser'
         ]
@@ -95,52 +97,49 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
      
      
     def create(self, validated_data):
-        # Extract broker id for agents (if supplied)
         broker_id = validated_data.pop('broker_id', None)
-        print('Creating user with validated_data=', validated_data)
-        valid_admin_profile_data     = validated_data.pop('admin_profile', None)
-        valid_buyer_profile_data     = validated_data.pop('buyer_profile', None)
+        broker_name = validated_data.pop('broker_name', None)
+        valid_admin_profile_data = validated_data.pop('admin_profile', None)
+        valid_buyer_profile_data = validated_data.pop('buyer_profile', None)
         valid_developer_profile_data = validated_data.pop('developer_profile', None)
-        valid_broker_profile_data    = validated_data.pop('broker_profile', None)
-        valid_agent_profile_data     = validated_data.pop('agent_profile', None)
-        
-        # 👇 use role from validated_data (default = buyer if not sent)
-        role = validated_data.get('role', CustomUser.RoleType.BUYER)
-        
-        user = CustomUser.objects.create_user(
-                        email      = validated_data['email'],
-                        password   = validated_data['password'],
-                        first_name = validated_data['first_name'],
-                        last_name  = validated_data['last_name'],
-                        role       = validated_data.get('role', CustomUser.RoleType.BUYER)  # 👈 come from frontend register page
-        )
-        print("user=",user)
-        if valid_admin_profile_data:
-            if user.role == "admin":
+        valid_broker_profile_data = validated_data.pop('broker_profile', None)
+        valid_agent_profile_data = validated_data.pop('agent_profile', None)
+
+        with transaction.atomic():
+            user = CustomUser.objects.create_user(
+                email=validated_data['email'],
+                password=validated_data['password'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                role=validated_data.get('role', CustomUser.RoleType.BUYER)
+            )
+            if valid_admin_profile_data and user.role == "admin":
                 AdminProfile.objects.create(user=user, **valid_admin_profile_data)
-        
-        if valid_buyer_profile_data:
-            if user.role == "buyer":
+
+            if valid_buyer_profile_data and user.role == "buyer":
                 BuyerProfile.objects.create(user=user, **valid_buyer_profile_data)
-        
-        if valid_developer_profile_data:
-            if user.role == "developer":
+
+            if valid_developer_profile_data and user.role == "developer":
                 DeveloperProfile.objects.create(user=user, **valid_developer_profile_data)
-        
-        if valid_broker_profile_data:
+
             if user.role == "broker":
-                BrokerProfile.objects.create(user=user, **valid_broker_profile_data)
-        
-        if user.role == "agent":
-                # Always create AgentProfile for agents if broker_id is provided
+                # Profile may already exist (created by signal); update or create
+                profile, created = BrokerProfile.objects.get_or_create(
+                    user=user,
+                    defaults=valid_broker_profile_data or {}
+                )
+                if broker_name:
+                    profile.broker_name = broker_name
+                    profile.save()
+
+            if user.role == "agent":
                 if not broker_id:
                     raise serializers.ValidationError({"broker_id": "Broker must be selected for agent registration."})
                 broker = BrokerProfile.objects.get(id=broker_id)
-                # Create profile with or without additional profile data
                 profile_data = valid_agent_profile_data if valid_agent_profile_data else {}
                 AgentProfile.objects.create(user=user, belong_to_broker=broker, **profile_data)
-     
-        return user
+
+            return user
 
 
     def get_admin_profile(self, obj):
