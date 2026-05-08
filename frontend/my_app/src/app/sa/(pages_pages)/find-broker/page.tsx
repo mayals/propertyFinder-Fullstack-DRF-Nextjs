@@ -14,6 +14,7 @@ interface AgentProfile {
   phone_number?: string;
   bio?: string;
   broker_name?: string;
+  profile_picture?: string;
 }
 
 export default function findBrokerPage() {
@@ -137,8 +138,24 @@ export default function findBrokerPage() {
             >
               {/* Card Header */}
               <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-8 text-center relative">
-                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold border-4 border-white/30">
-                  {agent.full_name?.charAt(0) || "A"}
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-white/20 mx-auto mb-3 border-4 border-white/30">
+                  {agent.profile_picture && !agent.profile_picture.includes('user_default.png') ? (
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}${agent.profile_picture}`}
+                      alt={agent.full_name}
+                      width={80}
+                      height={80}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <Image
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(agent.full_name)}&background=random&color=fff&size=80`}
+                      alt={agent.full_name}
+                      width={80}
+                      height={80}
+                      className="object-cover w-full h-full"
+                    />
+                  )}
                 </div>
                 <h3 className="text-white font-bold text-lg">{agent.full_name}</h3>
                 <div className="flex items-center justify-center gap-2 mt-1">
