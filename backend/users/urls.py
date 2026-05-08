@@ -51,5 +51,7 @@ urlpatterns = [
     path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
     # Broker list for agent registration
     path('broker-list/', views.BrokerListAPIView.as_view(), name='broker-list'),
-    
+    # Broker + Agent list for find-broker page
+    path('broker-agent-list/', views.BrokerAgentListAPIView.as_view(), name='broker-agent-list'),
+
 ]

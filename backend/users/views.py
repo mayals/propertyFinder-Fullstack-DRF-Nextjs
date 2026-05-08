@@ -813,3 +813,51 @@ class BrokerListAPIView(generics.ListAPIView):
 
 
     
+
+
+##################################### Broker + Agent List for Find-Broker Page ############################################
+class BrokerAgentListAPIView(views.APIView):
+    # Return a combined list of brokers and agents for the find-broker page.
+    # Each item has: id, full_name, role, email, phone_number, bio, broker_name (for agents).
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        # Get brokers with broker_name set
+        brokers = BrokerProfile.objects.filter(
+            models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
+        ).select_related('user').order_by('broker_name')
+
+        # Get ALL agents with related user and broker
+        agents = AgentProfile.objects.all().select_related('user', 'belong_to_broker').order_by('agent_name')
+
+        result = []
+
+        # Add brokers
+        for broker in brokers:
+            result.append({
+                'id': str(broker.id),
+                'full_name': broker.broker_name or broker.user.get_full_name(),
+                'role': 'broker',
+                'email': broker.user.email,
+                'phone_number': str(broker.phone_number) if broker.phone_number else None,
+                'bio': broker.bio or '',
+                'broker_name': '',
+            })
+
+        # Add agents
+        for agent in agents:
+            broker_name = ''
+            if agent.belong_to_broker:
+                broker_name = agent.belong_to_broker.broker_name or ''
+            result.append({
+                'id': str(agent.id),
+                'full_name': agent.agent_name or agent.user.get_full_name(),
+                'role': 'agent',
+                'email': agent.user.email,
+                'phone_number': str(agent.phone_number) if agent.phone_number else None,
+                'bio': '',  # AgentProfile doesn't have bio field
+                'broker_name': broker_name,
+            })
+
+        return Response(result)
+
