@@ -301,7 +301,11 @@ export default function OwnerPropertiesPage() {
         </div>
 
         {properties.length === 0 ? (
-          <p className="text-center py-10 text-gray-600">No properties found for the owner <b>{ownerData?.full_name}</b>.</p>
+          <div className="text-center mt-10 p-8 bg-white rounded-lg shadow mx-5">
+              <p className="text-gray-600">
+                  No properties found for the owner <b> {ownerData?.full_name}</b>.
+              </p>
+          </div>
         ) : (
           <div className="flex flex-col gap-6">
             {properties.map((property) => (

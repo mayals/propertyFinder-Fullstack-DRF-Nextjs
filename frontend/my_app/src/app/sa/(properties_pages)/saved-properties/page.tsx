@@ -70,7 +70,13 @@ export default function SavedPropertiesPage() {
       </h1>
 
       {properties.length === 0 ? (
-        <p className="text-gray-500">No saved properties yet.</p>
+        
+        <div className="text-center mt-10 p-8 bg-white rounded-lg shadow mx-5">
+            <p className="text-gray-600">
+                You don&apos;t liked any property yet.
+            </p>
+        </div>
+      
       ) : (
         <div className="space-y-6 my-8">
                 {properties.map((property) => (
