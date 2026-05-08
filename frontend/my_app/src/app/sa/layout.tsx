@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 "use client"
-
+import React from "react";
+import { ToastContainer } from "react-toastify";
 import "../globals.css"
 import { Poetsen_One } from "next/font/google";
 

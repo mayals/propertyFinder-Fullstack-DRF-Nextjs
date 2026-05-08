@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, MapPin, Phone, Mail, Star, Verified, ArrowRight } from "lucide-react";
+import axiosInstance from "../../lib/axios";
 
 interface AgentProfile {
   id: string;
@@ -12,55 +13,45 @@ interface AgentProfile {
   email: string;
   phone_number?: string;
   bio?: string;
+  broker_name?: string;
 }
-
-// Mock data - replace with real API later
-const agents: AgentProfile[] = [
-  {
-    id: "1",
-    full_name: "Ahmed Al Rashid",
-    role: "agent",
-    email: "ahmed@example.com",
-    phone_number: "+966500000001",
-    bio: "Top-performing agent with 10+ years of experience in Riyadh's luxury property market.",
-  },
-  {
-    id: "2",
-    full_name: "Sara Al Mahmoud",
-    role: "broker",
-    email: "sara@example.com",
-    phone_number: "+966500000002",
-    bio: "Specializing in commercial properties and investment opportunities across Saudi Arabia.",
-  },
-  {
-    id: "3",
-    full_name: "Mohammed Al Qahtani",
-    role: "agent",
-    email: "mohammed@example.com",
-    phone_number: "+966500000003",
-    bio: "Residential property expert focused on family homes in the Eastern Province.",
-  },
-  {
-    id: "4",
-    full_name: "Nora Al Saud",
-    role: "broker",
-    email: "nora@example.com",
-    phone_number: "+966500000004",
-    bio: "Luxury real estate specialist helping clients find premium properties in major cities.",
-  },
-];
 
 export default function findBrokerPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState<"all" | "agent" | "broker">("all");
+  const [agents, setAgents] = useState<AgentProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(`/users/broker-agent-list/`);
+        setAgents(res.data);
+      } catch (error) {
+        console.error('Failed to fetch brokers/agents', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredAgents = agents.filter((agent) => {
     const matchesSearch =
       agent.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (agent.bio && agent.bio.toLowerCase().includes(searchQuery.toLowerCase()));
+      (agent.bio && agent.bio.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (agent.broker_name && agent.broker_name.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesRole = filterRole === "all" || agent.role === filterRole;
     return matchesSearch && matchesRole;
   });
+
+  if (loading) {
+    return (
+      <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -80,7 +71,7 @@ export default function findBrokerPage() {
             <li>
               <div className="flex items-center">
                 <svg className="rtl:rotate-180 w-3 h-3 text-slate-400 mx-1" fill="none" viewBox="0 0 6 10">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4" />
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4" />
                 </svg>
                 <span className="ml-1 text-sm font-medium text-indigo-600 md:ml-2">Find Agent</span>
               </div>
@@ -118,7 +109,7 @@ export default function findBrokerPage() {
               {["all", "agent", "broker"].map((role) => (
                 <button
                   key={role}
-                  onClick={() => setFilterRole(role)}
+                  onClick={() => setFilterRole(role as "all" | "agent" | "broker")}
                   className={`px-6 py-3 rounded-xl font-medium transition-all ${
                     filterRole === role
                       ? "bg-indigo-600 text-white shadow-lg"
@@ -160,6 +151,9 @@ export default function findBrokerPage() {
                   </span>
                   <Verified className="w-4 h-4 text-green-400" />
                 </div>
+                {agent.role === "agent" && agent.broker_name && (
+                  <p className="text-indigo-100 text-sm mt-2">Works under: {agent.broker_name}</p>
+                )}
               </div>
 
               {/* Card Body */}
