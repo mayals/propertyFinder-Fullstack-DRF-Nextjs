@@ -92,53 +92,27 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
         
     @property
     def profile_picture(self):
-        if self.role == "buyer" :
-            try:
-                profile_picture = BuyerProfile.objects.get(id=self.id).profile_picture
-                print('profile_picture',profile_picture)
-                return profile_picture
-            except:
-                DEFAULT_BUYER_IMAGE = 'default_profile/user_default.png'
-                return DEFAULT_BUYER_IMAGE 
-                
-        if self.role == "developer" :
-            try:
-                profile_picture = DeveloperProfile.objects.get(id=self.id).profile_picture
-                print('profile_picture',profile_picture)
-                return profile_picture
-            except:
-                DEFAULT_DEVELOPER_IMAGE = 'default_profile/user_default.png'
-                return DEFAULT_DEVELOPER_IMAGE  
-        
-        
-        if self.role == "broker" :
-            try:
-                profile_picture = BrokerProfile.objects.get(id=self.id).profile_picture
-                print('profile_picture',profile_picture)
-                return profile_picture
-            except:
-                DEFAULT_BROKER_IMAGE = 'default_profile/user_default.png'
-                return DEFAULT_BROKER_IMAGE 
-        
-        
-        if self.role == "agent" :
-            try:
-                profile_picture = AgentProfile.objects.get(id=self.id).profile_picture
-                print('profile_picture',profile_picture)
-                return profile_picture
-            except:
-                DEFAULT_AGENT_IMAGE = 'default_profile/user_default.png'
-                return DEFAULT_AGENT_IMAGE 
-            
-            
-        if self.role == "admin" :
-            try:    
-                profile_picture = AdminProfile.objects.get(id=self.id).profile_picture
-                print('profile_picture',profile_picture)
-                return profile_picture
-            except:
-                DEFAULT_ADMIN_IMAGE = 'default_profile/user_default.png'
-                return DEFAULT_ADMIN_IMAGE 
+        default_image = 'default_profile/user_default.png'
+
+        try:
+            if self.role == "buyer":
+                profile = BuyerProfile.objects.get(id=self.id)
+            elif self.role == "developer":
+                profile = DeveloperProfile.objects.get(id=self.id)
+            elif self.role == "broker":
+                profile = BrokerProfile.objects.get(id=self.id)
+            elif self.role == "agent":
+                profile = AgentProfile.objects.get(id=self.id)
+            elif self.role == "admin":
+                profile = AdminProfile.objects.get(id=self.id)
+            else:
+                return default_image
+
+            if profile.profile_picture:
+                return profile.profile_picture.url
+            return default_image
+        except Exception:
+            return default_image
                 
     
     
@@ -281,7 +255,7 @@ class AgentProfile(models.Model):
     profile_picture = models.ImageField(upload_to='agent_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
-    belong_to_broker= models.ForeignKey(BrokerProfile,on_delete=models.CASCADE, related_name='agents')  # ✅ one broker → many agents
+    belong_to_broker= models.ForeignKey(BrokerProfile,on_delete=models.CASCADE, related_name='agents', null=True, blank=True)  # ✅ one broker → many agents
     phone_number    = PhoneNumberField(blank=False, null=True)
     contact_email   = models.EmailField( blank=False, null=False) 
     country         = models.CharField(max_length=50, blank=False, null=True)

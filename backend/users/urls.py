@@ -49,5 +49,7 @@ urlpatterns = [
     path('set-new-password/', views.SetNewPasswordView.as_view(), name='set-new-password'),
     # Change-password
     path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    # Broker list for agent registration
+    path('broker-list/', views.BrokerListAPIView.as_view(), name='broker-list'),
     
 ]

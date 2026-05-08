@@ -29,7 +29,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         elif role == "broker":
             BrokerProfile.objects.create(id=instance.id, user=instance)
         elif role == "agent":
-            AgentProfile.objects.create(id=instance.id, user=instance)
+            # Agent profile creation deferred - requires broker assignment
+            pass
         elif role == "buyer":
             BuyerProfile.objects.create(id=instance.id, user=instance)
         elif instance.is_superuser:

@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 
 
 # DRF
-from rest_framework import views, permissions, status
+from rest_framework import views, permissions, status, generics
 from rest_framework.response import Response
 # JWT
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
@@ -775,9 +775,19 @@ class ChangePasswordView(views.APIView):
         request.user.save()
 
         return Response(
-            {"message": "Password changed successfully"}, 
+            {"message": "Password changed successfully"},
             status=status.HTTP_200_OK
         )
+
+
+##################################### Broker List for Agent Registration ############################################
+class BrokerListAPIView(generics.ListAPIView):
+    """
+    Return a list of brokers (id, broker_name, user.first_name, user.last_name) for agent registration.
+    """
+    queryset = BrokerProfile.objects.select_related('user').all()
+    serializer_class = BrokerProfileSerializer
+    permission_classes = [permissions.AllowAny]  # or IsAuthenticated if you want only logged-in users to see
 
 
 

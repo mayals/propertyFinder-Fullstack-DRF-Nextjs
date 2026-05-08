@@ -16,7 +16,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 # LOCAL
-from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile,BrokerProfile,AgentProfile,UserOTP
+from .models import  CustomUser, BuyerProfile, AdminProfile, DeveloperProfile, BrokerProfile, AgentProfile, UserOTP
 from .utils import send_normal_email
 
 
@@ -32,7 +32,8 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
     last_name      = serializers.CharField(max_length=12, min_length=3, allow_blank=False, trim_whitespace=True)
     password       = serializers.CharField(max_length=68, min_length=6, write_only=True)
     password2      = serializers.CharField(max_length=68, min_length=6, write_only=True)
-    # profiles 
+    broker_id      = serializers.UUIDField(required=False, write_only=True)
+    # profiles
     admin_profile  = serializers.SerializerMethodField()
     buyer_profile  = serializers.SerializerMethodField()
     developer_profile = serializers.SerializerMethodField()
@@ -42,9 +43,9 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'id', 'email', 'first_name', 'last_name', 'password', 'password2',
-            'role',   # 👈 keep role here so frontend can send it
-             'admin_profile','buyer_profile', 'developer_profile','broker_profile','agent_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
-            'is_superuser'     
+            'role', 'broker_id',   # 👈 keep role here so frontend can send it; broker_id for agents
+            'admin_profile','buyer_profile', 'developer_profile','broker_profile','agent_profile', 'is_verifiedEmail', 'is_active', 'is_staff',
+            'is_superuser'
         ]
         extra_kwargs = {
             'password' : {'write_only': True},
@@ -94,6 +95,8 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
      
      
     def create(self, validated_data):
+        # Extract broker id for agents (if supplied)
+        broker_id = validated_data.pop('broker_id', None)
         print('Creating user with validated_data=', validated_data)
         valid_admin_profile_data     = validated_data.pop('admin_profile', None)
         valid_buyer_profile_data     = validated_data.pop('buyer_profile', None)
@@ -128,9 +131,14 @@ class RegisteUserProfileSerializer(serializers.ModelSerializer):
             if user.role == "broker":
                 BrokerProfile.objects.create(user=user, **valid_broker_profile_data)
         
-        if valid_agent_profile_data:
-            if user.role == "agent":
-                AgentProfile.objects.create(user=user, **valid_agent_profile_data)
+        if user.role == "agent":
+                # Always create AgentProfile for agents if broker_id is provided
+                if not broker_id:
+                    raise serializers.ValidationError({"broker_id": "Broker must be selected for agent registration."})
+                broker = BrokerProfile.objects.get(id=broker_id)
+                # Create profile with or without additional profile data
+                profile_data = valid_agent_profile_data if valid_agent_profile_data else {}
+                AgentProfile.objects.create(user=user, belong_to_broker=broker, **profile_data)
      
         return user
 
@@ -419,14 +427,39 @@ class BrokerProfileSerializer(serializers.ModelSerializer):
         return value  
 
 class AgentProfileSerializer(serializers.ModelSerializer):
+    belong_to_broker_name = serializers.SerializerMethodField()
+    belong_to_broker_profile = serializers.SerializerMethodField()
+
     class Meta:
         model = AgentProfile
         exclude = ['user']
 
+    def get_belong_to_broker_name(self, obj):
+        if obj.belong_to_broker:
+            return obj.belong_to_broker.broker_name
+        return None
+
+    def get_belong_to_broker_profile(self, obj):
+        if obj.belong_to_broker:
+            broker = obj.belong_to_broker
+            # Get the profile picture URL properly
+            profile_picture_url = ''
+            if broker.profile_picture:
+                # Access the URL property of the ImageField
+                try:
+                    profile_picture_url = broker.profile_picture.url
+                except:
+                    profile_picture_url = ''
+            return {
+                'profile_picture': profile_picture_url,
+                'broker_name': broker.broker_name
+            }
+        return None
+
     def validate_phone_number(value):
         if not value :
             raise serializers.ValidationError("phone_number field is required")
-        return value  
+        return value
 
 
 
