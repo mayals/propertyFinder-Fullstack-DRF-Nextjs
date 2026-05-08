@@ -157,12 +157,13 @@ class BuyerProfile(models.Model):
     def save(self, *args, **kwargs):
         # Set the buyer profile id to be the same as the user id
         if not self.id:
-            self.id = self.user.id 
-        
-        # Deletes old profile_picture when making an update to profile_picture
+            self.id = self.user.id
+
+        # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = BuyerProfile.objects.get(id=self.id)
-            if old.profile_picture != self.profile_picture:
+            default_path = 'default_profile/user_default.png'
+            if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
     
@@ -196,11 +197,13 @@ class DeveloperProfile(models.Model):
     def save(self, *args, **kwargs):
         # Set the developer profile id to be the same as the user id
         if not self.id:
-            self.id = self.user.id 
-        # Deletes old profile_picture when making an update to profile_picture
+            self.id = self.user.id
+
+        # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = DeveloperProfile.objects.get(id=self.id)
-            if old.profile_picture != self.profile_picture:
+            default_path = 'default_profile/user_default.png'
+            if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
     
@@ -235,11 +238,13 @@ class BrokerProfile(models.Model):
     def save(self, *args, **kwargs):
         # Set the broker profile id to be the same as the user id
         if not self.id:
-            self.id = self.user.id 
-        # Deletes old profile_picture when making an update to profile_picture
+            self.id = self.user.id
+
+        # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = BrokerProfile.objects.get(id=self.id)
-            if old.profile_picture != self.profile_picture:
+            default_path = 'default_profile/user_default.png'
+            if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
     
@@ -273,11 +278,13 @@ class AgentProfile(models.Model):
     def save(self, *args, **kwargs):
         # Set the agent profile id to be the same as the user id
         if not self.id:
-            self.id = self.user.id 
-        # Deletes old profile_picture when making an update to profile_picture
+            self.id = self.user.id
+
+        # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = AgentProfile.objects.get(id=self.id)
-            if old.profile_picture != self.profile_picture:
+            default_path = 'default_profile/user_default.png'
+            if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
     
@@ -312,11 +319,12 @@ class AdminProfile(models.Model):
     def save(self, *args, **kwargs):
         # Set the admin profile id to be the same as the user id
         if not self.id:
-            self.id = self.user.id  
-        # Deletes old profile_picture when making an update to profile_picture
+            self.id = self.user.id
+        # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = AdminProfile.objects.get(id=self.id)
-            if old.profile_picture != self.profile_picture:
+            default_path = 'default_profile/user_default.png'
+            if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs) 
 

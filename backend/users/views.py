@@ -834,6 +834,13 @@ class BrokerAgentListAPIView(views.APIView):
 
         # Add brokers
         for broker in brokers:
+            profile_pic = ''
+            default_path = 'default_profile/user_default.png'
+            if broker.profile_picture and default_path not in str(broker.profile_picture.name):
+                try:
+                    profile_pic = broker.profile_picture.url
+                except:
+                    profile_pic = ''
             result.append({
                 'id': str(broker.id),
                 'full_name': broker.broker_name or broker.user.get_full_name(),
@@ -842,6 +849,7 @@ class BrokerAgentListAPIView(views.APIView):
                 'phone_number': str(broker.phone_number) if broker.phone_number else None,
                 'bio': broker.bio or '',
                 'broker_name': '',
+                'profile_picture': profile_pic,
             })
 
         # Add agents
@@ -849,6 +857,13 @@ class BrokerAgentListAPIView(views.APIView):
             broker_name = ''
             if agent.belong_to_broker:
                 broker_name = agent.belong_to_broker.broker_name or ''
+            profile_pic = ''
+            default_path = 'default_profile/user_default.png'
+            if agent.profile_picture and default_path not in str(agent.profile_picture.name):
+                try:
+                    profile_pic = agent.profile_picture.url
+                except:
+                    profile_pic = ''
             result.append({
                 'id': str(agent.id),
                 'full_name': agent.agent_name or agent.user.get_full_name(),
@@ -857,6 +872,7 @@ class BrokerAgentListAPIView(views.APIView):
                 'phone_number': str(agent.phone_number) if agent.phone_number else None,
                 'bio': '',  # AgentProfile doesn't have bio field
                 'broker_name': broker_name,
+                'profile_picture': profile_pic,
             })
 
         return Response(result)
