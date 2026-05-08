@@ -111,10 +111,8 @@ export default function LoginPage() {
                     <h1>Login</h1>
                 </div>
 
-                {/* error message shown only if Email is not verified */}
-                {errorConfirmEmailMsg == "Email is not verified. Click below to verify." && (
-                    <ToastContainer position="top-center" autoClose={3000} />
-                )}
+                {/* Toast Container - always available for notifications */}
+                <ToastContainer position="top-center" autoClose={3000} />
 
                 {/*  errorConfirmEmailMsg message  */}
                 {errorConfirmEmailMsg && (

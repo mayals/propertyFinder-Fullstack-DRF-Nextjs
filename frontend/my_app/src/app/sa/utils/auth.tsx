@@ -13,7 +13,7 @@ import { useAuth, } from "../context/AuthContext";
 
 
 // register //////////////////////////////////////////////////////////
-export const registerUser = async(first_name, last_name, email, password, password2, role, broker_id?) => {
+export const registerUser = async(first_name, last_name, email, password, password2, role, broker_id?, broker_name?) => {
         console.log('auth-first_name=', first_name);
         console.log('auth-last_name=', last_name);
         console.log('auth-email=', email);
@@ -21,9 +21,11 @@ export const registerUser = async(first_name, last_name, email, password, passwo
         console.log('auth-password2=', password2);
         console.log('auth-role=', role);
         console.log('auth-broker_id=', broker_id);
+        console.log('auth-broker_name=', broker_name);
     try {
         const payload: any = {first_name,last_name,email,password,password2,role};
         if (broker_id) payload.broker_id = broker_id;
+        if (broker_name) payload.broker_name = broker_name;
         const response = await axios.post(`${API_URL}/users/register/`,
             payload,
             {

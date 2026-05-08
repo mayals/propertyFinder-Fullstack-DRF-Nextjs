@@ -50,7 +50,7 @@ const agents: AgentProfile[] = [
   },
 ];
 
-export default function findBrokerPage() {
+export default function findAgentPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState<"all" | "agent" | "broker">("all");
 

@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [brokers, setBrokers] = useState<any[]>([]);
   const [selectedBrokerId, setSelectedBrokerId] = useState<string>('');
+  const [brokerName, setBrokerName] = useState("");
 
   useEffect(() => {
     if (role === 'agent') {
@@ -55,9 +56,16 @@ export default function RegisterPage() {
       setIsSubmitting(false);
       return;
     }
+    if (role === 'broker' && !brokerName.trim()) {
+      notify("Please enter your broker/company name!", "warning");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      await registerUser(firstName, lastName, email, password, password2, role, role === 'agent' ? selectedBrokerId : undefined);
+      const brokerIdForAgent = role === 'agent' ? selectedBrokerId : undefined;
+      const brokerNameForBroker = role === 'broker' ? brokerName : undefined;
+      await registerUser(firstName, lastName, email, password, password2, role, brokerIdForAgent, brokerNameForBroker);
       notify(
         "Thanks for signing up. Please check your email — a confirmation link has been sent.",
         "success"
@@ -65,13 +73,20 @@ export default function RegisterPage() {
       setTimeout(() => router.push("/sa/login"), 5000);
     } catch (error: any) {
       console.log("registration error =", error);
-      Object.entries(error.response?.data || {}).forEach(([field, messages]) => {
-        if (Array.isArray(messages)) {
-          messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
-        } else {
-          notify(`${field}: ${messages}`, "error");
-        }
-      });
+      const data = error.response?.data;
+      if (data && typeof data === 'object') {
+        Object.entries(data).forEach(([field, messages]) => {
+          if (Array.isArray(messages)) {
+            messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
+          } else {
+            notify(`${field}: ${messages}`, "error");
+          }
+        });
+      } else if (data && typeof data === 'string') {
+        notify(data, "error");
+      } else {
+        notify("Registration failed. Please try again.", "error");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -145,6 +160,19 @@ export default function RegisterPage() {
             onChange={(e) => setPassword2(e.target.value)}
           />
         </div>
+
+        {role === 'broker' && (
+          <div className="flex flex-col">
+            <label className="mb-1 text-sm sm:text-base">Broker Name (Commercial Name)</label>
+            <input
+              className="text-gray-600 bg-gray-100 p-2 rounded"
+              placeholder="Enter your broker/company name"
+              type="text"
+              value={brokerName}
+              onChange={(e) => setBrokerName(e.target.value)}
+            />
+          </div>
+        )}
 
         {role === 'agent' && (
           <div className="flex flex-col">
