@@ -789,14 +789,26 @@ class ChangePasswordView(views.APIView):
 ##################################### Broker List for Agent Registration ############################################
 class BrokerListAPIView(generics.ListAPIView):
     """
-    Return a list of brokers (id, broker_name, user.first_name, user.last_name) for agent registration.
-    Only show brokers that have a broker_name set.
+    Return a list of brokers for agent registration.
+    - If the request user is a broker: return only their own profile (auto-selected).
+    - If the request user is an admin: return all brokers with broker_name set.
+    - Otherwise return empty list.
     """
-    queryset = BrokerProfile.objects.filter(
-        models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
-    ).select_related('user').order_by('broker_name')
     serializer_class = BrokerProfileSerializer
-    permission_classes = [permissions.AllowAny]  # or IsAuthenticated if you want only logged-in users to see
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        base_qs = BrokerProfile.objects.filter(
+            models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
+        ).select_related('user').order_by('broker_name')
+
+        if user.is_superuser:
+            return base_qs
+        if user.role == 'broker':
+            return base_qs.filter(user=user)
+        # Non-broker, non-admin: return empty
+        return BrokerProfile.objects.none()
 
 
 
