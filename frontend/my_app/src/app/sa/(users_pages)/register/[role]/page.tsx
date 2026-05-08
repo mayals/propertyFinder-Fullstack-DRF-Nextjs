@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { registerUser } from "../../../utils/auth";
 import { ToastContainer, toast } from 'react-toastify';
-import notify from "../../../common/useNotification"
+import notify from "../../../common/useNotification";
+import { useAuth } from "../../../context/AuthContext";
+import axiosInstance from "../../../lib/axios";
 
 export default function RegisterPage() {
   const { role } = useParams<{ role: string }>();
-  console.log("RegisterPage-role=",role)
+  console.log("RegisterPage-role=", role);
   const router = useRouter();
+  const { user } = useAuth();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName]   = useState("");
@@ -17,7 +20,7 @@ export default function RegisterPage() {
   const [password, setPassword]   = useState("");
   const [password2, setPassword2] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [brokers, setBrokers] = useState<any[]>([]);
+  const [brokers, setBrokers]     = useState<any[]>([]);
   const [selectedBrokerId, setSelectedBrokerId] = useState<string>('');
   const [brokerName, setBrokerName] = useState("");
 
@@ -25,9 +28,13 @@ export default function RegisterPage() {
     if (role === 'agent') {
       const fetchBrokers = async () => {
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/broker-list/`);
-          const data = await res.json();
+          const res = await axiosInstance.get(`/users/broker-list/`);
+          const data = res.data;
           setBrokers(data);
+          // If only one broker (logged-in broker), auto-select it
+          if (data.length === 1) {
+            setSelectedBrokerId(data[0].id);
+          }
         } catch (error) {
           console.error('Failed to fetch brokers', error);
         }
@@ -77,7 +84,7 @@ export default function RegisterPage() {
       if (data && typeof data === 'object') {
         Object.entries(data).forEach(([field, messages]) => {
           if (Array.isArray(messages)) {
-            messages.forEach((msg) => notify(`${field}: ${msg}`, "error"));
+            messages.forEach((msg: string) => notify(`${field}: ${msg}`, "error"));
           } else {
             notify(`${field}: ${messages}`, "error");
           }
@@ -91,6 +98,10 @@ export default function RegisterPage() {
       setIsSubmitting(false);
     }
   };
+
+  // Determine if broker select should be disabled (when broker is logged in)
+  const isBrokerUser = user?.role === 'broker';
+  const shouldDisableBrokerSelect = isBrokerUser && brokers.length === 1;
 
   return (
     <section className="min-h-screen bg-[#F2F2F2] flex flex-col justify-center items-center px-4 py-8">
@@ -181,6 +192,7 @@ export default function RegisterPage() {
               className="text-gray-600 bg-gray-100 p-2 rounded"
               value={selectedBrokerId}
               onChange={(e) => setSelectedBrokerId(e.target.value)}
+              disabled={shouldDisableBrokerSelect}
             >
               <option value="">-- Select a broker --</option>
               {brokers.map((broker: any) => (
@@ -189,6 +201,11 @@ export default function RegisterPage() {
                 </option>
               ))}
             </select>
+            {isBrokerUser && (
+              <p className="text-sm text-gray-600 mt-1">
+                You are adding an agent to your broker company.
+              </p>
+            )}
           </div>
         )}
 

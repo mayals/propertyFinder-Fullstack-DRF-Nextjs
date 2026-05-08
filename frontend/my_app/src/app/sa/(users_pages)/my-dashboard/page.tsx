@@ -139,7 +139,7 @@ export default function MyDashboard() {
 
 
                 {/* Add agent belong selected broker  frorbidden only by(Admin + broker) */}
-                {user?.role === "admin" || user?.role === "broker" && (
+                {(user?.role === "admin" || user?.role === "broker") && (
                 <Link
                     href="/sa/register/agent"
                     className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
