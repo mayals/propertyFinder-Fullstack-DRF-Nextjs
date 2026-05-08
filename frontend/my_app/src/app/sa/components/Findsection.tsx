@@ -171,11 +171,11 @@ export default function Findsection() {
                 New Projects
               </Link>
               <Link
-                href="/sa/find-agent"
+                href="/sa/find-broker"
                 className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
               >
                 <Users className="w-4 h-4" />
-                Find Agent
+                Find Broker / Agency
               </Link>
             </div>
 

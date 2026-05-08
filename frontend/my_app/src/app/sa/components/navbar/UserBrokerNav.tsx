@@ -105,29 +105,29 @@ const UserBrokerNav = ({user}) => {
                                 }}
                             />
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My properties'
                                 onClick={() => {
                                     router.push('/sa/my-properties');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My favorites'
                                 onClick={() => {
                                     router.push('/sa/my-favorites');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My reservations'
                                 onClick={() => { 
                                     router.push('/sa/my-reservations');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
                             
                             <MenuLink
                                 label='Inbox'

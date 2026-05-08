@@ -8,6 +8,7 @@ import PropertyCard from "../../../components/PropertyCard";
 import Loading from "../../../components/Loading";
 import Footer from "../../../components/Footer";
 import { Phone, Mail, MessageCircle, Share2, Check, Copy, Link2 } from "lucide-react";
+import Link from "next/link";
 import { useAuth } from "../../../context/AuthContext";
 import notify from "../../../common/useNotification";
 
@@ -158,7 +159,7 @@ export default function OwnerPropertiesPage() {
 
   return (
     <section>
-      <main className="container mx-auto mt-5 px-4 py-10">
+      <main className="container mx-auto mt-5 px-4 py-3">
         <div className="p-6 flex flex-col md:flex-row items-center justify-between gap-6 bg-white mb-5 mx-auto max-w-4xl rounded-xl shadow-sm">
           <div className="flex items-center gap-6">
             {ownerData?.profile?.profile_picture ? (
@@ -188,16 +189,16 @@ export default function OwnerPropertiesPage() {
 
           <div className="flex gap-2">
             {/* CALL */}
-            <a
+            <Link
               href={`tel:${ownerData?.profile?.phone_number || ""}`}
               className="flex items-center justify-center gap-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
             >
               <Phone size={18} />
               <span className="hidden sm:inline">Call</span>
-            </a>
+            </Link>
 
             {/* WHATSAPP */}
-            <a
+            <Link
               href={`https://wa.me/${ownerData?.profile?.phone_number || ""}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -205,16 +206,16 @@ export default function OwnerPropertiesPage() {
             >
               <MessageCircle size={18} />
               <span className="hidden sm:inline">WhatsApp</span>
-            </a>
+            </Link>
 
             {/* EMAIL */}
-            <a
+            <Link
               href={`mailto:${ownerData?.email || ""}`}
               className="flex items-center justify-center gap-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
             >
               <Mail size={18} />
               <span className="hidden sm:inline">Email</span>
-            </a>
+            </Link>
 
             {/* SHARE BUTTON WITH DROPDOWN */}
             <div className="relative" ref={shareMenuRef}>

@@ -1,15 +1,13 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { registerUser } from "../../../utils/auth";
 import { ToastContainer, toast } from 'react-toastify';
 import notify from "../../../common/useNotification"
 
-
-
 export default function RegisterPage() {
-  const { role } = useParams<{ role: string }>(); // 👈 get role from URL
+  const { role } = useParams<{ role: string }>();
   console.log("RegisterPage-role=",role)
   const router = useRouter();
 
@@ -19,12 +17,29 @@ export default function RegisterPage() {
   const [password, setPassword]   = useState("");
   const [password2, setPassword2] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [brokers, setBrokers] = useState<any[]>([]);
+  const [selectedBrokerId, setSelectedBrokerId] = useState<string>('');
+
+  useEffect(() => {
+    if (role === 'agent') {
+      const fetchBrokers = async () => {
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/broker-list/`);
+          const data = await res.json();
+          setBrokers(data);
+        } catch (error) {
+          console.error('Failed to fetch brokers', error);
+        }
+      };
+      fetchBrokers();
+    }
+  }, [role]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // validation (can extract into a helper later)
+    // validation
     if (!firstName || !lastName || !email || !password || !password2) {
       notify("Please fill all fields!", "warning");
       setIsSubmitting(false);
@@ -35,9 +50,14 @@ export default function RegisterPage() {
       setIsSubmitting(false);
       return;
     }
+    if (role === 'agent' && !selectedBrokerId) {
+      notify("Please select a broker!", "warning");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      await registerUser(firstName, lastName, email, password, password2, role); // 👈 role dynamic come from useParams()
+      await registerUser(firstName, lastName, email, password, password2, role, role === 'agent' ? selectedBrokerId : undefined);
       notify(
         "Thanks for signing up. Please check your email — a confirmation link has been sent.",
         "success"
@@ -125,6 +145,24 @@ export default function RegisterPage() {
             onChange={(e) => setPassword2(e.target.value)}
           />
         </div>
+
+        {role === 'agent' && (
+          <div className="flex flex-col">
+            <label className="mb-1 text-sm sm:text-base">Select Broker</label>
+            <select
+              className="text-gray-600 bg-gray-100 p-2 rounded"
+              value={selectedBrokerId}
+              onChange={(e) => setSelectedBrokerId(e.target.value)}
+            >
+              <option value="">-- Select a broker --</option>
+              {brokers.map((broker: any) => (
+                <option key={broker.id} value={broker.id}>
+                  {broker.user?.first_name} {broker.user?.last_name} ({broker.broker_name})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <button
           disabled={isSubmitting}

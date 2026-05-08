@@ -13,16 +13,19 @@ import { useAuth, } from "../context/AuthContext";
 
 
 // register //////////////////////////////////////////////////////////
-export const registerUser = async(first_name, last_name, email, password, password2, role) => {
+export const registerUser = async(first_name, last_name, email, password, password2, role, broker_id?) => {
         console.log('auth-first_name=', first_name);
         console.log('auth-last_name=', last_name);
         console.log('auth-email=', email);
         console.log('auth-password=', password);
         console.log('auth-password2=', password2);
         console.log('auth-role=', role);
+        console.log('auth-broker_id=', broker_id);
     try {
+        const payload: any = {first_name,last_name,email,password,password2,role};
+        if (broker_id) payload.broker_id = broker_id;
         const response = await axios.post(`${API_URL}/users/register/`,
-            {first_name,last_name,email,password,password2,role},
+            payload,
             {
                 withCredentials:false,                   // avoid sending cookies
                 headers: {

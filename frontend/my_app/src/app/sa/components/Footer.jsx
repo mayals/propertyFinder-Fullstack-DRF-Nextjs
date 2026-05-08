@@ -59,7 +59,7 @@ const Footer = () => {
                 <Link href="/sa/new-projects" className='text-sm hover:text-white transition-colors'>New Projects</Link>
               </li>
               <li>
-                <Link href="/sa/find-agent" className='text-sm hover:text-white transition-colors'>Find Agent</Link>
+                <Link href="/sa/find-broker" className='text-sm hover:text-white transition-colors'>Find Agent</Link>
               </li>
               <li>
                 <Link href="/sa/contact-us" className='text-sm hover:text-white transition-colors'>Contact Us</Link>

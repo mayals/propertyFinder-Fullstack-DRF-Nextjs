@@ -1,13 +1,8 @@
 // context/AuthContext.tsx
 "use client";
 
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import axiosInstance from "../lib/axios";
-
-const API_URL = "http://127.0.0.1:8000";
-
-
 
 interface RequestUserProfileData {
 
@@ -15,8 +10,8 @@ interface RequestUserProfileData {
     first_name?: string;
     last_name?: string;
     email?: string;
-    role? : string;
-   
+    role?: string;
+
     gender?: string;
     profile_picture?: string;
     phone_number?: string | null;
@@ -29,54 +24,57 @@ interface AuthContextType {
   user: RequestUserProfileData | null;
   setUser: (user: RequestUserProfileData | null) => void;
   loading: boolean;
+  fetchUser: () => Promise<void>;
 }
-
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   loading: true,
+  fetchUser: async () => {},
 });
 
-
 export const useAuth = () => useContext(AuthContext);
-
-
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const [user, setUser] = useState<RequestUserProfileData | null>(null);
       const [loading, setLoading] = useState(true);
 
-
-      // fetch user on load (if cookie exists)
-      useEffect(() => {
-          const RequestUserProfileData = async () => {
-              try {
-                  const res = await axiosInstance.get(`${API_URL}/users/request-user-profile/`, 
-                      {
-                          withCredentials: true, // IMPORTANT to include cookies 
-                      }
-                  );
-                  // console.log('RequestUserProfileData-res=', res);
-                  console.log('RequestUserProfileData-res.data=', res.data);
-                  setUser(res.data); // assume backend returns user info
-            
-              } catch (err) {
-                  console.log('RequestUserProfileData-error=',err);
-                  setUser(null); // not logged in
-              
-              } finally {
-                  setLoading(false); // ✅ important
+      // Function to fetch user profile (call explicitly after login)
+      const fetchUser = async () => {
+          try {
+              const res = await axiosInstance.get(`/users/request-user-profile/`, {
+                  withCredentials: true,
+              });
+              console.log('RequestUserProfileData-res.data=', res.data);
+              setUser(res.data);
+          } catch (err: any) {
+              console.log('RequestUserProfileData-error=', err);
+              // 401 or 404 means not logged in
+              if (err.response?.status === 401 || err.response?.status === 404) {
+                  console.log('User not authenticated');
               }
-          };
+              setUser(null);
+          } finally {
+              setLoading(false);
+          }
+      };
 
-          RequestUserProfileData();
-          
+      // Only fetch on initial load if we might have a session
+      useEffect(() => {
+          const hasCookie = typeof document !== 'undefined' &&
+              (document.cookie.includes('sessionid') ||
+               document.cookie.includes('csrftoken'));
+
+          if (hasCookie) {
+              fetchUser();
+          } else {
+              setLoading(false);
+          }
       }, []);
 
-
       return (
-          <AuthContext.Provider value={{ user, setUser, loading }}>
+          <AuthContext.Provider value={{ user, setUser, loading, fetchUser }}>
               {children}
           </AuthContext.Provider>
       );

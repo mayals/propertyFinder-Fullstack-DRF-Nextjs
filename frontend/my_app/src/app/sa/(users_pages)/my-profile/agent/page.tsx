@@ -14,6 +14,7 @@ import { moveMessagePortToContext } from "worker_threads";
 import Link from "next/link";
 import Loading from "../../../components/Loading";
 
+
 // Role badge colors
 const getRoleBadgeColor = (role: string) => {
   switch (role) {
@@ -53,33 +54,44 @@ const getRoleIcon = (role: string) => {
 
 
 
-export default function MyBrokerProfile() {
+export default function MyAgentProfile() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const [userProfile, setUserProfile] = useState<any>(null);
     
 
     useEffect(() => {
-        console.log("brokerProfile-loading=",loading)
-        console.log("brokerProfile-user=",user)
+        console.log("agentProfile-loading=",loading)
+        console.log("agentProfile-user=",user)
         if (!loading && !user) {
             router.push("/sa/login");
         }
         if (!loading && user){
               setUserProfile(user)
+              console.log("SET userProfile - data structure:")
+              console.log("- user has belong_to_broker_profile?", !!user?.belong_to_broker_profile)
+              console.log("- broker name:", user?.belong_to_broker_profile?.broker_name)
+              console.log("- broker picture path:", user?.belong_to_broker_profile?.profile_picture)
         }
     }, [user, loading, router]); // Add dependencies here
 
     
     
-        if (loading) {
-            return (
-            <div className="text-center mt-20">
-                <Loading />
-            </div>
-            );
-        }
-        
+    useEffect(() => {
+      console.log('Complete user profile:', userProfile)
+      console.log('Agent profile exists?', !!userProfile?.agent_profile)
+      console.log('Broker profile exists?', !!userProfile?.agent_profile?.belong_to_broker_profile)
+    }, [userProfile])
+
+
+    if (loading) {
+        return (
+        <div className="text-center mt-20">
+            <Loading />
+        </div>
+        );
+    }
+    
         
     return (
         <>
@@ -88,7 +100,7 @@ export default function MyBrokerProfile() {
                     
                     {/* edit button  */}
                     <div className="flex place-content-end">
-                      <Link href="/sa/edit-my-profile/broker"
+                      <Link href="/sa/edit-my-profile/agent"
                          className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
                         <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                                 stroke="currentColor" className="w-6 h-6">
@@ -121,19 +133,47 @@ export default function MyBrokerProfile() {
                                     : "/profile_default.svg"
                               }
                               onError={(e) => { (e.target as HTMLImageElement).src = "/profile_default.svg"; }}
-                              alt="Broker Profile Picture"
+                              alt="Agent Profile Picture"
                               width={300}
                               height={300}
                               className="rounded-full object-cover"
                             />
                 
                             <div className="text-xl mt-3 text-gray-600 flex items-center justify-center gap-2">
-                                {/* broker name */}
-                                {userProfile?.broker_name }
+                                {/* agent name */}
+                                {userProfile?.agent_name }
                             </div>
                             <h2 className={`${getRoleBadgeColor(userProfile?.role || "")} text-white p-1 px-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1`}>
                                 {getRoleIcon(userProfile?.role || "")} {userProfile?.role}
-                            </h2> 
+                            </h2>
+
+                            {/* Belong to broker - Modern Card */}
+                            {userProfile?.belong_to_broker_profile?.broker_name && (
+                                <div className="mt-3 bg-amber-100 rounded-2xl p-5 shadow-md border border-amber-200">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex-shrink-0 w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center">
+                                            {/* Broker Profile Picture */}
+                                            {userProfile?.belong_to_broker_profile?.profile_picture ? (
+                                                <Image
+                                                    src={`${process.env.NEXT_PUBLIC_API_URL}/${userProfile.belong_to_broker_profile.profile_picture}`.replace(/\/\/+/g, "/")}
+                                                    alt="Broker Logo"
+                                                    width={56}
+                                                    height={56}
+                                                    className="w-full h-full rounded-lg object-cover"
+                                                />
+                                            ) : (
+                                                <span className="text-3xl">🏢</span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-xs font-medium text-amber-700 uppercase tracking-wider">Belong to broker</p>
+                                            <h3 className="text-xl font-bold text-gray-900 mt-0.5">
+                                                {userProfile.belong_to_broker_profile.broker_name}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                           </div>
 
 
@@ -160,24 +200,16 @@ export default function MyBrokerProfile() {
                                 <dd className="mt-2">{user?.last_name}</dd>
                               </div>
 
-                              <div className="relative pl-9">
+                              {/* <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
                                   </svg>
-                                  Broker Name (Commerical Name)
+                                  Belong to broker (Commerical Name)
                                 </dt>
-                                <dd className="mt-2">{userProfile?.broker_name || "Not provided"}</dd>
+                                <dd className="mt-2">{userProfile?.belong_to_broker_name || "Not assigned"}</dd>
                               </div>
-                              <div className="relative pl-9">
-                                <dt className="font-semibold text-gray-900">
-                                  <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
-                                  </svg>
-                                  Bio
-                                </dt>
-                                <dd className="mt-2">{userProfile?.bio || "Not provided"}</dd>
-                              </div>
+                              */}
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -197,24 +229,8 @@ export default function MyBrokerProfile() {
                                 </dt>
                                 <dd className="mt-2">{userProfile?.phone_number || "Not provided"}</dd>
                               </div>
-                              <div className="relative pl-9">
-                                <dt className="font-semibold text-gray-900">
-                                  <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
-                                  </svg>
-                                  Website
-                                </dt>
-                                <dd className="mt-2">{userProfile?.website || "Not provided"}</dd>
-                              </div>
-                              <div className="relative pl-9">
-                                <dt className="font-semibold text-gray-900">
-                                  <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd"></path>
-                                  </svg>
-                                  Twitter
-                                </dt>
-                                <dd className="mt-2">{userProfile?.twitter || "Not provided"}</dd>
-                              </div>
+                            
+                            
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">
                                   <svg className="absolute top-1 left-0 h-5 w-5 text-indigo-500" x-description="Heroicon name: mini/check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

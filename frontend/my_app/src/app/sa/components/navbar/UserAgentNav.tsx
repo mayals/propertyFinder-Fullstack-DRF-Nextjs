@@ -105,30 +105,30 @@ const UserAgentNav = ({user}) => {
                                 }}
                             />
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My properties'
                                 onClick={() => {
                                     router.push('/sa/my-properties');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My favorites'
                                 onClick={() => {
                                     router.push('/sa/my-favorites');
                                     setIsOpen(false);
                                 }}
-                            />
+                            /> */}
 
-                            <MenuLink
+                            {/* <MenuLink
                                 label='My reservations'
                                 onClick={() => { 
                                     router.push('/sa/my-reservations');
                                     setIsOpen(false);
                                 }}
-                            />
-                            
+                            /> */}
+{/*                             
                             <MenuLink
                                 label='Inbox'
                                 onClick={() => {
@@ -136,14 +136,14 @@ const UserAgentNav = ({user}) => {
                                     setIsOpen(false);
                                     
                                 }}
-                            />
+                            /> */}
 
-                            <button 
+                            {/* <button 
                                 onClick={handleLogout}
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                             >
                                 Logout
-                            </button>
+                            </button> */}
 
                             
                         </>

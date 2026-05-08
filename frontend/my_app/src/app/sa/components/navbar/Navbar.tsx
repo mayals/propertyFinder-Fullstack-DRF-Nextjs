@@ -118,7 +118,7 @@ const Navbar: React.FC = () => {
   // Nav items
   const navItems: NavItem[] = [
     { label: "New Projects", href: "/sa/new-projects" },
-    { label: "Find Agent", href: "/sa/find-agent" },
+    { label: "Find Broker/Agency", href: "/sa/find-broker" },
     { label: "Blog", href: "/sa/blog" },
     { label: "About", href: "/sa/about" },
   ];

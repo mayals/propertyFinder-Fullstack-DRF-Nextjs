@@ -1,4 +1,4 @@
-// users\confirm-email\[uid]\[token]\page.tsx
+// sa\confirm-email\[uid]\[token]\page.tsx
 'use client'
 
 import { useEffect, useState } from 'react';
