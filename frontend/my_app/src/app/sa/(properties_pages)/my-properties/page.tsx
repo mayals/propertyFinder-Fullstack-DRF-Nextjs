@@ -3,13 +3,11 @@
 
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
-import Loading from "../../components/Loading";
-import PropertyCard from "../../components/PropertyCard";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Footer from "../../components/Footer";
-
-
+import Loading from "../../components/Loading";
+import MyPropertyCard from "../../components/MyPropertyCard";
 
 interface Property {
   id: string;
@@ -85,7 +83,7 @@ export default function MyPropertiesPage() {
       ) : (
         <div className="space-y-6 my-8">
                 {properties.map((property) => (
-                        <PropertyCard 
+                        <MyPropertyCard 
                             key={property.id} 
                             property={property}
                             className="space-y-6 my-8" 

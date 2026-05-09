@@ -3,12 +3,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import type { Property } from "../types/property";
+import axiosInstance from "../../../lib/axios";
+import type { Property } from "../../../types/property";
 import { useParams } from "next/navigation";
-import PropertyGallery from "../components/PropertyGallery";
-import PropertyHeader from "../components/PropertyHeader";
-import PropertyDetails from "../components/PropertyDetails";
+import PropertyGallery from "../../../components/PropertyGallery";
+import PropertyHeader from "../../../components/PropertyHeader";
+import PropertyDetails from "../../../components/PropertyDetails";
 import Loading from "../../../components/Loading";
 import Footer from "../../../components/Footer"
 

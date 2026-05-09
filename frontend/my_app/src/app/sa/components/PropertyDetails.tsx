@@ -1,6 +1,6 @@
 import React from "react";
 import type { Property } from "../types/property";
-import { amenityIcons } from "../utils/amenityIcons";
+import { amenityIcons } from "../common/amenityIcons";
 import { LiaBedSolid } from "react-icons/lia";
 import { PiBathtub } from "react-icons/pi";
 import { RxDimensions } from "react-icons/rx";
