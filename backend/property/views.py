@@ -688,9 +688,41 @@ class PropertyDetailsAPIView(APIView):
 
 
 class UpdatePropertyAPIView(APIView):
-    pass 
+    serializer_class = PropertySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, id, *args, **kwargs):
+        try:
+            property_obj = Property.objects.get(id=id)
+        except Property.DoesNotExist:
+            return response.Response({"detail": "Property not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check ownership
+        if property_obj.owner != request.user:
+            return response.Response({"detail": "You do not have permission to update this property."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Use the same serializer for update, allowing partial updates
+        serializer = self.serializer_class(property_obj, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class DeletePropertyAPIView(APIView):
-    pass 
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, id, *args, **kwargs):
+        try:
+            property_obj = Property.objects.get(id=id)
+        except Property.DoesNotExist:
+            return response.Response({"detail": "Property not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check ownership
+        if property_obj.owner != request.user:
+            return response.Response({"detail": "You do not have permission to delete this property."}, status=status.HTTP_403_FORBIDDEN)
+
+        property_obj.delete()
+        return response.Response({"detail": "Property deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
 
 
