@@ -18,7 +18,7 @@ import { createPortal } from "react-dom";
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
 import { RiEdit2Fill } from "react-icons/ri";
-
+import notify from "../common/useNotification";
 
 
 export default function PropertyCard({ property }: any) {
@@ -54,6 +54,21 @@ export default function PropertyCard({ property }: any) {
     }
     touchStartX.current = null;
     touchEndX.current = null;
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(
+        `/property/delete-property/${property.id}/`,
+        { withCredentials: true }
+      );
+      notify("Property deleted successfully", "success");
+      router.push("/sa/my-properties");
+    } catch (err: any) {
+      notify("Failed to delete property", "error");
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
 
@@ -321,7 +336,11 @@ export default function PropertyCard({ property }: any) {
   return (
     <div className="rounded-lg border border-gray-300 bg-white shadow-md transition-all hover:bg-[#f3f4f6]" data-card-id={property.id}>
       {/* Main card content - clickable to go to property detail */}
-      <Link href={`/${countrySlug}/property/${property.id}`} className="block">
+      <div
+  className="rounded-lg border border-gray-300 bg-white shadow-md transition-all hover:bg-[#f3f4f6]"
+  data-card-id={property.id}
+  onClick={() => router.push(`/${countrySlug}/property/${property.id}`)}
+>
         <div className="flex flex-col sm:flex-row">
 
           {/* Left Side: Image */}
@@ -431,7 +450,7 @@ export default function PropertyCard({ property }: any) {
           </div>
 
         </div>
-      </Link>
+      </div>
 
       {/* Footer - OUTSIDE the Link so buttons work correctly */}
       <div className="bg-[#e5e7eb] text-gray-500 text-xs px-3 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
