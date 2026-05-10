@@ -11,6 +11,9 @@ import PropertyHeader from "../../../components/PropertyHeader";
 import PropertyDetails from "../../../components/PropertyDetails";
 import Loading from "../../../components/Loading";
 import Footer from "../../../components/Footer"
+import axios from "axios";
+
+
 
 
 
@@ -86,8 +89,14 @@ export default function PropertyPage() {
 
     if (error) 
         return (<div className="p-6 text-red-600">{error}</div>);
-    if (!property) 
-        return (<div className="p-6">Property not found</div>);
+    
+    if (!property) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Property not found</p>
+      </div>
+    );
+  }
 
 
     return (
