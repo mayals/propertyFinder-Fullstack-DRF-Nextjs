@@ -34,7 +34,7 @@ urlpatterns = [
     # buyer
     path('list-buyer/', views.ListBuyerAPIView.as_view(), name='list-buyer'),
 
- #  for request user only
+    # for request user only
     path('request-user/', views.DetailRequestUserAPIView.as_view(), name='request-user'),
     path('request-user-profile/', views.RequestUserProfileAPIView.as_view(), name='request-user-profile'), # general any type of user role types
     path('update-request-user-profile/', views.UpdateRequestUserProfileAPIView.as_view(), name='update-request-user-profile'), # general any type of user role types
@@ -49,9 +49,22 @@ urlpatterns = [
     path('set-new-password/', views.SetNewPasswordView.as_view(), name='set-new-password'),
     # Change-password
     path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    
+    
     # Broker list for agent registration
     path('broker-list/', views.BrokerListAPIView.as_view(), name='broker-list'),
     # Broker + Agent list for find-broker page
     path('broker-agent-list/', views.BrokerAgentListAPIView.as_view(), name='broker-agent-list'),
-
+    
+    # agent-detail for find-broker page
+    path('agent-detail/<uuid:id>/', views.AgentDetailAPIView.as_view(), name='agent-detail'),
+    
+    # by request user only - by (user.role=broker)
+    path('my-agents/', views.MyAgentsAPIView.as_view(), name='my-agents'),
+    
+    # by request user only - by (user.role=admin)
+    path('broker-detail/<uuid:id>/agents', views.BrokerDetailAgentsAPIView.as_view(), name='broker-detail-agents'),
+    
+    # by request user only - by (user.role=broker && user.role=admin)
+    path('delete-agent/<uuid:agentId>/', views.DeleteAgentAPIView.as_view(), name='delete-agent')
 ]

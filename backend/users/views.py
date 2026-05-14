@@ -1,5 +1,9 @@
 # DJANGO
+from tkinter.messagebox import OK
+from webbrowser import get
+
 from django.contrib.auth import get_user_model, tokens
+from django.utils import translation
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -10,6 +14,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
+
 
 
 # DRF
@@ -786,6 +791,12 @@ class ChangePasswordView(views.APIView):
         )
 
 
+
+
+
+
+
+
 ##################################### Broker List for Agent Registration ############################################
 class BrokerListAPIView(generics.ListAPIView):
     """
@@ -815,23 +826,19 @@ class BrokerListAPIView(generics.ListAPIView):
     
 
 
-##################################### Broker + Agent List for Find-Broker Page ############################################
+##################################### Brokers + Agents List for ---  Find-Broker -- Page ############################################
 class BrokerAgentListAPIView(views.APIView):
-    # Return a combined list of brokers and agents for the find-broker page.
-    # Each item has: id, full_name, role, email, phone_number, bio, broker_name (for agents).
+    """Return a combined (list of brokers and agents) for the find-broker page."""
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         # Get brokers with broker_name set
         brokers = BrokerProfile.objects.filter(
-            models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
-        ).select_related('user').order_by('broker_name')
-
-        # Get ALL agents with related user and broker
+                    models.Q(broker_name__isnull=False) & ~models.Q(broker_name='')
+                ).select_related('user').order_by('broker_name')
+        # Get all agents with related user and broker
         agents = AgentProfile.objects.all().select_related('user', 'belong_to_broker').order_by('agent_name')
-
         result = []
-
         # Add brokers
         for broker in brokers:
             profile_pic = ''
@@ -851,7 +858,6 @@ class BrokerAgentListAPIView(views.APIView):
                 'broker_name': '',
                 'profile_picture': profile_pic,
             })
-
         # Add agents
         for agent in agents:
             broker_name = ''
@@ -870,10 +876,57 @@ class BrokerAgentListAPIView(views.APIView):
                 'role': 'agent',
                 'email': agent.user.email,
                 'phone_number': str(agent.phone_number) if agent.phone_number else None,
-                'bio': '',  # AgentProfile doesn't have bio field
+                'bio': '',
                 'broker_name': broker_name,
                 'profile_picture': profile_pic,
             })
-
         return Response(result)
 
+
+# agent-detail for find-broker page
+class AgentDetailAPIView(views.APIView):
+    """Retrieve details for a specific agent by UUID."""
+    permission_classes = [permissions.AllowAny]
+    serializer_class = AgentProfileSerializer
+
+    def get(self, request, id, *args, **kwargs):
+        agent = get_object_or_404(AgentProfile, id=id)
+        serializer = self.serializer_class(agent)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+# by request user only - by (user.role=broker)
+class MyAgentsAPIView(views.APIView):
+    serializer_class = AgentProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            # Get the broker profile associated with the logged-in user
+            broker_profile = request.user.broker_profile
+            agents = AgentProfile.objects.filter(belong_to_broker=broker_profile)
+            serializer = AgentProfileSerializer(agents, many=True, context={'request': request})
+            print("✅ MyAgentsAPIView-serializer.data", serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except BrokerProfile.DoesNotExist:
+            return Response(
+                {"detail": "User does not have a broker profile."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except AgentProfile.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+    
+
+class BrokerDetailAgentsAPIView(views.APIView):
+    pass
+
+
+class DeleteAgentAPIView(views.APIView):
+    pass
+    
+
+   
+    
+   
