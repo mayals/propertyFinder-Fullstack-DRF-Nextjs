@@ -207,3 +207,67 @@ export const passwordResetRequest = async(email) => {
     }
 }
  
+
+
+
+export const myAgents = async () => {
+    try {
+            const response = await axiosInstance.get(
+                `/users/my-agents/`,            // endpoint 
+                {
+                    withCredentials: true,      // include cookies if needed        
+                }
+            );
+            console.log("myAgents-response.data=", response.data);
+            return response.data;
+    } catch (e: any) {
+            console.log("myAgents-e.response.data=", e.response?.data);
+            throw e.response?.data || { detail: "Unknown error occurred" };
+    }
+};
+
+
+
+
+
+
+   
+
+export const fetchBrokerAgents = async (brokerId: string) => {
+    try {
+            const response = await axiosInstance.get(
+                `/broker-detail/${brokerId}/agents/`,                   // endpoint 
+                {
+                    withCredentials: true,                     // include cookies if needed        
+                }
+            );
+            console.log("fetchBrokerAgents-response.data=", response.data);
+            return response.data;
+    } catch (e: any) {
+            console.log("fetchBrokerAgents-e.response.data=", e.response?.data);
+            throw e.response?.data || { detail: "Unknown error occurred" };
+    }
+};
+
+
+
+
+
+
+export const handleDeleteAgent = async (agentId: string) => {
+    if (confirm("Delete   this agent?")) {
+        try{
+            axiosInstance.delete(
+                `/delete-agent/${agentId}`,  // endpoint 
+                {
+                    withCredentials: true,   // include cookies if needed        
+                }
+            );
+            console.log("handleDeleteAgent-the agent is deleted successfully!");
+              
+        } catch (e: any) {
+            console.log("handleDeleteAgent-e.response.data=", e.response?.data);
+            throw e.response?.data || { detail: "Failed to delete agent" }; 
+        }
+    }
+};

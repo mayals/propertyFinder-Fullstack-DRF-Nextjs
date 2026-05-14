@@ -24,6 +24,7 @@ interface AuthContextType {
   user: RequestUserProfileData | null;
   setUser: (user: RequestUserProfileData | null) => void;
   loading: boolean;
+  setLoading: (loading: boolean) => void;
   fetchUser: () => Promise<void>;
 }
 
@@ -31,8 +32,14 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   setUser: () => {},
   loading: true,
+  setLoading: () => {},
   fetchUser: async () => {},
 });
+
+
+
+
+
 
 export const useAuth = () => useContext(AuthContext);
 
