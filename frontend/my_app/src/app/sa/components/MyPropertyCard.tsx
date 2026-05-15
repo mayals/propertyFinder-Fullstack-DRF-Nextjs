@@ -482,7 +482,7 @@ export default function PropertyCard({ property }: any) {
               e.stopPropagation();
               setShowDeleteModal(true);
             }}
-            className="bg-white text-red-500 border border-red-500 rounded-md flex items-center gap-1 py-1 px-2 hover:bg-red-50 transition cursor-pointer"
+            style={{ cursor: 'pointer' }} className="bg-white text-red-500 border border-red-500 rounded-md flex items-center gap-1 py-1 px-2 hover:bg-red-50 transition cursor-pointer pointer-events-auto"
           >
             <MdDeleteForever size={14} /> Delete
           </button>

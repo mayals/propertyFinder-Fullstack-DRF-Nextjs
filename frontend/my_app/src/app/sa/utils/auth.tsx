@@ -254,19 +254,20 @@ export const fetchBrokerAgents = async (brokerId: string) => {
 
 
 
-export const handleDeleteAgent = async (agentId: string) => {
-    if (confirm("Delete   this agent?")) {
+export const handleDeleteMyAgent = async (agentId: string) => {
+    if (confirm("Delete this agent?")) {
         try{
-            axiosInstance.delete(
-                `/delete-agent/${agentId}`,  // endpoint 
+            await axiosInstance.delete(
+                `/users/delete-my-agent/${agentId}/`,  // endpoint with trailing slash
                 {
-                    withCredentials: true,   // include cookies if needed        
+                    withCredentials: true,   // include cookies if needed
                 }
             );
-            console.log("handleDeleteAgent-the agent is deleted successfully!");
+            return true;
+            console.log("handleDeleteMyAgent-the agent is deleted successfully!");
               
         } catch (e: any) {
-            console.log("handleDeleteAgent-e.response.data=", e.response?.data);
+            console.log("handleDeleteMyAgent-e.response.data=", e.response?.data);
             throw e.response?.data || { detail: "Failed to delete agent" }; 
         }
     }
