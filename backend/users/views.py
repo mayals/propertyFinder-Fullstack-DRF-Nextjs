@@ -908,13 +908,14 @@ class MyAgentsAPIView(views.APIView):
             serializer = AgentProfileSerializer(agents, many=True, context={'request': request})
             print("✅ MyAgentsAPIView-serializer.data", serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
         except BrokerProfile.DoesNotExist:
-            return Response(
-                {"detail": "User does not have a broker profile."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"detail": "User does not have a broker profile."},status=status.HTTP_400_BAD_REQUEST)
+        
         except AgentProfile.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "User does not have a agent profile."},status=status.HTTP_404_NOT_FOUND)
+                
+           
 
 
     
@@ -923,8 +924,38 @@ class BrokerDetailAgentsAPIView(views.APIView):
     pass
 
 
-class DeleteAgentAPIView(views.APIView):
-    pass
+
+
+
+
+# by broker only that has this agent have permission to delete his agents
+class DeleteMyAgentAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, agentId, *args, **kwargs):
+        """Allow only the broker who owns the agent to delete it.
+        Admin deletion will be handled by a separate endpoint in the future.
+        """
+        # Retrieve the agent
+        agent = get_object_or_404(AgentProfile, id=agentId)
+        user = request.user
+        # Ensure the user has a broker profile (i.e., is a broker)
+        try:
+            broker_profile = user.broker_profile
+        
+        except Exception:
+            return Response({"error": "Permission denied: not a broker"}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Verify ownership
+        if agent.belong_to_broker != broker_profile:
+            return Response({"error": "Permission denied: broker does not own this agent"}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Delete the agent and its associated user account
+        user_to_delete = agent.user
+        agent.delete()
+        # Deleting the user will also cascade delete related profiles
+        user_to_delete.delete()
+        return Response({"success": "Agent and user account deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
 
    

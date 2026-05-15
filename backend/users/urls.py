@@ -66,5 +66,6 @@ urlpatterns = [
     path('broker-detail/<uuid:id>/agents', views.BrokerDetailAgentsAPIView.as_view(), name='broker-detail-agents'),
     
     # by request user only - by (user.role=broker && user.role=admin)
-    path('delete-agent/<uuid:agentId>/', views.DeleteAgentAPIView.as_view(), name='delete-agent')
+    path('delete-my-agent/<uuid:agentId>/', views.DeleteMyAgentAPIView.as_view(), name='delete-my-agent')
+
 ]

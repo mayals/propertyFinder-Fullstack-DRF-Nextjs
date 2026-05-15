@@ -425,9 +425,13 @@ class BrokerProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("phone_number field is required")
         return value  
 
+
+
+
 class AgentProfileSerializer(serializers.ModelSerializer):
     belong_to_broker_name = serializers.SerializerMethodField()
     belong_to_broker_profile = serializers.SerializerMethodField()
+    user_data = serializers.SerializerMethodField()
 
     class Meta:
         model = AgentProfile
@@ -452,6 +456,21 @@ class AgentProfileSerializer(serializers.ModelSerializer):
             return {
                 'profile_picture': profile_picture_url,
                 'broker_name': broker.broker_name
+            }
+        return None
+
+    def get_user_data(self, obj):
+        if hasattr(obj, 'user'):
+            user = obj.user
+            return {
+                'id': str(user.id),
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'full_name': user.get_full_name(),
+                'date_joined': user.date_joined.isoformat() if user.date_joined else None,
+                'is_active': user.is_active,
+                'role': user.role
             }
         return None
 
