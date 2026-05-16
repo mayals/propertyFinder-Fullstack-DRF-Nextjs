@@ -817,3 +817,8 @@ class UnreadMessagesCountAPIView(APIView):
             receiver=request.user, is_read=False
         ).count()
         return Response({"unread_count": count}, status=status.HTTP_200_OK) 
+    
+    
+    
+    
+    

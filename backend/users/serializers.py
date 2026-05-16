@@ -462,12 +462,32 @@ class AgentProfileSerializer(serializers.ModelSerializer):
     def get_user_data(self, obj):
         if hasattr(obj, 'user'):
             user = obj.user
+            # Gender is not a direct field on CustomUser; infer from related profile if possible
+            gender = ''
+            # Try to get gender from possible profile types (buyer, developer, etc.)
+            try:
+                if hasattr(user, 'buyer_profile'):
+                    gender = getattr(user.buyer_profile, 'gender', '')
+                elif hasattr(user, 'developer_profile'):
+                    gender = getattr(user.developer_profile, 'gender', '')
+                elif hasattr(user, 'agent_profile'):
+                    # AgentProfile has gender field
+                    gender = getattr(user.agent_profile, 'gender', '')
+                elif hasattr(user, 'broker_profile'):
+                    gender = getattr(user.broker_profile, 'gender', '')
+                elif hasattr(user, 'admin_profile'):
+                    gender = getattr(user.admin_profile, 'gender', '')
+                elif hasattr(user, 'agent_profile'):
+                    gender = getattr(user.agent_profile, 'gender', '')
+            except Exception:
+                gender = ''
             return {
                 'id': str(user.id),
                 'email': user.email,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'full_name': user.get_full_name(),
+                'gender': gender,
                 'date_joined': user.date_joined.isoformat() if user.date_joined else None,
                 'is_active': user.is_active,
                 'role': user.role

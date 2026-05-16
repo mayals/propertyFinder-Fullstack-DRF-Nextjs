@@ -258,22 +258,21 @@ class CookieCustomTokenRefreshView(TokenRefreshView):
 # ####################### LogoutAPIView ###############################################333
 class LogoutAPIView(views.APIView):
     def post(self, request):
-        try:
-            refresh_token = request.COOKIES.get("refresh_token")
-            if refresh_token:
+        # Attempt to blacklist the refresh token if present. Ignore errors caused by
+        # invalid or expired tokens – logout should succeed regardless.
+        refresh_token = request.COOKIES.get("refresh_token")
+        if refresh_token:
+            try:
                 token = RefreshToken(refresh_token)
                 token.blacklist()
-        except Exception as e:
-            return Response({"error in vadilating token": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception:
+                # Token is invalid/expired; proceed to clear cookies anyway.
+                pass
 
         response = Response({"message": "Successfully logged out"}, status=status.HTTP_200_OK)
         # ✅ Clear cookies explicitly
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
-        access_token = request.COOKIES.get("access_token")
-        refresh_token = request.COOKIES.get("refresh_token")
-        print('deleted_access_token=', access_token)
-        print('deleted_refresh_token=', refresh_token)
         return response
 
 
@@ -883,7 +882,7 @@ class BrokerAgentListAPIView(views.APIView):
         return Response(result)
 
 
-# agent-detail for find-broker page
+# agent-detail for find-broker page and agent detail page (by agent id) - for any one can see it without authentication
 class AgentDetailAPIView(views.APIView):
     """Retrieve details for a specific agent by UUID."""
     permission_classes = [permissions.AllowAny]
@@ -893,6 +892,10 @@ class AgentDetailAPIView(views.APIView):
         agent = get_object_or_404(AgentProfile, id=id)
         serializer = self.serializer_class(agent)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+    
+    
     
 
 # by request user only - by (user.role=broker)
