@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Search, MapPin, Phone, Mail, Star, Verified, ArrowRight } from "lucide-react";
 import axiosInstance from "../../lib/axios";
+import Loading from "../../components/Loading";
 
 interface AgentProfile {
   id: string;
@@ -18,7 +19,7 @@ interface AgentProfile {
 }
 
 export default function findBrokerPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [filterRole, setFilterRole] = useState<"all" | "agent" | "broker">("all");
   const [agents, setAgents] = useState<AgentProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,9 +49,7 @@ export default function findBrokerPage() {
 
   if (loading) {
     return (
-      <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </section>
+      <Loading />
     );
   }
 

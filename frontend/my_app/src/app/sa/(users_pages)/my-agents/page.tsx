@@ -162,8 +162,8 @@ export default function MyAgentsPage() {
                                 {agent.user_data.is_active ? <FiCheckCircle className="text-green-600" title="Active" /> : <FiXCircle className="text-red-600" title="Inactive" />}</div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onClick={() => router.push(`/agents/${agent.id}`)} className="mx-1 text-blue-600"><FiEye size={18} /></button>
-                                <button onClick={() => router.push(`/agents/edit/${agent.id}`)} className="mx-1 text-green-600"><FiEdit size={18} /></button>
+                                <button onClick={() => router.push(`/sa/agent-detail/${agent.id}`)} className="mx-1 text-blue-600 cursor-pointer hover:bg-blue-100 transition-colors duration-200"><FiEye size={18} /></button>
+                                {/* <button onClick={() => router.push(`/agents/edit/${agent.id}`)} className="mx-1 text-green-600"><FiEdit size={18} /></button> */}
                                 <button onClick={() => { setAgentToDelete(agent.id); setShowDeleteModal(true); }} className="mx-1 text-red-600 cursor-pointer hover:bg-red-100 transition-colors duration-200"><FiTrash2 size={18} /></button>
                               </td>
                             </tr>
@@ -173,6 +173,9 @@ export default function MyAgentsPage() {
                     </div>
                 )}
             </div>
+
+
+
 
 
 
