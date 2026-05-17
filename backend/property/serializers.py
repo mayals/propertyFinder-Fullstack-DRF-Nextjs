@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import  Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike, Message
+from .models import  Country, City, NewProject, NewProjectImage, NewProjectVideo, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike, Message
 from users.serializers import CustomUserSerializer
 from users.models import CustomUser
 from django.utils.text import slugify
@@ -346,10 +346,6 @@ class AmenitySerializer(serializers.ModelSerializer):
 #  add images to property selected of params property.id
 class PropertyImageSerializer(serializers.ModelSerializer):
     images = serializers.ImageField(use_url=True)   # use_url=True  -- absolute URL   --  Next.js requires full absolute URL, not relative.
-   
-
-
-
     class Meta:
         model = PropertyImage
         fields = ["id", "images"]
@@ -469,15 +465,12 @@ class PropertySerializer(serializers.ModelSerializer):
         # Then attach amenities
         if amenities_data:
             property_instance.amenities.set(amenities_data)
-
         return property_instance
 
     def get_is_liked(self, obj):
         request = self.context.get("request")
-
         if not request or not request.user.is_authenticated:
             return False
-
         return PropertyLike.objects.filter(user=request.user, property=obj).exists()
            
            
@@ -485,10 +478,10 @@ class PropertySerializer(serializers.ModelSerializer):
 
     
     
-class PropertyLikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PropertyLike
-        fields = "__all__"
+# class PropertyLikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PropertyLike
+#         fields = "__all__"
 
 
 class MessagePropertySerializer(serializers.ModelSerializer):
@@ -637,3 +630,158 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
+##################################   NEW PROJECT   #############################################
+class NewProjectImageSerializer(serializers.ModelSerializer):
+    images = serializers.ImageField(use_url=True)   # use_url=True  -- absolute URL   --  Next.js requires full absolute URL, not relative.
+    class Meta:
+        model = NewProjectImage
+        fields = ["id", "images"]
+
+    def create(self, validated_data):
+        
+        # Get the new_project_obj from the context
+        print("self=",self)
+        new_project_obj = self.context.get("new_project")
+        if not new_project_obj:
+            raise serializers.ValidationError("new_project_obj is required to upload images.")
+
+        # Handle multiple files
+        request = self.context.get("request")
+        files = request.FILES.getlist("images") if request else None
+
+        if files:
+            images = [NewProjectImage.objects.create(new_project=new_project_obj, images=file) for file in files]
+            return images
+
+        # Single image fallback
+        return NewProjectImage.objects.create(new_project=new_project_obj, **validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and data.get("images"):
+            data["images"] = request.build_absolute_uri(data["images"])
+        return data
+    #  Now the API returns:
+    # "http://127.0.0.1:8000/media/new_project_images/2025/10/13/1.jpg"
+
+
+
+
+
+class NewProjectVideoSerializer(serializers.ModelSerializer):
+    video = serializers.FileField(use_url=True)
+
+    class Meta:
+        model = NewProjectVideo
+        fields = ["id", "video"]
+
+    def create(self, validated_data):
+        new_project_obj = self.context.get("new_project")
+        if not new_project_obj:
+            raise serializers.ValidationError("new_project_obj is required to upload videos.")
+
+        request = self.context.get("request")
+        files = request.FILES.getlist("video") if request else None
+
+        if files:
+            videos = [NewProjectVideo.objects.create(new_project=new_project_obj, video=file) for file in files]
+            return videos
+
+        return NewProjectVideo.objects.create(new_project=new_project_obj, **validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and data.get("video"):
+            data["video"] = request.build_absolute_uri(data["video"])
+        return data
+
+
+
+
+class NewProjectSerializer(serializers.ModelSerializer):
+    nproj_name = serializers.CharField(
+                                    max_length=200,
+                                    required=True,
+                                    allow_blank=False,
+                                    validators=[UniqueValidator(queryset=Property.objects.all())]
+    )
+    # ✅ Nested with property list
+    # ForeignKey fields - make ForeignKey fields as this to get all object informations instesd of only id number of that object
+    user       = CustomUserSerializer(many=False,read_only=True) # to get object of owner data with response.data
+    country    = CountrySerializer(many=False, read_only=True) # to get object of country data with response.data
+    city       = CitySerializer(many=False, read_only=True)
+    nproj_main_type = PropertyMainTypeSerializer(many=False, read_only=True)
+    images     = NewProjectImageSerializer(many=True, read_only=True)
+    videos     = NewProjectVideoSerializer(many=True, read_only=True)
+    amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
+    hand_over_year = serializers.DateField(required=False, allow_null=True)
+    status_detail = serializers.CharField(required=False, allow_blank=True)
+    nproj_main_type = serializers.CharField(required=True, allow_blank=True)
+    
+    
+    
+    # 👇 Add write-only fields for IDs (because the customer in frontend will insert the id in these foreignkey field )
+    country_id = serializers.PrimaryKeyRelatedField(
+        queryset=Country.objects.all(), write_only=True, source='country'
+    )
+    city_id = serializers.PrimaryKeyRelatedField(
+        queryset=City.objects.all(), write_only=True, source='city'
+    )
+    amenities_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Amenity.objects.all(), many=True, write_only=True, source='amenities'
+    )
+    # is_liked = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = NewProject
+        fields = [
+            'id', 'user', 'nproj_name', 'description','nproj_main_type',
+            'country', 'country_id','city', 'city_id','district', 'address_detail',
+            'full_area', 'units', 'latitude', 'longitude',
+            'hand_over_year', 'hand_over_year_quarter' , 'status_detail',
+            'amenities','amenities_ids', 'lunch_price', 'currency', 'is_published',
+            'images', 'videos'
+        ]
+        
+        read_only_fields = [
+            'id', 'is_published','user', # 👈 add 'user' here because it come from backend not from frontend -- request.user -- serializer.save(user=self.request.user) in view.py
+            'country ', 'city', 'images',
+            'nproj_main_type', 'amenities'
+        ]  
+
+    
+    def validate_nproj_name(self, value):
+        if not value:
+            raise serializers.ValidationError("The New Project name is required")
+        if Property.objects.filter(nproj_name=value).exists():
+            raise serializers.ValidationError("The New Project name must be unique")
+        return value
+    
+        
+    def create(self, validated_data):
+        # DRF will automatically map *_id fields to FKs
+        # Pop amenities from validated_data because it's M2M
+        amenities_data = validated_data.pop('amenities', [])
+
+        # Create property (without amenities yet)
+        new_project_instance = NewProject.objects.create(**validated_data)
+
+        # Then attach amenities
+        if amenities_data:
+            new_project_instance.amenities.set(amenities_data)
+
+        return new_project_instance
+
+    # def get_is_liked(self, obj):
+    #     request = self.context.get("request")
+    #     if not request or not request.user.is_authenticated:
+    #         return False
+        # return NewProjectLike.objects.filter(user=request.user, new_property=obj).exists()
+           
+           

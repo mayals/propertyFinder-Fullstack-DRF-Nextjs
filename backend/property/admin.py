@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage,PropertyLike
+from .models import  NewProject, PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage,PropertyLike
 
 @admin.register(PropertyMainType)
 class PropertyMainTypeAdmin(admin.ModelAdmin):
@@ -66,3 +66,12 @@ class PropertyLikeAdmin(admin.ModelAdmin):
     list_filter   = ( "user", "property",)
     search_fields = ( "user", "property", )
  
+ 
+ 
+ 
+ #################  NewProject ############################################3
+@admin.register(NewProject)
+class NewProjectAdmin(admin.ModelAdmin):
+    list_display  = ("id", "user", "nproj_name", "country", "city", "nproj_main_type", "hand_over_year", "status_detail")
+    list_filter   = ( "nproj_name", "user", "country", "city", "nproj_main_type", "hand_over_year", "status_detail")
+    search_fields = ( "nproj_name", "user", "country", "city", "nproj_main_type", "hand_over_year", "status_detail")

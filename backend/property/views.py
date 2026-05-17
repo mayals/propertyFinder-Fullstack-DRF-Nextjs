@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, PropertyLikeSerializer, MessageSerializer, MessageCreateSerializer
-from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike, Message
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, MessageSerializer, MessageCreateSerializer, NewProjectSerializer, NewProjectImageSerializer, NewProjectVideoSerializer
+from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike, Message,NewProject, NewProjectImage, NewProjectVideo
 from users.models import CustomUser
 from rest_framework import  response, permissions, status
 from rest_framework.response import Response
@@ -728,7 +728,28 @@ class DeletePropertyAPIView(APIView):
 
 
 class CreatePropertyImageAPIView(APIView):
-    pass  
+    pass
+
+# New video upload view
+class CreateNewProjectVideoUploadAPIView(APIView):
+    def post(self, request):
+        # Get new_project from context
+        new_project = request.context.get('new_project')
+        if not new_project:
+            return Response({'error': 'New project not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Handle video upload
+        serializer = NewProjectVideoSerializer(data=request.data, context={'new_project': new_project})
+        if serializer.is_valid():
+            videos = serializer.save()
+            # Mark project as published if not already
+            if not new_project.is_published:
+                new_project.is_published = True
+                new_project.save(update_fields=['is_published'])
+            return Response({'detail': 'Video(s) uploaded successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+
+
 class ListPropertyImageAPIView(APIView):
     pass 
 class UpdatePropertyImageAPIView(APIView):
@@ -820,5 +841,48 @@ class UnreadMessagesCountAPIView(APIView):
     
     
     
+    
+    
+########################### New Project API Views #####################################################
+class ListNewProjectAPIView(APIView):
+    serializer_class = NewProjectSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        queryset = NewProject.objects.filter(is_published=True)
+        serializer = NewProjectSerializer(queryset, many=True, context={'request': request})
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    
+
+# List all new_projects in one country only and one main type only
+# <slug:country_slug>/<slug:nproj_main_type_slug>/
+class ListNewProjectByCountryMaintypeAPIView(APIView):
+    serializer_class = NewProjectSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, country_slug, nproj_main_type_slug, *args, **kwargs):
+        country = get_object_or_404(Country, country_slug=country_slug)
+        nproj_main_type = get_object_or_404(NewProject, nproj_main_type_slug=nproj_main_type_slug)
+        queryset = NewProject.objects.filter(country=country, nproj_main_type=nproj_main_type)
+        serializer = PropertySerializer(queryset, many=True, context={'request': request})
+
+        return Response(
+            {
+                "count": queryset.count(),
+                "country": country.country_name,
+                "nproj_main_type": nproj_main_type,
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
     
     

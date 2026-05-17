@@ -359,3 +359,122 @@ class Message(models.Model):
 
 #     class Meta:
 #         unique_together = ("property", "amenity")
+
+
+
+
+
+
+class NewProject(models.Model):
+    
+    PROJECT_MAIN_TYPE_CHOICES = [
+        ("residential", "Residential"),
+        ("commercial", "Commercial"),
+        ("mixed_use", "Mixed Use"),
+    ]
+    
+    HAND_OVER_YEAR_QUARTER_CHOICES = [
+        ("q1", "Q1"),
+        ("q2", "Q2"),
+        ("q3", "Q3"),
+        ("q4", "Q4"),
+    ]
+    STATUS_DETAIL = [
+        ("ready_to_move", "Ready to Move"),
+        ("under_construction", "Under Construction"),
+        ("off_plan", "Off Plan"),
+        ("completed", "Completed"),
+        ("handed_over", "Handed Over"),
+        ("launching_soon", "Launching Soon")
+    ]
+
+    id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user         = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="new_projects")# can be Admin, Broker, agent or Developer 
+    nproj_name    = models.CharField(max_length=255, blank=False)
+    description  = models.TextField(blank=False, null=True)
+    nproj_main_type = models.CharField(max_length=225, choices=PROJECT_MAIN_TYPE_CHOICES, blank=False, null=True)
+    nproj_main_type_slug = models.SlugField(max_length=30, blank=True, null=True, unique=True)
+    
+    # PROJECT_Location
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, blank=False, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    district = models.CharField(max_length=100, blank=True, null=True)
+    address_detail = models.CharField(max_length=255, blank=True, null=True)
+    
+    full_area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Size in sqm")
+    units = models.IntegerField(blank=True, null=True)
+    
+    # on google map location
+    latitude = models.DecimalField(max_digits=25, decimal_places=18, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=25, decimal_places=18, null=True, blank=True)
+
+    # Status
+    hand_over_year = models.DateField(blank=True, null=True)
+    hand_over_year_quarter = models.CharField(max_length=20, choices=HAND_OVER_YEAR_QUARTER_CHOICES, blank=False, null=True)
+    status_detail = models.CharField(max_length=20, choices=STATUS_DETAIL, blank=False, null=True) 
+   
+    # Property details
+    amenities = models.ManyToManyField(Amenity, blank=False, null=True)
+    
+    # Pricing
+    lunch_price = models.DecimalField(max_digits=12, decimal_places=2)
+    currency    = models.CharField(max_length=10, default="SAR")
+
+    # Read only field
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # to manage displaying the property or not.
+    is_published = models.BooleanField(null=True, default=False)
+    
+    def __str__(self):
+        return f"{self.nproj_name} - {self.city}"
+
+    def save(self, *args, **kwargs):
+        if not self.nproj_main_type_slug:
+            # make sure slug is lowercase and unique
+            self.nproj_main_type_slug = slugify(self.nproj_main_type.lower())
+        super().save(*args, **kwargs)
+    
+
+
+
+
+class NewProjectImage(models.Model):
+    """
+    Multiple images per project
+    """
+    new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_images")
+    images = models.ImageField(upload_to="project_images/%Y/%m/%d/", null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.images)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Always mark new project as published when an image is uploaded
+        if self.new_project and not self.new_project.is_published:
+            self.new_project.is_published = True
+            self.new_project.save(update_fields=["is_published"])
+    
+
+
+
+class NewProjectVideo(models.Model):
+    """
+    Multiple videos per project
+    """
+    new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_videos")
+    video = models.FileField(upload_to="project_videos/%Y/%m/%d/", null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.video)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Always mark new project as published when an image is uploaded
+        if self.new_project and not self.new_project.is_published:
+            self.new_project.is_published = True
+            self.new_project.save(update_fields=["is_published"])

@@ -125,4 +125,10 @@ urlpatterns = [
     path("messages/unread-count/", views.UnreadMessagesCountAPIView.as_view(), name='messages-unread-count'),
     path("messages/send/", views.SendMessageAPIView.as_view(), name='messages-send'),
     path("messages/<uuid:message_id>/", views.MessageDetailAPIView.as_view(), name='messages-detail'),
+
+
+    # NewProject endpoints
+    path('new-projects/', views.ListNewProjectAPIView.as_view(), name='list-new-projects'),
+    path('new-projects/<slug:country_slug>/<slug:nproj_main_type_slug>/',views.ListNewProjectByCountryMaintypeAPIView.as_view(), name='list-new-project-by-country-nproj_main_type'),
+
 ]   
