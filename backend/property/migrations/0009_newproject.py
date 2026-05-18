@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('latitude', models.DecimalField(blank=True, decimal_places=18, max_digits=25, null=True)),
                 ('longitude', models.DecimalField(blank=True, decimal_places=18, max_digits=25, null=True)),
                 ('hand_over_year', models.DateField(blank=True, null=True)),
-                ('hand_over_year_quarter', models.CharField(choices=[('q1', 'Q1'), ('q2', 'Q2'), ('q3', 'Q3'), ('q4', 'Q4')], max_length=20, null=True)),
+                ('hand_over_year_quarter', models.CharField(choices=[('Q1', 'Q1'), ('Q2', 'Q2'), ('Q3', 'Q3'), ('Q4', 'Q4')], max_length=20, null=True)),
                 ('status_detail', models.CharField(choices=[('ready_to_move', 'Ready to Move'), ('under_construction', 'Under Construction'), ('off_plan', 'Off Plan'), ('completed', 'Completed'), ('handed_over', 'Handed Over'), ('launching_soon', 'Launching Soon')], max_length=20, null=True)),
                 ('lunch_price', models.DecimalField(decimal_places=2, max_digits=12)),
                 ('currency', models.CharField(default='SAR', max_length=10)),

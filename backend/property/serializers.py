@@ -717,7 +717,7 @@ class NewProjectSerializer(serializers.ModelSerializer):
     country    = CountrySerializer(many=False, read_only=True) # to get object of country data with response.data
     city       = CitySerializer(many=False, read_only=True)
     nproj_main_type = PropertyMainTypeSerializer(many=False, read_only=True)
-    images     = NewProjectImageSerializer(many=True, read_only=True)
+    images     = NewProjectImageSerializer(many=True, read_only=True, source='new_project_images')
     videos     = NewProjectVideoSerializer(many=True, read_only=True)
     amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
     hand_over_year = serializers.DateField(required=False, allow_null=True)

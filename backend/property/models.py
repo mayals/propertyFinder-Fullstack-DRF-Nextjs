@@ -374,10 +374,10 @@ class NewProject(models.Model):
     ]
     
     HAND_OVER_YEAR_QUARTER_CHOICES = [
-        ("q1", "Q1"),
-        ("q2", "Q2"),
-        ("q3", "Q3"),
-        ("q4", "Q4"),
+        ("Q1", "Q1"),
+        ("Q2", "Q2"),
+        ("Q3", "Q3"),
+        ("Q4", "Q4"),
     ]
     STATUS_DETAIL = [
         ("ready_to_move", "Ready to Move"),
@@ -390,10 +390,10 @@ class NewProject(models.Model):
 
     id           = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user         = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="new_projects")# can be Admin, Broker, agent or Developer 
-    nproj_name    = models.CharField(max_length=255, blank=False)
+    nproj_name    = models.CharField(max_length=255, blank=False , unique=True)
     description  = models.TextField(blank=False, null=True)
     nproj_main_type = models.CharField(max_length=225, choices=PROJECT_MAIN_TYPE_CHOICES, blank=False, null=True)
-    nproj_main_type_slug = models.SlugField(max_length=30, blank=True, null=True, unique=True)
+    nproj_main_type_slug = models.SlugField(max_length=30, blank=True, null=True)
     
     # PROJECT_Location
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, blank=False, null=True)
@@ -445,7 +445,7 @@ class NewProjectImage(models.Model):
     Multiple images per project
     """
     new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_images")
-    images = models.ImageField(upload_to="project_images/%Y/%m/%d/", null=True, blank=True)
+    images = models.ImageField(upload_to="new_project_images/%Y/%m/%d/", null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

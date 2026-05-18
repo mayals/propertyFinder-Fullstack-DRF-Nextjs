@@ -128,7 +128,7 @@ urlpatterns = [
 
 
     # NewProject endpoints
-    path('new-projects/', views.ListNewProjectAPIView.as_view(), name='list-new-projects'),
+    path('list-new-projects/', views.ListNewProjectAPIView.as_view(), name='list-new-projects'),
     path('new-projects/<slug:country_slug>/<slug:nproj_main_type_slug>/',views.ListNewProjectByCountryMaintypeAPIView.as_view(), name='list-new-project-by-country-nproj_main_type'),
 
 ]   

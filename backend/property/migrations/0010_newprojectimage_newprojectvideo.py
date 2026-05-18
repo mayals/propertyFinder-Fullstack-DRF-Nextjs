@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='NewProjectImage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('images', models.ImageField(blank=True, null=True, upload_to='project_images/%Y/%m/%d/')),
+                ('images', models.ImageField(blank=True, null=True, upload_to='new_project_images/%Y/%m/%d/')),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
                 ('new_project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='new_project_images', to='property.newproject')),
             ],
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             name='NewProjectVideo',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('video', models.FileField(blank=True, null=True, upload_to='project_videos/%Y/%m/%d/')),
+                ('video', models.FileField(blank=True, null=True, upload_to='new_project_videos/%Y/%m/%d/')),
                 ('uploaded_at', models.DateTimeField(auto_now_add=True)),
                 ('new_project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='new_project_videos', to='property.newproject')),
             ],
