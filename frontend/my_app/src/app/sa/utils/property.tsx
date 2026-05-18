@@ -431,3 +431,29 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
         }
     }
 }
+
+
+
+// getNewProjects -- all new projects for allowAny  //
+export const getNewProjects = async() => {
+    try {
+        const response = await axios.get(
+            `${API_URL}/property/list-new-projects/`,        // endpoint 
+            { withCredentials:true },                        //  sending cookies          
+        )
+        console.log("getNewProjects-response.data=",response.data);
+        return response.data;
+
+
+    } catch (e) {
+        if (e) {
+        // Throw full error object for the component to handle
+        console.log('getNewProjects-e=',e)
+        throw e;
+        
+        } else {
+        throw { error: "Something went wrong." };
+        }
+    }
+}
+ 
