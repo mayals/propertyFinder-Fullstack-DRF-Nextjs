@@ -47,7 +47,7 @@ interface NewProject {
     longitude: number;
     hand_over_year: number;
     hand_over_year_quarter: string;
-    status_details: string;
+    status_detail: string;
     amenities: string[];
     created_at: string;
     updated_at: string;
@@ -217,8 +217,8 @@ export default function NewProjectsPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(project.status_details)}`}>
-                    {project.status_details}
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(project.status_detail)}`}>
+                    {project.status_detail}
                   </span>
                 </div>
                 <div className="absolute top-4 right-4">
