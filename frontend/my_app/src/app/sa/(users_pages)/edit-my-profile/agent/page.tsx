@@ -202,14 +202,14 @@ export default function EditAdminProfile() {
           }
                     
           // Log the values using the get method
-          console.log('formData.first_name=', formData.get('first_name'));
-          console.log('formData.last_name=', formData.get('last_name'));
-          console.log('formData.gender=', formData.get('gender'));
-          console.log('formData.date_of_birth=', formData.get('date_of_birth'));
-          console.log('formData.phone_number=', formData.get('phone_number'));
-          console.log('formData.country=', formData.get('country'));
-          console.log('formData.address=', formData.get('address'));
-          console.log('formData.profile_picture=', formData.get('profile_picture'));
+          // console.log('formData.first_name=', formData.get('first_name'));
+          // console.log('formData.last_name=', formData.get('last_name'));
+          // console.log('formData.gender=', formData.get('gender'));
+          // console.log('formData.date_of_birth=', formData.get('date_of_birth'));
+          // console.log('formData.phone_number=', formData.get('phone_number'));
+          // console.log('formData.country=', formData.get('country'));
+          // console.log('formData.address=', formData.get('address'));
+          // console.log('formData.profile_picture=', formData.get('profile_picture'));
           
     
     

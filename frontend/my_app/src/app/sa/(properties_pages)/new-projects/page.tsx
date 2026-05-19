@@ -265,7 +265,7 @@ export default function NewProjectsPage() {
                     <div className="flex items-center justify-center mb-1">
                       <Wallet className="w-3 h-3 text-slate-400" />
                     </div>
-                    <p className="text-xs text-slate-500">Price</p>
+                    <p className="text-xs text-slate-500">Lunch Price</p>
                     <p className="text-sm font-semibold text-slate-700">
                       {project.lunch_price?.toLocaleString()}{project.currency ? ` ${project.currency}` : ""}
                     </p>

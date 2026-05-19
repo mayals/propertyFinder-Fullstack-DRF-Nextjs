@@ -90,9 +90,9 @@ const UserDeveloperNav = ({user}) => {
                     {user ? (
                         <>
                             <MenuLink
-                                label='My Admin profile'
+                                label='My Developer profile'
                                 onClick={() => {
-                                    router.push('/sa/my-profile/admin');
+                                    router.push('/sa/my-profile/developer');
                                     setIsOpen(false);
                                 }}
                             />

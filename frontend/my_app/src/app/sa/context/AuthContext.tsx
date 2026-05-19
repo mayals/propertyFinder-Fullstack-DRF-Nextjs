@@ -5,19 +5,25 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import axiosInstance from "../lib/axios";
 
 interface RequestUserProfileData {
-
     id?: string;
     first_name?: string;
     last_name?: string;
     email?: string;
     role?: string;
-
     gender?: string;
     profile_picture?: string;
     phone_number?: string | null;
     country?: string | null;
     address?: string | null;
     date_of_birth?: string | null;
+    twitter?: string | null;
+    website?: string | null;
+    bio?: string | null;
+    developer_name?: string | null;
+    broker_name?: string | null;
+    contact_email?: string | null;
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface AuthContextType {

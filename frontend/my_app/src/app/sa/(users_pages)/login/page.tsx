@@ -59,6 +59,7 @@ export default function LoginPage() {
                     else if (role === 'buyer') router.push('/sa/my-profile/buyer');
                     else if (role === 'broker') router.push('/sa/my-profile/broker');
                     else if (role === 'agent') router.push('/sa/my-profile/agent');
+                    else if (role === 'developer') router.push('/sa/my-profile/developer');
                     else router.push('/sa/');
                 }, 3000);
 
