@@ -719,7 +719,7 @@ class UpdateDeveloperProfileSerializer(serializers.ModelSerializer):
     user = UpdateUserSerializer(required=True,many=False)
     class Meta:
         model = DeveloperProfile
-        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture'] 
+        fields = ['user', 'date_of_birth','phone_number','country', 'address','profile_picture','bio','website','twitter']
 
     def update(self, instance, validated_data): # Update DeveloperProfile fields + User fields
         print('validated_data',validated_data)

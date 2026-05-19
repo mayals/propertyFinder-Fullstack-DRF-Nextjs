@@ -184,8 +184,8 @@ class DeveloperProfile(models.Model):
     profile_picture = models.ImageField(upload_to='developer_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
-    # date_of_birth   = models.DateField(blank=True, null=True)
-    # gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
+    date_of_birth   = models.DateField(blank=True, null=True)
+    gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
     
     def __str__(self):
         # you must use parentheses when calling a function
@@ -225,8 +225,8 @@ class BrokerProfile(models.Model):
     profile_picture = models.ImageField(upload_to='broker_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
-    # date_of_birth   = models.DateField(blank=True, null=True)
-    # gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
+    date_of_birth   = models.DateField(blank=True, null=True)
+    gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
     
     def __str__(self):
         # you must use parentheses when calling a function
