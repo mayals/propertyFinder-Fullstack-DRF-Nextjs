@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 # permissions
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAllowedToAddProperty
+from .permissions import IsAllowedToAddProperty, IsAllowedToAddNewProject
 from django.utils.text import slugify
 from django.conf import settings
 
@@ -860,7 +860,31 @@ class ListNewProjectAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
+
+
+
+class CreateNewProjectAPIView(APIView): # only project data -- no images -- no videos  --step1
+    serializer_class = NewProjectSerializer
+    permission_classes = [IsAuthenticated, IsAllowedToAddNewProject]  # 👈 both required
     
+    def post(self, request):
+        print('CreateNewProjectAPIView-request.data=',request.data)
+        serializer = self.serializer_class(data=request.data)
+        print('serializer.initial_data=',serializer.initial_data)
+
+        if serializer.is_valid():
+            serializer.save(user=self.request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED) 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+
+
+
+
+
+
 
 # List all new_projects in one country only and one main type only
 # <slug:country_slug>/<slug:nproj_main_type_slug>/

@@ -709,14 +709,13 @@ class NewProjectSerializer(serializers.ModelSerializer):
                                     max_length=200,
                                     required=True,
                                     allow_blank=False,
-                                    validators=[UniqueValidator(queryset=Property.objects.all())]
+                                    validators=[UniqueValidator(queryset=NewProject.objects.all())]
     )
     # ✅ Nested with property list
     # ForeignKey fields - make ForeignKey fields as this to get all object informations instesd of only id number of that object
     user       = CustomUserSerializer(many=False,read_only=True) # to get object of owner data with response.data
     country    = CountrySerializer(many=False, read_only=True) # to get object of country data with response.data
     city       = CitySerializer(many=False, read_only=True)
-    nproj_main_type = PropertyMainTypeSerializer(many=False, read_only=True)
     images     = NewProjectImageSerializer(many=True, read_only=True, source='new_project_images')
     videos     = NewProjectVideoSerializer(many=True, read_only=True)
     amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
@@ -759,7 +758,7 @@ class NewProjectSerializer(serializers.ModelSerializer):
     def validate_nproj_name(self, value):
         if not value:
             raise serializers.ValidationError("The New Project name is required")
-        if Property.objects.filter(nproj_name=value).exists():
+        if NewProject.objects.filter(nproj_name=value).exists():
             raise serializers.ValidationError("The New Project name must be unique")
         return value
     

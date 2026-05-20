@@ -129,6 +129,10 @@ urlpatterns = [
 
     # NewProject endpoints
     path('list-new-projects/', views.ListNewProjectAPIView.as_view(), name='list-new-projects'),
-    path('new-projects/<slug:country_slug>/<slug:nproj_main_type_slug>/',views.ListNewProjectByCountryMaintypeAPIView.as_view(), name='list-new-project-by-country-nproj_main_type'),
+    path('create-new-project-data/', views.CreateNewProjectAPIView.as_view(), name='create-new-project-data'),
+
+    
+    
+    # path('list-new-projects/<slug:country_slug>/<slug:nproj_main_type_slug>/',views.ListNewProjectByCountryMaintypeAPIView.as_view(), name='list-new-project-by-country-nproj_main_type'),
 
 ]   

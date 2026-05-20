@@ -427,6 +427,7 @@ class NewProject(models.Model):
     # to manage displaying the property or not.
     is_published = models.BooleanField(null=True, default=False)
     
+    
     def __str__(self):
         return f"{self.nproj_name} - {self.city}"
 
@@ -437,7 +438,7 @@ class NewProject(models.Model):
         super().save(*args, **kwargs)
     
 
-
+    
 
 
 class NewProjectImage(models.Model):

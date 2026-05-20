@@ -16,3 +16,25 @@ class IsAllowedToAddProperty(permissions.BasePermission):
             return False
         allowed_roles = ["admin", "developer", "broker", "agent"]
         return user.role in allowed_roles
+
+
+
+
+class IsAllowedToAddNewProject(permissions.BasePermission):
+    """
+    Allow only admin, developer, broker, or agent to add a property.
+    Deny buyers and unauthenticated users.
+    """
+    
+    message = "Only admins, developers can add new projects."
+
+    def has_permission(self, request, view):
+        user = request.user
+        if not user or not user.is_authenticated:
+            self.message = "Authentication required."
+            return False
+        
+        allowed_roles = ["admin", "developer"]
+        return user.role in allowed_roles
+
+
