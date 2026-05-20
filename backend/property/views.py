@@ -880,7 +880,20 @@ class CreateNewProjectAPIView(APIView): # only project data -- no images -- no v
 
 
 
+# Create New Project Image
+class CreateNewProjectImageUploadAPIView (APIView):
+    serializer_class = NewProjectImageSerializer
+    permission_classes = [IsAuthenticated, IsAllowedToAddNewProject]
 
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs.get("projectId")
+        project_obj = get_object_or_404(NewProject, id=project_id)
+        serializer = self.serializer_class(data=request.data, context={"new_project": project_obj, "request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"detail": "New project Images uploaded successfully"},status=status.HTTP_201_CREATED,)
+            
+            
 
 
 
@@ -896,7 +909,7 @@ class ListNewProjectByCountryMaintypeAPIView(APIView):
         country = get_object_or_404(Country, country_slug=country_slug)
         nproj_main_type = get_object_or_404(NewProject, nproj_main_type_slug=nproj_main_type_slug)
         queryset = NewProject.objects.filter(country=country, nproj_main_type=nproj_main_type)
-        serializer = PropertySerializer(queryset, many=True, context={'request': request})
+        serializer = NewProjectSerializer(queryset, many=True, context={'request': request})
 
         return Response(
             {
@@ -907,6 +920,3 @@ class ListNewProjectByCountryMaintypeAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
-    
-    

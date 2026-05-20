@@ -132,6 +132,11 @@ urlpatterns = [
     path('create-new-project-data/', views.CreateNewProjectAPIView.as_view(), name='create-new-project-data'),
 
     
+
+    path('<uuid:projectId>/new-project-upload-images/', views.CreateNewProjectImageUploadAPIView.as_view(), name="create-new-project-upload-images"),
+    
+    
+    
     
     # path('list-new-projects/<slug:country_slug>/<slug:nproj_main_type_slug>/',views.ListNewProjectByCountryMaintypeAPIView.as_view(), name='list-new-project-by-country-nproj_main_type'),
 
