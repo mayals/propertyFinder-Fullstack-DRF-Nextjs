@@ -103,7 +103,7 @@ export default function MyDashboard() {
                 </Link>
 
                 {/* My owned Properties */}
-                {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
+                {(user?.role === "admin"  || user?.role === "broker" || user?.role === "agent") &&(
                 <Link
                     href="/sa/my-properties"
                     className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
@@ -182,12 +182,6 @@ export default function MyDashboard() {
                     </p>
                 </Link>
                 )} 
-            
-
-
-
-
-
             </div>
             
 
@@ -312,8 +306,9 @@ export default function MyDashboard() {
             </>    
             )}
 
-            
-            {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
+
+            {/* add property */}
+            {(user?.role === "admin"  || user?.role === "broker" || user?.role === "agent") &&(
             <>
             <h2 className="text-center py-3 mt-8 text-2xl">Add Property</h2>
             <div>      
@@ -331,6 +326,28 @@ export default function MyDashboard() {
                     <h3 className="text-center text-xl">Add Property</h3>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
                         Add new property.
+                    </p>
+                </Link>  
+            </div>
+            </>
+            )}
+
+
+
+
+            {/* Add New Project*/}
+            {(user?.role === "admin" || user?.role === "developer" || user?.role === "broker" || user?.role === "agent") &&(
+            <>
+            <h2 className="text-center py-3 mt-8 text-2xl">Add New Project</h2>
+            <div>      
+                <Link
+                    href="/sa/add-new-project"
+                    className="group flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-lg"
+                >
+                    <svg  className="text-center h-40 w-40 text-[#ef5e4e] transition group-hover:scale-105" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16 4H18V6H20V8H18V10H16V8H14V6H16V4Z" fill="#ef5e4e"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 12V6H4V20H18V12H12ZM6 8H10V12H6V8ZM10 14V18H6V14H10ZM16 14V18H12V14H16Z" fill="#ef5e4e"></path> </g></svg>
+                    <h3 className="text-center text-xl">Add New Project</h3>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center">
+                        Add New Project to database.
                     </p>
                 </Link>  
             </div>

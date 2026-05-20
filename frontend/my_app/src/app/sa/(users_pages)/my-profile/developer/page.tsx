@@ -88,16 +88,16 @@ export default function MyDeveloperProfile() {
                     
                     {/* edit button  */}
                     <div className="flex place-content-end">
-                      <Link href="/sa/edit-my-profile/developer"
-                         className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
-                        <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                                stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round"
-                                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                            </svg>
-                        </span>
-                        <span className="hidden md:inline-block">Edit</span>
-                      </Link>
+                        <Link href="/sa/edit-my-profile/developer"
+                            className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-l-lg rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center">
+                            <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
+                                    stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                            </span>
+                            <span className="hidden md:inline-block">Edit</span>
+                        </Link>
                     </div>
 
                     <h1 className="text-center text-2xl text-gray-900">
@@ -106,14 +106,13 @@ export default function MyDeveloperProfile() {
                     </h1>
                     
                     <ToastContainer position="top-center" autoClose={3000} />
-                  
+
                     <div className="bg-white py-5 sm:py-8">
                       <div className="max-w-7xl px-6 lg:px-8">
                         <div className="grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-                          
-                          
-                          {/* profile image */}
-                          <div className="text-center justify-items-center">
+
+                        {/* profile image */}
+                        <div className="text-center justify-items-center">
                             <Image
                               src={
                                   userProfile?.profile_picture
@@ -134,11 +133,11 @@ export default function MyDeveloperProfile() {
                             <h2 className={`${getRoleBadgeColor(userProfile?.role || "")} text-white p-1 px-2 rounded-lg text-sm font-semibold inline-flex items-center gap-1`}>
                                 {getRoleIcon(userProfile?.role || "")} {userProfile?.role}
                             </h2> 
-                          </div>
+                        </div>
 
 
 
-                          <dl className="col-span-2 grid grid-cols-1 gap-x-8 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2 lg:gap-y-16">
+                        <dl className="col-span-2 grid grid-cols-1 gap-x-8 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2 lg:gap-y-16">
                             
                               <div className="relative pl-9">
                                 <dt className="font-semibold text-gray-900">

@@ -6,9 +6,6 @@ import { useAuth, } from "../context/AuthContext";
 
 
 
-
-
-
 // addCountry //
 export const addCountry = async(countryName , code) => {
         console.log('addCountry-countryName =', countryName );
@@ -30,12 +27,11 @@ export const addCountry = async(countryName , code) => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('addCountry-e=',e)
-        throw e;
-        
+            // Throw full error object for the component to handle
+            console.log('addCountry-e=',e)
+            throw e;
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -78,12 +74,12 @@ export const getCountriesList = async() => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getCountriesList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getCountriesList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -168,12 +164,12 @@ export const getMainTypesList = async() => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getMainTypesList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getMainTypesList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -192,12 +188,12 @@ export const getMainTypeSubTypesList = async(selectedMainType) => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getMainTypeSubTypesList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getMainTypeSubTypesList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -282,12 +278,12 @@ export const getPurposeList = async() => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getPurposeList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getPurposeList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -315,12 +311,12 @@ export const addAmenity = async(amenityName) => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('addAmenity-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('addAmenity-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -339,12 +335,12 @@ export const getAmenitiesList = async() => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getAmenitiesList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getAmenitiesList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
@@ -368,15 +364,19 @@ export const addProperty = async(formData) => {
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('addProperty-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('addProperty-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 };
+
+
+
+
 
 
 
@@ -397,12 +397,12 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('uploadPropertyImages-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('uploadPropertyImages-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 };
@@ -414,7 +414,7 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
     try {
         const response = await axios.get(
             `${API_URL}/property/list-purposes/`,        // endpoint 
-            { withCredentials:true },                  //  sending cookies          
+            { withCredentials:true },                    // sending cookies          
         )
         console.log("getPurposeList-response.data=",response.data);
         return response.data;
@@ -422,38 +422,38 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
 
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getPurposeList-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('getPurposeList-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
 }
 
 
 
-// getNewProjects -- all new projects for allowAny  //
-export const getNewProjects = async() => {
+/////////////////////////////////[ New Project APIs] ///////////////////////////
+// addNewProject -- only data -NO images  - NO videos //
+export const addNewProject= async(formData) => {
     try {
-        const response = await axios.get(
-            `${API_URL}/property/list-new-projects/`,        // endpoint 
-            { withCredentials:true },                        //  sending cookies          
-        )
-        console.log("getNewProjects-response.data=",response.data);
+        const response = await axiosInstance.post(
+            "/property/create-new-project-data/",       // endpoint
+            formData ,                                     // data
+            { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies                                                
+        );
+        console.log("addNewProject-response.data=",response.data);
         return response.data;
-
-
+    
     } catch (e) {
         if (e) {
-        // Throw full error object for the component to handle
-        console.log('getNewProjects-e=',e)
-        throw e;
+            // Throw full error object for the component to handle
+            console.log('addNewProject-e=',e)
+            throw e;
         
         } else {
-        throw { error: "Something went wrong." };
+            throw { error: "Something went wrong." };
         }
     }
-}
- 
+};
