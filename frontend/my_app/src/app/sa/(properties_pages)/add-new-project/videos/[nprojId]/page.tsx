@@ -1,20 +1,20 @@
-// src/app/add-new-project/images/[nprojId]/page.tsx
+// src/app/add-new-project/videos/[nprojId]/page.tsx
 "use client";
 import React, { useState, ChangeEvent, DragEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { uploadNewProjectImages } from "../../../../utils/property";
+import { uploadNewProjectVideos } from "../../../../utils/property";
 import { Toaster, toast } from "react-hot-toast";
 
 
 
-//  for New Project Images upload page
-export default function UploadNewProjectImagesPage() {
+//  for New Project Videos upload page
+export default function UploadNewProjectVideosPage() {
   const router = useRouter();
   const params = useParams();
   const newProjId = Array.isArray(params.nprojId)? params.nprojId[0] : params.nprojId;
-  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function UploadNewProjectImagesPage() {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      setImages((prev) => [...prev, ...filesArray]);
+      setVideos((prev) => [...prev, ...filesArray]);
       setPreviewUrls((prev) => [
         ...prev,
         ...filesArray.map((file) => URL.createObjectURL(file)),
@@ -42,7 +42,7 @@ export default function UploadNewProjectImagesPage() {
     setIsDragging(false);
     if (e.dataTransfer.files.length > 0) {
       const filesArray = Array.from(e.dataTransfer.files);
-      setImages((prev) => [...prev, ...filesArray]);
+      setVideos((prev) => [...prev, ...filesArray]);
       setPreviewUrls((prev) => [
         ...prev,
         ...filesArray.map((file) => URL.createObjectURL(file)),
@@ -50,41 +50,47 @@ export default function UploadNewProjectImagesPage() {
     }
   };
 
-  // --- Remove a selected image ---
-  const handleRemoveImage = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
+   console.log("videos=",videos)
+   console.log("previewUrls=",previewUrls)
+
+
+  // --- Remove a selected video ---
+  const handleRemoveVideo = (index: number) => {
+    const updatedVideos = videos.filter((_, i) => i !== index);
     const updatedPreviews = previewUrls.filter((_, i) => i !== index);
-    setImages(updatedImages);
+    setVideos(updatedVideos);
     setPreviewUrls(updatedPreviews);
   };
 
   // --- Submit to backend ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!images.length) {
-      toast.error("Please select at least one image!");
+    if (!videos.length) {
+      toast.error("Please select at least one video!");
       return;
     }
 
     const formData = new FormData();
-    images.forEach((file) => formData.append("images", file));
+    videos.forEach((file) => formData.append("videos", file));
 
     try {
         setIsLoading(true);
-        const response = await uploadNewProjectImages(newProjId,formData);
-        toast.success(response.detail || "Images uploaded successfully!");
-        setImages([]);
+        const response = await uploadNewProjectVideos(newProjId,formData);
+        toast.success(response.detail || "Videos uploaded successfully!");
+        setVideos([]);
         setPreviewUrls([]);
-        setTimeout(() => router.push(`/sa/add-new-project/videos/${newProjId}`), 2000);
+        setTimeout(() => router.push("/sa/my-dashboard"), 2000);
     
     } catch (error) {
         console.error("Upload error:", error);
-        toast.error("Failed to upload images!");  
+        toast.error("Failed to upload videos!");
+   
     } finally {
         setIsLoading(false);
     }
   };
-
+ // Example navigation to image form
+            ;
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 py-12">
       <Toaster position="top-center" />
@@ -95,7 +101,7 @@ export default function UploadNewProjectImagesPage() {
         transition={{ duration: 0.6 }}
       >
         <h2 className="text-3xl font-semibold mb-8 text-center text-gray-800">
-          Upload New Project Images 🏡
+          Upload New Project Videos 🎬
         </h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-8">
@@ -114,7 +120,7 @@ export default function UploadNewProjectImagesPage() {
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="video/*"
               className="absolute inset-0 opacity-0 cursor-pointer"
               onChange={handleFileChange}
             />
@@ -147,7 +153,7 @@ export default function UploadNewProjectImagesPage() {
                     />
                     <motion.button
                       type="button"
-                      onClick={() => handleRemoveImage(index)}
+                      onClick={() => handleRemoveVideo(index)}
                       className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full w-7 h-7 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                       whileTap={{ scale: 0.9 }}
                     >
@@ -167,7 +173,7 @@ export default function UploadNewProjectImagesPage() {
               isLoading ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"
             } transition`}
           >
-            {isLoading ? "Uploading..." : "Upload Images"}
+            {isLoading ? "Uploading..." : "Upload Videos"}
           </button>
         </form>
       </motion.div>

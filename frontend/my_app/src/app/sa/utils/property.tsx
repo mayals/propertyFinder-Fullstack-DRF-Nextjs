@@ -487,3 +487,35 @@ export const uploadNewProjectImages = async (projectId:string, formData:FormData
         }
     }
 };
+
+
+
+
+// uploadNewProjectVideos -- upload videos for a new project i created -- use project.id  //
+export const uploadNewProjectVideos = async (projectId:string,formData:FormData) => {
+    console.log('uploadNewProjectVideos-projectId=', projectId);
+    console.log('uploadNewProjectVideos-formData=', formData);
+    try { 
+        const response = await axiosInstance.post(
+            `/property/${projectId}/new-project-upload-videos/`,                  // endpoint
+            formData,                                                  // data as formData because there is a file inside the sending data
+            {
+                headers: { "Content-Type": "multipart/form-data" },    // since there is a file inside the sending data
+                withCredentials: true,                                 // since you're using cookies
+            }
+        );
+        console.log("uploadNewProjectVideos-response.data=",response.data);
+        return response.data;
+  
+
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('uploadNewProjectVideos-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+};
