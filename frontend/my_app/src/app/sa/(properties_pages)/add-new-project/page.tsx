@@ -317,9 +317,9 @@ export default function AddNewProjectPage() {
         formData.append("hand_over_year_quarter", handOverYearQuarter);
         formData.append("status_detail", statusDetails);
         amenities.forEach(id => formData.append("amenities_ids", id));  // multiple -- many to many relationship
-        formData.append("is_published", isPublished);
+        formData.append("is_published", isPublished ? 1 : 0);
        
-        
+
         console.log('formData=', formData);
         console.log('formData.selectedCountryId=', formData.get('country'));
         console.log('formData.city=', formData.get('city'));
