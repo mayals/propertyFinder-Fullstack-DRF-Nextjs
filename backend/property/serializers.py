@@ -674,11 +674,11 @@ class NewProjectImageSerializer(serializers.ModelSerializer):
 
 
 class NewProjectVideoSerializer(serializers.ModelSerializer):
-    video = serializers.FileField(use_url=True)
+    videos = serializers.FileField(use_url=True)
 
     class Meta:
         model = NewProjectVideo
-        fields = ["id", "video"]
+        fields = ["id", "videos"]
 
     def create(self, validated_data):
         new_project_obj = self.context.get("new_project")
@@ -686,10 +686,10 @@ class NewProjectVideoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("new_project_obj is required to upload videos.")
 
         request = self.context.get("request")
-        files = request.FILES.getlist("video") if request else None
+        files = request.FILES.getlist("videos") if request else None
 
         if files:
-            videos = [NewProjectVideo.objects.create(new_project=new_project_obj, video=file) for file in files]
+            videos = [NewProjectVideo.objects.create(new_project=new_project_obj, videos=file) for file in files]
             return videos
 
         return NewProjectVideo.objects.create(new_project=new_project_obj, **validated_data)
@@ -697,8 +697,8 @@ class NewProjectVideoSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         request = self.context.get("request")
-        if request and data.get("video"):
-            data["video"] = request.build_absolute_uri(data["video"])
+        if request and data.get("videos"):
+            data["videos"] = request.build_absolute_uri(data["videos"])
         return data
 
 

@@ -85,6 +85,6 @@ class NewProjectImageAdmin(admin.ModelAdmin):
     
 @admin.register(NewProjectVideo)
 class NewProjectvideoAdmin(admin.ModelAdmin):
-    list_display  = ("id", "video", "new_project",)
-    list_filter   = ( "video", )
-    search_fields = ( "video", )   
+    list_display  = ("id", "videos", "new_project",)
+    list_filter   = ( "videos", )
+    search_fields = ( "videos", )   

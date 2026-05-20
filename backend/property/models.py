@@ -467,11 +467,11 @@ class NewProjectVideo(models.Model):
     Multiple videos per project
     """
     new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_videos")
-    video = models.FileField(upload_to="project_videos/%Y/%m/%d/", null=True, blank=True)
+    videos = models.FileField(upload_to="project_videos/%Y/%m/%d/", null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.video)
+        return str(self.videos)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
