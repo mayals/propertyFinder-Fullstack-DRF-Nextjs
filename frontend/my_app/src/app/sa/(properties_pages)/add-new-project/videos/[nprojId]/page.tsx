@@ -79,7 +79,7 @@ export default function UploadNewProjectVideosPage() {
         toast.success(response.detail || "Videos uploaded successfully!");
         setVideos([]);
         setPreviewUrls([]);
-        setTimeout(() => router.push("/sa/my-dashboard"), 2000);
+        setTimeout(() => router.push(`/sa/add-new-project/documents/${newProjId}`), 2000);
     
     } catch (error) {
         console.error("Upload error:", error);

@@ -24,7 +24,6 @@ export const addCountry = async(countryName , code) => {
         console.log("addCountry-response.data=",response.data)
         return response.data;
     
-
     } catch (e) {
         if (e) {
             // Throw full error object for the component to handle
@@ -70,7 +69,6 @@ export const getCountriesList = async() => {
         )
         console.log("getCountriesList-response.data=",response.data);
         return response.data;
-
 
     } catch (e) {
         if (e) {
@@ -160,7 +158,6 @@ export const getMainTypesList = async() => {
         )
         console.log("getMainTypesList-response.data=",response.data);
         return response.data;
-
 
     } catch (e) {
         if (e) {
@@ -264,7 +261,7 @@ export const addPurpose = async(purposeName) => {
     }
 }
 
- 
+
 // getPurposeList  //
 export const getPurposeList = async() => {
     try {
@@ -274,7 +271,6 @@ export const getPurposeList = async() => {
         )
         console.log("getPurposeList-response.data=",response.data);
         return response.data;
-
 
     } catch (e) {
         if (e) {
@@ -308,7 +304,6 @@ export const addAmenity = async(amenityName) => {
         console.log("addAmenity-response.data=",response.data)
         return response.data;
     
-
     } catch (e) {
         if (e) {
             // Throw full error object for the component to handle
@@ -331,7 +326,6 @@ export const getAmenitiesList = async() => {
         )
         console.log("getAmenitiesList-response.data=",response.data);
         return response.data;
-
 
     } catch (e) {
         if (e) {
@@ -356,7 +350,6 @@ export const addProperty = async(formData) => {
             "/property/create-property-data/",             // endpoint
             formData ,                                     // data
             { withCredentials:true },                      // sending cookies -- since we use HTTP-only cookies              
-                                             
         );
         console.log("addProperty-response.data=",response.data);
         return response.data;
@@ -393,7 +386,6 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
         );
         console.log("uploadPropertyImages-response.data=",response.data);
         return response.data;
-  
 
     } catch (e) {
         if (e) {
@@ -418,7 +410,6 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
         )
         console.log("getPurposeList-response.data=",response.data);
         return response.data;
-
 
     } catch (e) {
         if (e) {
@@ -474,7 +465,7 @@ export const uploadNewProjectImages = async (projectId:string, formData:FormData
         );
         console.log("uploadNewProjectImages-response.data=",response.data);
         return response.data;
-  
+
 
     } catch (e) {
         if (e) {
@@ -506,12 +497,42 @@ export const uploadNewProjectVideos = async (projectId:string,formData:FormData)
         );
         console.log("uploadNewProjectVideos-response.data=",response.data);
         return response.data;
-  
 
     } catch (e) {
         if (e) {
             // Throw full error object for the component to handle
             console.log('uploadNewProjectVideos-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+};
+
+
+
+
+// uploadNewProjectDocuments -- upload documents for a new project i created -- use project.id  //
+export const uploadNewProjectDocuments = async (projectId:string,formData:FormData) => {
+    console.log('uploadNewProjectDocuments-projectId=', projectId);
+    console.log('uploadNewProjectDocuments-formData=', formData);
+    try { 
+        const response = await axiosInstance.post(
+            `/property/${projectId}/new-project-upload-documents/`,    // endpoint
+            formData,                                                  // data as formData because there is a file inside the sending data
+            {
+                headers: { "Content-Type": "multipart/form-data" },    // since there is a file inside the sending data
+                withCredentials: true,                                 // since you're using cookies
+            }
+        );
+        console.log("uploadNewProjectDocuments-response.data=",response.data);
+        return response.data;
+
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('uploadNewProjectDocuments-e=',e)
             throw e;
         
         } else {

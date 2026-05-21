@@ -338,7 +338,7 @@ export default function AddNewProjectPage() {
             notify("New project data has been added successfully", "success");
 
             // Example navigation to image form
-            router.push(`/sa/add-new-project/videos/${nprojectId}`);
+            router.push(`/sa/add-new-project/images/${nprojectId}`);
             // http://localhost:3000/add-property/images/2723a133-a26f-4e79-94b7-d4e1c9924658
 
 
