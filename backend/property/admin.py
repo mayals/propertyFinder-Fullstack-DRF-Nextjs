@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  NewProject, NewProjectImage, NewProjectVideo, PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage,PropertyLike
+from .models import  NewProject, NewProjectDocument, NewProjectImage, NewProjectVideo, PropertyMainType,PropertySubTypes,PropertyPurpose,Country,City,Amenity,Property,PropertyImage,PropertyLike
 
 @admin.register(PropertyMainType)
 class PropertyMainTypeAdmin(admin.ModelAdmin):
@@ -88,3 +88,12 @@ class NewProjectvideoAdmin(admin.ModelAdmin):
     list_display  = ("id", "videos", "new_project",)
     list_filter   = ( "videos", )
     search_fields = ( "videos", )   
+    
+    
+
+   
+@admin.register(NewProjectDocument)
+class NewProjectDocumentAdmin(admin.ModelAdmin):
+    list_display  = ("id", "documents", "new_project",)
+    list_filter   = ( "documents", )
+    search_fields = ( "documents", )   

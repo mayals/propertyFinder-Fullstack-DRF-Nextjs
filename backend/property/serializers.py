@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import  Country, City, NewProject, NewProjectImage, NewProjectVideo, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike, Message
+from .models import  Country, City, NewProject, NewProjectDocument, NewProjectImage, NewProjectVideo, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyImage, PropertyLike, Message
 from users.serializers import CustomUserSerializer
 from users.models import CustomUser
 from django.utils.text import slugify
@@ -113,7 +113,7 @@ class CitySerializer(serializers.ModelSerializer):
         return attrs
 
 
-       
+
 
 class UpdateCitySerializer(serializers.ModelSerializer):
     
@@ -129,7 +129,7 @@ class UpdateCitySerializer(serializers.ModelSerializer):
         fields = ['id', 'city_name']
         read_only_fields = ('id',)
         
-       
+
         
         
 # MainType ##################################################################
@@ -379,9 +379,6 @@ class PropertyImageSerializer(serializers.ModelSerializer):
     
 
 
-
-
-
 # Creater Property data #######  if we want to create new property with 1 step(data form only-first form) - and at 2step(images form only-second next form)  ###########################################
 class PropertySerializer(serializers.ModelSerializer):
     title = serializers.CharField(
@@ -472,9 +469,7 @@ class PropertySerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
         return PropertyLike.objects.filter(user=request.user, property=obj).exists()
-           
-           
-      
+
 
     
     
@@ -536,37 +531,9 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ------------------- Property Serializer -------------------
 ## CREATE PROPERTY  way-2 ##################################################################################################################################
- 
+
 # Property #######################  if we want to create new property with (data + images) in the same form - at one step  ###########################################
 ####################### not applied this type of form
 
@@ -588,7 +555,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 #     title            = serializers.CharField(max_length=200, min_length=None,required=True, allow_blank=False,validators=[UniqueValidator(queryset=Property.objects.all())])
 #     images_Property  = PropertyImageSerializer(many=True,read_only=True)                                     
 #     uploaded_images = serializers.ListField(child = serializers.ImageField(max_length = 1000000, allow_empty_file = False, use_url = False), write_only=True)
-     
+
 #     class Meta:
 #         model = Property
 #         fields = ['id','owner','title','description','country','city','area',
@@ -598,10 +565,10 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 #                   'bedrooms','bathrooms','plot_length','plot_width','street_width',
 #                   'facade','property_age','amenities','price','currency','furnishing',
 #                   'category']
-                  
+
 #         read_only_fields = ['id', 'images_project', 'created_at', 'updated_at']
 #         write_only_fields = ['uploaded_images']                   
-    
+
 #     def validate_title(self, value):
 #         print('value in serializer=',value)
 #         if value is None  or value == "" :
@@ -610,15 +577,15 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 #             raise serializers.ValidationError("The Property's title must be unique")     
 #         print('value of validated title =',value)
 #         return value
-   
-    
+
+
 #     def validate_uploaded_images(self, value):
 #         allowed_extensions = ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'webp', 'tiff']
 #         if not value.name.split('.')[-1].lower() in allowed_extensions:
 #             raise serializers.ValidationError("Invalid file extension. Allowed extensions are: bmp, gif, jpg, jpeg, png, webp, tiff.")
 #         return value
-    
-    
+
+
 #     def create(self,validated_data):
 #         print('validated_data in serializer=',validated_data) 
 #         uploaded_images = validated_data.pop('uploaded_images', [])
@@ -642,7 +609,6 @@ class NewProjectImageSerializer(serializers.ModelSerializer):
         fields = ["id", "images"]
 
     def create(self, validated_data):
-        
         # Get the new_project_obj from the context
         print("self=",self)
         new_project_obj = self.context.get("new_project")
@@ -659,6 +625,7 @@ class NewProjectImageSerializer(serializers.ModelSerializer):
 
         # Single image fallback
         return NewProjectImage.objects.create(new_project=new_project_obj, **validated_data)
+
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -682,16 +649,15 @@ class NewProjectVideoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         new_project_obj = self.context.get("new_project")
+        
         if not new_project_obj:
             raise serializers.ValidationError("new_project_obj is required to upload videos.")
-
         request = self.context.get("request")
         files = request.FILES.getlist("videos") if request else None
 
         if files:
             videos = [NewProjectVideo.objects.create(new_project=new_project_obj, videos=file) for file in files]
             return videos
-
         return NewProjectVideo.objects.create(new_project=new_project_obj, **validated_data)
 
     def to_representation(self, instance):
@@ -700,6 +666,54 @@ class NewProjectVideoSerializer(serializers.ModelSerializer):
         if request and data.get("videos"):
             data["videos"] = request.build_absolute_uri(data["videos"])
         return data
+
+
+
+
+class NewProjectDocumentSerializer(serializers.ModelSerializer):
+    documents = serializers.FileField(use_url=True)
+
+    class Meta:
+        model = NewProjectDocument
+        fields = ["id", "documents"]
+
+    def create(self, validated_data):
+        new_project_obj = self.context.get("new_project")
+        if not new_project_obj:
+            raise serializers.ValidationError("new_project_obj is required to upload documents.")
+        request = self.context.get("request")
+        files = request.FILES.getlist("documents") if request else None
+        if files:
+            documents = [NewProjectDocument.objects.create(new_project=new_project_obj, documents=file) for file in files]
+            return documents
+        return NewProjectDocument.objects.create(new_project=new_project_obj, **validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and data.get("documents"):
+            data["documents"] = request.build_absolute_uri(data["documents"])
+        return data
+
+    def create(self, validated_data):
+        new_project_obj = self.context.get("new_project")
+        if not new_project_obj:
+            raise serializers.ValidationError("new_project_obj is required to upload documents.")
+        request = self.context.get("request")
+        files = request.FILES.getlist("documents") if request else None
+        if files:
+            documents = [NewProjectDocument.objects.create(new_project=new_project_obj, documents=file) for file in files]
+            return documents
+        return NewProjectDocument.objects.create(new_project=new_project_obj, **validated_data)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        if request and data.get("documents"):
+            data["documents"] = request.build_absolute_uri(data["documents"])
+        return data
+
+
 
 
 
@@ -782,5 +796,4 @@ class NewProjectSerializer(serializers.ModelSerializer):
     #     if not request or not request.user.is_authenticated:
     #         return False
         # return NewProjectLike.objects.filter(user=request.user, new_property=obj).exists()
-           
-           
+

@@ -479,3 +479,25 @@ class NewProjectVideo(models.Model):
         if self.new_project and not self.new_project.is_published:
             self.new_project.is_published = True
             self.new_project.save(update_fields=["is_published"])
+            
+      
+      
+      
+            
+class NewProjectDocument(models.Model):
+    """
+    Multiple documents per project
+    """
+    new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_documents")
+    documents = models.FileField(upload_to="project_documents/%Y/%m/%d/", null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.documents)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Always mark new project as published when an image is uploaded
+        if self.new_project and not self.new_project.is_published:
+            self.new_project.is_published = True
+            self.new_project.save(update_fields=["is_published"])

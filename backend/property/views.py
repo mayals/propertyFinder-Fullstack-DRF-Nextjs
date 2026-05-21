@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, MessageSerializer, MessageCreateSerializer, NewProjectSerializer, NewProjectImageSerializer, NewProjectVideoSerializer
+from .serializers import CountrySerializer, CitySerializer, PropertyMainTypeSerializer, PropertySubTypesSerializer, PropertyPurposeSerializer, AmenitySerializer, PropertySerializer, PropertyImageSerializer,SerarchPropertySubTypesSerializer,PropertySubTypesMainTypeSerializer, MessageSerializer, MessageCreateSerializer, NewProjectSerializer, NewProjectImageSerializer, NewProjectVideoSerializer, NewProjectDocumentSerializer
 from .models import Country, City, PropertyMainType, PropertySubTypes, PropertyPurpose, Amenity, Property, PropertyLike, Message,NewProject, NewProjectImage, NewProjectVideo
 from users.models import CustomUser
 from rest_framework import  response, permissions, status
@@ -732,22 +732,20 @@ class CreatePropertyImageAPIView(APIView):
 
 # New video upload view
 class CreateNewProjectVideoUploadAPIView(APIView):
-    def post(self, request):
-        # Get new_project from context
-        new_project = request.context.get('new_project')
-        if not new_project:
-            return Response({'error': 'New project not provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Handle video upload
-        serializer = NewProjectVideoSerializer(data=request.data, context={'new_project': new_project})
+    def post(self, request, *args, **kwargs):
+        # Retrieve the project ID from URL kwargs
+        project_id = self.kwargs.get('projectId')
+        project_obj = get_object_or_404(NewProject, id=project_id)
+        # Handle video upload with proper context
+        serializer = NewProjectVideoSerializer(data=request.data, context={'new_project': project_obj, 'request': request})
         if serializer.is_valid():
             videos = serializer.save()
             # Mark project as published if not already
-            if not new_project.is_published:
-                new_project.is_published = True
-                new_project.save(update_fields=['is_published'])
+            if not project_obj.is_published:
+                project_obj.is_published = True
+                project_obj.save(update_fields=['is_published'])
             return Response({'detail': 'Video(s) uploaded successfully'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListPropertyImageAPIView(APIView):
@@ -907,6 +905,29 @@ class CreateNewProjectVideoUploadAPIView (APIView):
         serializer.save()
         return Response({"detail": "New project Videos uploaded successfully"},status=status.HTTP_201_CREATED,)
         
+
+
+
+
+# Create New Project Document
+class CreateNewProjectDocumentUploadAPIView (APIView):
+    serializer_class = NewProjectDocumentSerializer
+    permission_classes = [IsAuthenticated, IsAllowedToAddNewProject]
+
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs.get("projectId")
+        project_obj = get_object_or_404(NewProject, id=project_id)
+        serializer = self.serializer_class(data=request.data, context={"new_project": project_obj, "request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"detail": "New project documents uploaded successfully"},status=status.HTTP_201_CREATED,)
+        
+
+
+
+
+
+
 
 
 
