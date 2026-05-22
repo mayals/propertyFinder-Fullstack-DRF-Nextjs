@@ -122,6 +122,17 @@ export interface AmenitiesObj {
 
 
 export interface ImageObj {
+  id: number;
+  url: string;   // backend key
+  alt?: string;
+}
+
+// Media item type for carousel (image, video, document)
+export type MediaItem = {
+  type: "image" | "video" | "document";
+  url: string;
+  name?: string; // optional for documents
+};
     id: number;
     url: string;   // backend key
     alt?: string;

@@ -31,21 +31,26 @@ export default function PropertyCard({ property }: any) {
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  const nextImage = () => setCurrentIndex((prev) => (prev + 1) % property.images.length);
-  const prevImage = () => setCurrentIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+  // Build combined media array (images + videos)
+  const mediaItems = [
+    ...(property.images?.map((img:any) => ({ type: 'image' as const, url: img.images }))) ?? [],
+    ...(property.videos?.map((vid:any) => ({ type: 'video' as const, url: vid.url }))) ?? []
+  ];
+
+  const nextMedia = () => setCurrentIndex((prev) => (prev + 1) % mediaItems.length);
+  const prevMedia = () => setCurrentIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
 
   const handleTouchStart = (e: React.TouchEvent) => (touchStartX.current = e.changedTouches[0].screenX);
   const handleTouchMove = (e: React.TouchEvent) => (touchEndX.current = e.changedTouches[0].screenX);
 
-  const router = useRouter()
+  const router = useRouter();
   const [liked, setLiked] = useState(property.is_liked);
-
 
   const handleTouchEnd = () => {
     if (touchStartX.current !== null && touchEndX.current !== null) {
       const deltaX = touchStartX.current - touchEndX.current;
-      if (deltaX > 50) nextImage();
-      else if (deltaX < -50) prevImage();
+      if (deltaX > 50) nextMedia();
+      else if (deltaX < -50) prevMedia();
     }
     touchStartX.current = null;
     touchEndX.current = null;
@@ -334,13 +339,13 @@ export default function PropertyCard({ property }: any) {
               className="object-cover"
             />
 
-            {property.images.length > 1 && (
+            {mediaItems.length > 1 && (
               <>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    prevImage();
+                    prevMedia();
                   }}
                   className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1 rounded-full z-10"
                 >
@@ -351,7 +356,7 @@ export default function PropertyCard({ property }: any) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      nextImage();
+                      nextMedia();
                     }}
                     className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white p-1 rounded-full z-10"
                 >
@@ -360,7 +365,7 @@ export default function PropertyCard({ property }: any) {
               </>
             )}
 
-            {property.images.length > 1 && (
+            {mediaItems.length > 1 && (
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {property.images.map((_, i) => (
                   <div
@@ -391,12 +396,14 @@ export default function PropertyCard({ property }: any) {
                   </span>
 
                   {property.owner.profile?.profile_picture && (
-                    <Link
-                        href={`/${countrySlug}/owned-properties/${property.owner.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
+                    <div
+                      role="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/${countrySlug}/owned-properties/${property.owner.id}`);
+                      }}
+                      style={{ cursor: 'pointer' }}
                     >
                       <Image
                         src={`${apiURL}${property.owner.profile.profile_picture}`}
@@ -405,7 +412,7 @@ export default function PropertyCard({ property }: any) {
                         height={32}
                         className="rounded-full mt-1"
                       />
-                    </Link>
+                    </div>
                   )}
                 </div>
               </div>

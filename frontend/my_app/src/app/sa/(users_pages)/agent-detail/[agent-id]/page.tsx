@@ -111,7 +111,7 @@ export default function AgentDetailPage() {
             <div className="bg-white rounded-xl shadow-md p-6 md:flex md:space-x-6">
                 <div className="flex-shrink-0 mb-4 md:mb-0">
                     <Image
-                        src={agent?.profile_picture || '/default_profile/user_default.png'}
+                        src={agent?.profile_picture || '/default_images/user_default.png'}
                         alt="Agent avatar"
                         width={120}
                         height={120}
@@ -146,7 +146,7 @@ export default function AgentDetailPage() {
             {agent?.belong_to_broker_profile && (
                 <div className="mt-8 bg-white rounded-xl shadow-sm p-4 flex items-center space-x-4">
                     <Image
-                        src={agent.belong_to_broker_profile.profile_picture || '/default_profile/user_default.png'}
+                        src={agent.belong_to_broker_profile.profile_picture || '/default_images/user_default.png'}
                         alt="Broker avatar"
                         width={50}
                         height={50}

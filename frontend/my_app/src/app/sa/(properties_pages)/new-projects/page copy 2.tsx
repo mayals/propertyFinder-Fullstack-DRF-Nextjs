@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Building2, TrendingUp, MapPin, Home, ArrowRight, Calendar, Tally5, Wallet, Edit3, Trash2, Eye, Shield } from "lucide-react";
-import ProjectCard from "../../components/ProjectCard";
+import Image from "next/image";
+import { Building2, TrendingUp, MapPin, Home, ArrowRight, Calendar, Tally5, Wallet } from "lucide-react";
 import axios from "axios";
 import notify from "../../common/useNotification";
 import { getYear } from "date-fns";
-import { useAuth } from "../../context/AuthContext";
 
 
 interface user {
@@ -56,7 +55,6 @@ interface NewProject {
 }
 
 export default function NewProjectsPage() {
-  const { user } = useAuth();
   const router = useRouter();
   const [newProjects, setNewProjects] = useState<NewProject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,38 +103,6 @@ export default function NewProjectsPage() {
       case "Ready to Move": return "bg-green-500";
       case "Under Construction": return "bg-amber-500";
       default: return "bg-blue-500";
-    }
-  };
-
-  const canEditProject = (project?: NewProject) => {
-    if (!project) return false;
-    return user && (
-      user.role === 'admin' ||
-      user.id === project.user.id
-    );
-  };
-
-  const showForbiddenMessage = (message: string) => {
-    notify(message, 'error');
-  };
-
-  const handleDeleteProject = async (projectId: string) => {
-    const project = newProjects.find(p => p.id === projectId);
-    if (!canEditProject(project)) {
-      showForbiddenMessage('You don\'t have permission to delete this project');
-      return;
-    }
-
-    if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-      try {
-        await axios.delete(`${API_URL}/property/new-projects/${projectId}/`, { withCredentials: true });
-        notify('Project deleted successfully', 'success');
-        // Remove the project from the list
-        setNewProjects(prev => prev.filter(p => p.id !== projectId));
-      } catch (err: any) {
-        console.log('Failed to delete project:', err);
-        notify('Failed to delete project', 'error');
-      }
     }
   };
 
@@ -234,13 +200,86 @@ export default function NewProjectsPage() {
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredNewProjects.map((project) => (
-            <ProjectCard
+            <div
               key={project.id}
-              project={project}
-              user={user}
-              onDelete={handleDeleteProject}
-            />
-          ))}        </div>
+              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group border border-slate-100"
+            >
+              {/* Project Image */}
+              <div className="relative h-52 overflow-hidden">
+                <Image
+                  src={project.images && project.images.length ? `${project.images[0].images}` : 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d'}
+                  alt={project.nproj_name || 'Project Image'}
+                  fill
+                  unoptimized
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+
+                <div className="absolute top-4 left-4">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(project.status_detail)}`}>
+                    {project.status_detail}
+                  </span>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-slate-700">
+                    {project.nproj_main_type}
+                  </span>
+                </div>
+              </div>
+
+              {/* Project Info */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-indigo-600 transition-colors">
+                  {project.nproj_name}
+                </h3>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                    <span className="text-sm">{project.city?.city_name || 'N/A'}{project.district ? `, ${project.district}` : ""}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Building2 className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                    <span className="text-sm">
+                      {project.user.profile?.developer_name || `${project.user?.first_name} ${project.user?.last_name}` || 'N/A'}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mb-4 text-center">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center justify-center mb-1">
+                      <Calendar className="w-3 h-3 text-slate-400" />
+                    </div>
+                    <p className="text-xs text-slate-500">Completion</p>
+                    <p className="text-sm font-semibold text-slate-700 capitalize">{project.hand_over_year ? `${getYear(project.hand_over_year)} ${project.hand_over_year_quarter}` : 'N/A'}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center justify-center mb-1">
+                      <Tally5 className="w-3 h-3 text-slate-400" />
+                    </div>
+                    <p className="text-xs text-slate-500">Units</p>
+                    <p className="text-sm font-semibold text-slate-700">{project.units}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center justify-center mb-1">
+                      <Wallet className="w-3 h-3 text-slate-400" />
+                    </div>
+                    <p className="text-xs text-slate-500">Lunch Price</p>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {project.lunch_price?.toLocaleString()}{project.currency ? ` ${project.currency}` : ""}
+                    </p>
+                  </div>
+                </div>
+
+                <button className="w-full py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2 group-hover:bg-indigo-700 shadow-md shadow-indigo-200">
+                  View Project
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Empty State */}
         {filteredNewProjects.length === 0 && (
