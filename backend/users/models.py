@@ -92,7 +92,7 @@ class CustomUser(AbstractUser):  # from AbstractUser(AbstractBaseUser, Permissio
         
     @property
     def profile_picture(self):
-        default_image = 'default_profile/user_default.png'
+        default_image = 'default_images/user_default.png'
 
         try:
             if self.role == "buyer":
@@ -141,7 +141,7 @@ class BuyerProfile(models.Model):
     phone_number    = PhoneNumberField(blank=False, null=True)
     country         = models.CharField(max_length=50, blank=False, null=True)
     address         = models.CharField(max_length=100, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='buyer_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='buyer_profile_picture/',default='default_images/user_default.png', blank=True, null=True)
     date_of_birth   = models.DateField(blank=True, null=True)
     gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
     created_at      = models.DateTimeField(auto_now_add=True)
@@ -162,7 +162,7 @@ class BuyerProfile(models.Model):
         # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = BuyerProfile.objects.get(id=self.id)
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
@@ -181,7 +181,7 @@ class DeveloperProfile(models.Model):
     twitter         = models.URLField(blank=True, null=True)
     country         = models.CharField(max_length=50, blank=False, null=True)
     address         = models.CharField(max_length=100, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='developer_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='developer_profile_picture/',default='default_images/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
     date_of_birth   = models.DateField(blank=True, null=True)
@@ -202,7 +202,7 @@ class DeveloperProfile(models.Model):
         # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = DeveloperProfile.objects.get(id=self.id)
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
@@ -222,7 +222,7 @@ class BrokerProfile(models.Model):
     twitter         = models.URLField(blank=True, null=True)
     country         = models.CharField(max_length=50, blank=False, null=True)
     address         = models.CharField(max_length=100, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='broker_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='broker_profile_picture/',default='default_images/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
     date_of_birth   = models.DateField(blank=True, null=True)
@@ -243,7 +243,7 @@ class BrokerProfile(models.Model):
         # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = BrokerProfile.objects.get(id=self.id)
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
@@ -257,7 +257,7 @@ class AgentProfile(models.Model):
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  
     agent_name      = models.CharField(max_length=50, blank=False, null=True)
     user            = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='agent_profile')
-    profile_picture = models.ImageField(upload_to='agent_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='agent_profile_picture/',default='default_images/user_default.png', blank=True, null=True)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
     belong_to_broker= models.ForeignKey(BrokerProfile,on_delete=models.CASCADE, related_name='agents', null=True, blank=True)  # ✅ one broker → many agents
@@ -283,7 +283,7 @@ class AgentProfile(models.Model):
         # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = AgentProfile.objects.get(id=self.id)
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs)
@@ -304,7 +304,7 @@ class AdminProfile(models.Model):
     phone_number    = PhoneNumberField(blank=False, null=True)
     country         = models.CharField(max_length=50, blank=True, null=True)
     address         = models.CharField(max_length=100, blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='admin_profile_picture/',default='default_profile/user_default.png', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='admin_profile_picture/',default='default_images/user_default.png', blank=True, null=True)
     date_of_birth   = models.DateField(blank=True, null=True)
     gender          = models.CharField(max_length=60, choices=GenderType.choices, default=GenderType.MALE)
     created_at      = models.DateTimeField(auto_now_add=True)
@@ -323,7 +323,7 @@ class AdminProfile(models.Model):
         # Deletes old profile_picture when making an update, but protect the default image
         with contextlib.suppress(Exception):
             old = AdminProfile.objects.get(id=self.id)
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if old.profile_picture != self.profile_picture and old.profile_picture.name != default_path:
                 old.profile_picture.delete(save=False)
         super().save(*args, **kwargs) 

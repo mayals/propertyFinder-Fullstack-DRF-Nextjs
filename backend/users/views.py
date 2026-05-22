@@ -841,7 +841,7 @@ class BrokerAgentListAPIView(views.APIView):
         # Add brokers
         for broker in brokers:
             profile_pic = ''
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if broker.profile_picture and default_path not in str(broker.profile_picture.name):
                 try:
                     profile_pic = broker.profile_picture.url
@@ -863,7 +863,7 @@ class BrokerAgentListAPIView(views.APIView):
             if agent.belong_to_broker:
                 broker_name = agent.belong_to_broker.broker_name or ''
             profile_pic = ''
-            default_path = 'default_profile/user_default.png'
+            default_path = 'default_images/user_default.png'
             if agent.profile_picture and default_path not in str(agent.profile_picture.name):
                 try:
                     profile_pic = agent.profile_picture.url

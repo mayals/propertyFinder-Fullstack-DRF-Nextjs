@@ -280,7 +280,7 @@ class PropertyImage(models.Model):
     Multiple images per property
     """
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
-    images = models.ImageField(upload_to="property_images/%Y/%m/%d/", null=True, blank=True)
+    images = models.ImageField(upload_to="property_images/%Y/%m/%d/",default='default_images/default_image.jpg', null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -446,7 +446,7 @@ class NewProjectImage(models.Model):
     Multiple images per project
     """
     new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_images")
-    images = models.ImageField(upload_to="new_project_images/%Y/%m/%d/", null=True, blank=True)
+    images = models.ImageField(upload_to="new_project_images/%Y/%m/%d/",default='default_images/default_image.jpg', null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -467,7 +467,7 @@ class NewProjectVideo(models.Model):
     Multiple videos per project
     """
     new_project = models.ForeignKey(NewProject, on_delete=models.CASCADE, related_name="new_project_videos")
-    videos = models.FileField(upload_to="project_videos/%Y/%m/%d/", null=True, blank=True)
+    videos = models.FileField(upload_to="project_videos/%Y/%m/%d/",default='default_images/default_video.jpg', null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
