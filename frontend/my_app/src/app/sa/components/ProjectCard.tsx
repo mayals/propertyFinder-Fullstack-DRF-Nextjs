@@ -62,21 +62,56 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Handed Over":
-        return "bg-orange-500";
-      case "Off Plan":
-        return "bg-red-500";
-      case "Launching Soon":
-        return "bg-yellow-500";
-      case "Completed":
-      case "Ready to Move":
-        return "bg-green-500";
-      case "Under Construction":
-        return "bg-amber-500";
+    // Normalize status to a comparable format (handles snake_case and case differences)
+    const normalized = status.replace(/_/g, " ").toLowerCase();
+    switch (normalized) {
+      case "handed over":
+        return "bg-orange-500/50";
+      case "off plan":
+        return "bg-red-500/50";
+      case "launching soon":
+        return "bg-yellow-500/50";
+      case "completed":
+      case "ready to move":
+        return "bg-green-500/50";
+      case "under construction":
+        return "bg-amber-500/50";
       default:
         return "bg-blue-500";
     }
+  };
+
+  // Main type color mapping (no underscores, distinct colors)
+  const getMainTypeColor = (type: string) => {
+    const normalized = type.replace(/_/g, " ").toLowerCase();
+    switch (normalized) {
+      case "residential":
+        return "bg-green-200 text-green-800";
+      case "commercial":
+        return "bg-purple-200 text-purple-800";
+      case "mixed use":
+        return "bg-indigo-200 text-indigo-800";
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
+  // Convert snake_case status values to a more readable format, e.g. "under_construction" → "Under Construction"
+  const formatStatus = (status: string) => {
+    if (!status) return "";
+    return status
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  // Convert main type to display without underscores, capitalized
+  const formatMainType = (type: string) => {
+    if (!type) return "";
+    return type
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   return (
@@ -97,10 +132,33 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
               <div className="flex-shrink-0 w-full max-w-full snap-center p-2">
                 <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-50 shadow">
                   {currentItem?.type === "image" && (
-                    <img src={currentItem.url} alt={currentItem.name ?? `image-${currentIndex}`} className="object-cover w-full h-full" />
+                    <Image src={currentItem.url} alt={currentItem.name ?? `image-${currentIndex}`} fill className="object-cover w-full h-full" />
                   )}
                   {currentItem?.type === "video" && (
-                    <video src={currentItem.url} controls className="w-full h-full object-cover" />
+                    <video
+                      src={
+                        // Convert relative file system paths to absolute URLs for the browser using backend API URL
+                        (function () {
+                          const url = currentItem.url;
+                          if (!url) return "";
+                          // If already an absolute URL (http:// or https://), use it directly
+                          if (/^https?:\/\//i.test(url)) return url;
+                          // Ensure leading slash for relative paths
+                          const normalized = url.startsWith('/') ? url : `/${url}`;
+                          // Use backend API base URL (NEXT_PUBLIC_API_URL) to fetch media
+                          const backendBase = process.env.NEXT_PUBLIC_API_URL || "";
+                          // Remove any trailing slash from backendBase to avoid double slashes
+                          const base = backendBase.replace(/\/+$/, "");
+                          return `${base}${normalized}`;
+                        })()
+                      }
+                      controls
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
                   )}
                   {currentItem?.type === "document" && (
                     <a href={currentItem.url} download className="flex flex-col items-center justify-center w-full h-full bg-gray-100 hover:bg-gray-200 transition">
@@ -132,17 +190,17 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
         })()}
         <div className="absolute top-3 left-3">
           <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(project.status_detail)}`}>
-            {project.status_detail}
+            {formatStatus(project.status_detail)}
           </span>
         </div>
         <div className="absolute top-3 right-3">
-          <span className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-slate-700">
-            {project.nproj_main_type}
+          <span className={`bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium ${getMainTypeColor(project.nproj_main_type)}`}>
+            {formatMainType(project.nproj_main_type)}
           </span>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 pt-1">
         <h3 className="text-lg font-semibold text-slate-800 mb-2 hover:text-indigo-600 transition-colors">
           {project.nproj_name}
         </h3>

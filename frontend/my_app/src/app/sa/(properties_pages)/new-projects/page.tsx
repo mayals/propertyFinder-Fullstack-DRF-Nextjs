@@ -97,14 +97,22 @@ export default function NewProjectsPage() {
   }, []);
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Handed Over": return "bg-orange-500";
-      case "Off Plan": return "bg-red-500";
-      case "Launching Soon": return "bg-yellow-500";
-      case "Completed":
-      case "Ready to Move": return "bg-green-500";
-      case "Under Construction": return "bg-amber-500";
-      default: return "bg-blue-500";
+    // Normalize status (handles snake_case and space‑separated)
+    const normalized = status.replace(/_/g, " ").toLowerCase();
+    switch (normalized) {
+      case "handed over":
+        return "bg-orange-500";
+      case "off plan":
+        return "bg-red-500";
+      case "launching soon":
+        return "bg-yellow-500";
+      case "completed":
+      case "ready to move":
+        return "bg-green-500";
+      case "under construction":
+        return "bg-amber-500";
+      default:
+        return "bg-blue-500";
     }
   };
 
