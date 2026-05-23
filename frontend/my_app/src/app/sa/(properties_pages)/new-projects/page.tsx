@@ -9,6 +9,7 @@ import axios from "axios";
 import notify from "../../common/useNotification";
 import { getYear } from "date-fns";
 import { useAuth } from "../../context/AuthContext";
+import Loading from "../../components/Loading";
 
 
 interface user {
@@ -148,16 +149,14 @@ export default function NewProjectsPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Loading projects...</p>
-        </div>
-      </section>
-    );
-  }
+  // ⏳ Loading
+  if (loading)
+      return (
+          <div className="text-center mt-20">
+              <Loading />
+          </div>
+  );
+
 
   if (error) {
     return (

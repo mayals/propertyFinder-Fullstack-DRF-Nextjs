@@ -24,7 +24,7 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
   // Build a default media item for fallback
   const DEFAULT_MEDIA = {
     image: "/media/default_images/default_image.jpg",
-    video: "/media/default_images/default_video.jpg"
+    video: "http://localhost:8000/media/default_images/default_video.jpg"
   };
 
   // Combine all media into a single array for the carousel
@@ -45,10 +45,15 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
     const videos = (project as any).videos;
     if (videos && videos.length) {
       videos.forEach((v: any) => {
-        media.push({ type: "video" as const, url: v.url, name: v.name });
+        if (v.videos) {
+          // Support full URLs or relative paths
+          const videoUrl = v.videos.startsWith('http') ? v.videos : (v.videos.startsWith('/') ? v.videos : `/${v.videos}`);
+          media.push({ type: "video" as const, url: videoUrl, name: v.name });
+        }
       });
-    } else {
-      // Add default video if no videos exist
+    }
+    // If no valid videos were added, use default video
+    if (!media.some(item => item.type === "video")) {
       media.push({ type: "video" as const, url: DEFAULT_MEDIA.video });
     }
 
@@ -82,19 +87,30 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
   };
 
   // Main type color mapping (no underscores, distinct colors)
-  const getMainTypeColor = (type: string) => {
-    const normalized = type.replace(/_/g, " ").toLowerCase();
-    switch (normalized) {
-      case "residential":
-        return "bg-green-200 text-green-800";
-      case "commercial":
-        return "bg-purple-200 text-purple-800";
-      case "mixed use":
-        return "bg-indigo-200 text-indigo-800";
-      default:
-        return "bg-gray-200 text-gray-800";
-    }
-  };
+  // Helper to build absolute media URLs
+const getMediaUrl = (url: string) => {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  const base = process.env.NEXT_PUBLIC_API_URL || '';
+  const normalized = url.startsWith('/') ? url : `/${url}`;
+  const fullUrl = `${base}${normalized}`;
+  console.log('Media URL:', fullUrl);
+  return fullUrl;
+};
+
+const getMainTypeColor = (type: string) => {
+  const normalized = type.replace(/_/g, " ").toLowerCase();
+  switch (normalized) {
+    case "residential":
+      return "bg-green-200 text-green-800";
+    case "commercial":
+      return "bg-purple-200 text-purple-800";
+    case "mixed use":
+      return "bg-indigo-200 text-indigo-800";
+    default:
+      return "bg-gray-200 text-gray-800";
+  }
+};
 
   // Convert snake_case status values to a more readable format, e.g. "under_construction" → "Under Construction"
   const formatStatus = (status: string) => {
@@ -136,22 +152,8 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
                   )}
                   {currentItem?.type === "video" && (
                     <video
-                      src={
-                        // Convert relative file system paths to absolute URLs for the browser using backend API URL
-                        (function () {
-                          const url = currentItem.url;
-                          if (!url) return "";
-                          // If already an absolute URL (http:// or https://), use it directly
-                          if (/^https?:\/\//i.test(url)) return url;
-                          // Ensure leading slash for relative paths
-                          const normalized = url.startsWith('/') ? url : `/${url}`;
-                          // Use backend API base URL (NEXT_PUBLIC_API_URL) to fetch media
-                          const backendBase = process.env.NEXT_PUBLIC_API_URL || "";
-                          // Remove any trailing slash from backendBase to avoid double slashes
-                          const base = backendBase.replace(/\/+$/, "");
-                          return `${base}${normalized}`;
-                        })()
-                      }
+                      src={getMediaUrl(currentItem.url)}
+                      type="video/mp4"
                       controls
                       muted
                       playsInline
@@ -229,7 +231,7 @@ export default function ProjectCard({ project, user, onDelete }: Props) {
           </div>
           <div className="bg-slate-50 rounded-lg p-2">
             <Wallet className="w-3 h-3 mx-auto text-slate-400" />
-            <p className="text-xs text-slate-500 mt-1">Price</p>
+            <p className="text-xs text-slate-500 mt-1">Lunched Price</p>
             <p className="text-sm font-medium text-slate-700">
               {project.lunch_price?.toLocaleString()}{project.currency ? ` ${project.currency}` : ""}
             </p>

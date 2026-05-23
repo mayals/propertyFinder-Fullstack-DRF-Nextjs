@@ -131,9 +131,7 @@ export interface ImageObj {
 export type MediaItem = {
   type: "image" | "video" | "document";
   url: string;
+  videos: string;
   name?: string; // optional for documents
 };
-    id: number;
-    url: string;   // backend key
-    alt?: string;
-}
+   
