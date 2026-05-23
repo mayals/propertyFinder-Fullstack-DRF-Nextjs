@@ -604,6 +604,7 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 ##################################   NEW PROJECT   #############################################
 class NewProjectImageSerializer(serializers.ModelSerializer):
     images = serializers.ImageField(use_url=True)   # use_url=True  -- absolute URL   --  Next.js requires full absolute URL, not relative.
+    
     class Meta:
         model = NewProjectImage
         fields = ["id", "images"]
@@ -731,7 +732,8 @@ class NewProjectSerializer(serializers.ModelSerializer):
     country    = CountrySerializer(many=False, read_only=True) # to get object of country data with response.data
     city       = CitySerializer(many=False, read_only=True)
     images     = NewProjectImageSerializer(many=True, read_only=True, source='new_project_images')
-    videos     = NewProjectVideoSerializer(many=True, read_only=True)
+    videos     = NewProjectVideoSerializer(many=True, read_only=True,source='new_project_videos')
+    documents  = NewProjectDocumentSerializer(many=True, read_only=True,source='new_project_documents')
     amenities  = AmenitySerializer(many=True, read_only=True) # to get list of amenities data with response.data
     hand_over_year = serializers.DateField(required=False, allow_null=True)
     status_detail = serializers.CharField(required=False, allow_blank=True)
@@ -759,7 +761,7 @@ class NewProjectSerializer(serializers.ModelSerializer):
             'full_area', 'units', 'latitude', 'longitude',
             'hand_over_year', 'hand_over_year_quarter' , 'status_detail',
             'amenities','amenities_ids', 'lunch_price', 'currency', 'is_published',
-            'images', 'videos'
+            'images', 'videos', 'documents',
         ]
         
         read_only_fields = [
