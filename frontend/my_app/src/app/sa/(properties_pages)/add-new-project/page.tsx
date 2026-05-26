@@ -280,16 +280,14 @@ export default function AddNewProjectPage() {
         }
 
         if (
-               !nprojName || !description ||  !selectedNprojMainType
-            || !selectedCountryId || !selectedCity|| !latitude || !longitude|| !district||  !addressDetail
-            || !lunchPrice  || !currency||  !units! || !fullArea
-            || !handOverYear || !handOverYearQuarter || !statusDetails
-            || !amenities || !isPublished 
-        )
-             // Added required fields
-            {
-                notify("Please fill the form fields !","warning");
-                return;
+               !nprojName || !description || !selectedNprojMainType ||
+               !selectedCountryId || !selectedCity || !latitude || !longitude ||
+               !district || !addressDetail || !lunchPrice || !currency ||
+               !units || !fullArea || !handOverYear || !handOverYearQuarter ||
+               !statusDetails
+            ) {
+               notify("Please fill the required fields.", "warning");
+               return;
             }
 
 
@@ -337,9 +335,13 @@ export default function AddNewProjectPage() {
 
             notify("New project data has been added successfully", "success");
 
-            // Example navigation to image form
-            router.push(`/sa/add-new-project/images/${nprojectId}`);
-            // http://localhost:3000/add-property/images/2723a133-a26f-4e79-94b7-d4e1c9924658
+            const newProjectId = newProject.id;
+            console.log('✅ New project created – id:', newProjectId);
+            // Guard against SSR (router may be undefined)
+            if (typeof router !== 'undefined') {
+              router.push(`/sa/add-new-project/images/${newProjectId}`);
+              console.log('🔀 Redirected to images page for id:', newProjectId);
+            }
 
 
         } catch (error: any) {

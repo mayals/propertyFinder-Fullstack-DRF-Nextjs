@@ -1,5 +1,10 @@
 // types/property.ts
 
+
+
+
+//  property
+//  This file defines TypeScript interfaces for the property-related data structures used in the application.
 export interface ProfileObj {
                 id: string;
                 country?: string | null;
@@ -85,10 +90,8 @@ export interface Property {
                 district?: string | null;               
                 facade?: string | null; 
                 furnishing?: string | null; 
-                
                 land_number?: string | null; 
                 plot_number?: string | null;
-                
                 bathrooms?: number | null;
                 bedrooms?: number | null;
                 area?: number | null;
@@ -101,8 +104,7 @@ export interface Property {
                 property_size?: number | null;
                 street_width?: number | null;
                 is_occupied?: boolean | null; 
-                is_published?: boolean | null; 
-               
+                is_published?: boolean | null;    
                 owner?: OwnerObj | null;  //owner should be a single object, not an array
                 country?: CountryObj | null;
                 city?: CityObj | null;
@@ -111,12 +113,17 @@ export interface Property {
                 pmain_type?: PmainTypeObj | null;   
                 psub_type?: PsubTypeObj | null;
                 purpose?: PurposeObj | null; 
-         
+                lunched_price?: number | null;
+                created_at?: Date | null;
+                updated_at?: Date | null;
 }
 
 export interface AmenitiesObj {
     id: string;
     amenity_name: string;
+    amenity_name_ar: string;
+    created_at: string;
+    updated_at: string;
 }
 
 
@@ -127,11 +134,81 @@ export interface ImageObj {
   alt?: string;
 }
 
+
+
+//  new project type for project listings and details (for developer only)
+
+// for developer only project listings and details
+export interface user {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    is_active: boolean;
+    is_verifiedEmail: boolean;
+    date_joined: string;
+    last_login: string;
+    profile?: {
+        developer_name: string;
+        profile_picture: string;
+    } | null;
+};
+
+
+
+export interface City {
+    id: string;
+    city_name: string;
+}
+
+
+
+
+// New PROJECT type (for project listings and details)
+export interface NewProject {
+    id: string;
+    user: user;
+    images: {id: number; images: string;}[];
+    videos?: {id: number; video_url: string;}[];
+    documents?: {id: number; file_url: string;}[];
+    nproj_name: string;
+    developer: string;
+    description: string;
+    nproj_main_type: string;
+    nproj_main_type_slug: string;
+    lunch_price: number;
+    currency: string;
+    country: string;
+    city: City;
+    district: string;
+    image: string;
+    status: string;
+    completion: string;
+    units: string;
+    full_area: number;
+    latitude: number;
+    longitude: number;
+    hand_over_year: number;
+    hand_over_year_quarter: string;
+    status_detail: string;
+    amenities: string[];
+    created_at: string;
+    updated_at: string;
+    is_published: boolean;
+    address_detail: string;
+}
+
+
+
 // Media item type for carousel (image, video, document)
 export type MediaItem = {
   type: "image" | "video" | "document";
-  url: string;
+  url: any;
   videos: string;
-  name?: string; // optional for documents
+  video:any;
+  images: string;
+  documents: string;
+  name?: any; // optional for documents
 };
    
+

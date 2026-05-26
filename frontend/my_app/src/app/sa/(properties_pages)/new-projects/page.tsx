@@ -1,127 +1,91 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Building2, TrendingUp, MapPin, Home, ArrowRight, Calendar, Tally5, Wallet, Edit3, Trash2, Eye, Shield } from "lucide-react";
-import ProjectCard from "../../components/ProjectCard";
 import axios from "axios";
-import notify from "../../common/useNotification";
 import { getYear } from "date-fns";
+import notify from "../../common/useNotification";
+import  { NewProject } from "../../types/property";
 import { useAuth } from "../../context/AuthContext";
+import { Building2, TrendingUp, MapPin, Home, ArrowRight, Calendar, Tally5, Wallet, Edit3, Trash2, Eye, Shield } from "lucide-react";
 import Loading from "../../components/Loading";
+import NewProjectCard from "../../components/NewProjectCard";
 
 
-interface user {
-    id: string;
-    first_name: string;
-    last_name: string;
-    profile?: {
-        developer_name: string;
-    };
-}
 
 
-interface City {
-    id: string;
-    city_name: string;
-}
-interface NewProject {
-    id: string;
-    user: user;
-    images: {id: number; images: string;}[];
-    nproj_name: string;
-    developer: string;
-    description: string;
-    nproj_main_type: string;
-    nproj_main_type_slug: string;
-    lunch_price: number;
-    currency: string;
-    country: string;
-    city: City;
-    district: string;
-    image: string;
-    status: string;
-    completion: string;
-    units: string;
-    full_area: number;
-    latitude: number;
-    longitude: number;
-    hand_over_year: number;
-    hand_over_year_quarter: string;
-    status_detail: string;
-    amenities: string[];
-    created_at: string;
-    updated_at: string;
-    is_published: boolean;
-}
+
+
 
 export default function NewProjectsPage() {
-  const { user } = useAuth();
+  const API_URL = "http://127.0.0.1:8000";
+  const { user, loading, setLoading} = useAuth();
   const router = useRouter();
   const [newProjects, setNewProjects] = useState<NewProject[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const API_URL = "http://127.0.0.1:8000";
-
   const [filterType, setFilterType] = useState<"all" | "residential" | "commercial" | "mixed_use">("all");
 
-  const filteredNewProjects = Array.isArray(newProjects)
-    ? filterType === "all"
+
+
+  // filtering by new project main type (residential, commercial, mixed use)
+  const filteredNewProjects = Array.isArray(newProjects)? filterType === "all"
       ? newProjects
       : newProjects.filter(np => np.nproj_main_type === filterType.replace('_', '_'))
-    : [];
+      : [];
 
+
+
+  // API  //  
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        setLoading(true);
-        const response = await axios.get(
-          `${API_URL}/property/list-new-projects/`,
-          { withCredentials: true }
-        );
-        const results = response.data.results || [];
-        const projectArray = Array.isArray(results) ? results : [results];
-        setNewProjects(projectArray);;
-        console.log("New projects fetched:", response.data);
-      
+          const response = await axios.get(
+            `${API_URL}/property/list-new-projects/`, // endpoint to fetch new projects
+            { withCredentials: true } // withCredentials is needed to send cookies for authentication
+          );
+          const results = response.data.results || [];
+          const projectArray = Array.isArray(results) ? results : [results];
+          setNewProjects(projectArray);;
+          console.log("New projects fetched:", response.data);
+        
       } catch (err: any) {
-        console.log("Failed to fetch projects:", err);
-        setError("Failed to load projects. Please try again.");
-        notify("Failed to load projects", "error");
-      } finally {
-        setLoading(false);
-      }
+          console.log("Failed to fetch projects:", err);
+          setError("Failed to load projects. Please try again.");
+          notify("Failed to load projects", "error");
+      };
     };
-
     fetchProjects();
   }, []);
 
+
+
+
   const getStatusColor = (status: string) => {
-    // Normalize status (handles snake_case and space‑separated)
-    const normalized = status.replace(/_/g, " ").toLowerCase();
-    switch (normalized) {
-      case "handed over":
-        return "bg-orange-500";
-      case "off plan":
-        return "bg-red-500";
-      case "launching soon":
-        return "bg-yellow-500";
-      case "completed":
-      case "ready to move":
-        return "bg-green-500";
-      case "under construction":
-        return "bg-amber-500";
-      default:
-        return "bg-blue-500";
-    }
+      // Normalize status (handles snake_case and space‑separated)
+      const normalized = status.replace(/_/g, " ").toLowerCase();
+      switch (normalized) {
+        case "handed over":
+          return "bg-orange-500";
+        case "off plan":
+          return "bg-red-500";
+        case "launching soon":
+          return "bg-yellow-500";
+        case "completed":
+        case "ready to move":
+          return "bg-green-500";
+        case "under construction":
+          return "bg-amber-500";
+        default:
+          return "bg-blue-500";
+      }
   };
 
+  // check permission to editand delete the new project (only admin or the developer who created the project can edit or delete it) 
   const canEditProject = (project?: NewProject) => {
     if (!project) return false;
     return user && (
-      user.role === 'admin' ||
-      user.id === project.user.id
+        user.role === 'admin' ||
+        user.id === project.user.id
     );
   };
 
@@ -137,17 +101,21 @@ export default function NewProjectsPage() {
     }
 
     if (window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-      try {
-        await axios.delete(`${API_URL}/property/new-projects/${projectId}/`, { withCredentials: true });
-        notify('Project deleted successfully', 'success');
-        // Remove the project from the list
-        setNewProjects(prev => prev.filter(p => p.id !== projectId));
-      } catch (err: any) {
-        console.log('Failed to delete project:', err);
-        notify('Failed to delete project', 'error');
+          try {
+              await axios.delete(
+              `${API_URL}/property/new-projects/${projectId}/`,
+                { withCredentials: true });
+                notify('Project deleted successfully', 'success');
+                // Remove the project from the list
+                setNewProjects(prev => prev.filter(p => p.id !== projectId)); 
+      
+          } catch (err: any) {
+                console.log('Failed to delete project:', err);
+                notify('Failed to delete project', 'error');
       }
     }
   };
+
 
   // ⏳ Loading
   if (loading)
@@ -179,7 +147,8 @@ export default function NewProjectsPage() {
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header - Breadcrumb */}
+        
+        {/* Header - Breadcrumb - page title */}
         <div className="mb-8">
           <nav className="mb-6" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
@@ -201,7 +170,6 @@ export default function NewProjectsPage() {
               </li>
             </ol>
           </nav>
-
           <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl px-8 py-10 text-center shadow-xl">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               New Projects
@@ -212,7 +180,7 @@ export default function NewProjectsPage() {
           </div>
         </div>
 
-        {/* Filter Tabs */}
+        {/* Filter Tabs  according to main types all-residential-commercial-mixed_use*/}
         <div className="flex gap-2 mb-8 justify-center flex-wrap">
           {([
             { key: "all", label: "All Projects", icon: <Building2 className="w-4 h-4" /> },
@@ -241,24 +209,27 @@ export default function NewProjectsPage() {
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredNewProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              user={user}
-              onDelete={handleDeleteProject}
+            <NewProjectCard
+                key={project.id}
+                project={project}
+                user={user}
+                onDelete={handleDeleteProject}
             />
-          ))}        </div>
+          ))}        
+        </div>
+
 
         {/* Empty State */}
         {filteredNewProjects.length === 0 && (
-          <div className="text-center py-20">
-            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Building2 className="w-10 h-10 text-slate-400" />
+            <div className="text-center py-20">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-10 h-10 text-slate-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">No projects found</h3>
+              <p className="text-slate-500">No new projects found for this filter. Try selecting a different category.</p>
             </div>
-            <h3 className="text-lg font-semibold text-slate-700 mb-2">No projects found</h3>
-            <p className="text-slate-500">No new projects found for this filter. Try selecting a different category.</p>
-          </div>
         )}
+
 
         {/* CTA Section */}
         <div className="mt-12 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl px-8 py-10 text-center shadow-xl">
@@ -274,6 +245,8 @@ export default function NewProjectsPage() {
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
+
+
       </div>
     </section>
   );

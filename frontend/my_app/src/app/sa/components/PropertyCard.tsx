@@ -16,6 +16,9 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { createPortal } from "react-dom";
 
+
+
+
 export default function PropertyCard({ property }: any) {
   const { user } = useAuth();
 

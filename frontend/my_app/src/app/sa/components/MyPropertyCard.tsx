@@ -21,7 +21,7 @@ import { RiEdit2Fill } from "react-icons/ri";
 import notify from "../common/useNotification";
 
 
-export default function PropertyCard({ property }: any) {
+export default function MyPropertyCard({ property }: any) {
   const { user } = useAuth();
 
   const [loading, setLoading] = useState(false); const [showDeleteModal, setShowDeleteModal] = useState(false);

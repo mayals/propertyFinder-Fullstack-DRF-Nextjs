@@ -1,10 +1,26 @@
 "use client";
 
-import { Edit3, Trash2, MapPin, Building2, Calendar, Tally5, Wallet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+
+
+
+import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../lib/axios";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { MediaItem, NewProject } from "../types/property";
-import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { CiLocationOn } from "react-icons/ci";
+import { LiaBedSolid } from "react-icons/lia";
+import { PiBathtub } from "react-icons/pi";
+import { RxDimensions } from "react-icons/rx";
+import { FiPhone, FiMail, FiHeart, FiShare2, FiMoreVertical, FiFlag, FiMessageCircle, FiCopy } from "react-icons/fi";
+import {Eye, Edit3, Trash2, MapPin, Building2, Calendar, Tally5, Wallet, FileText, ChevronLeft, ChevronRight,Copy, Share2, Flag  } from "lucide-react";
+import { createPortal } from "react-dom";
+
+
 
 interface Props {
   project: NewProject;
@@ -12,7 +28,9 @@ interface Props {
   onDelete: (projectId: string) => void;
 }
 
-export default function ProjectCard({ project, user, onDelete }: Props) {
+
+
+export default function NewProjectCard({ project, user, onDelete }: Props) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -131,7 +149,7 @@ const getMainTypeColor = (type: string) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-slate-100">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col h-full">
       {/* Media Carousel with navigation */}
       <div className="relative h-48 md:h-64">
         {/* Build media array */}
@@ -202,9 +220,9 @@ const getMainTypeColor = (type: string) => {
         </div>
       </div>
 
-      <div className="p-6 pt-1">
+      <div className="p-6 pt-1 flex-grow">
         <h3 className="text-lg font-semibold text-slate-800 mb-2 hover:text-indigo-600 transition-colors">
-          {project.nproj_name}
+          <Link href={`/sa/new-project/${project.id}`} className="hover:underline">{project.nproj_name}</Link>
         </h3>
         <div className="space-y-2 mb-4">
           <div className="flex items-center gap-2 text-slate-600">
@@ -237,22 +255,44 @@ const getMainTypeColor = (type: string) => {
             </p>
           </div>
         </div>
-        {canEditProject() && (
-          <div className="flex gap-3">
-            <button
-              className="flex-1 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center justify-center gap-1"
-              onClick={() => router.push(`/sa/projects/edit/${project.id}`)}
-            >
-              <Edit3 className="w-4 h-4" /> Edit
-            </button>
-            <button
-              className="flex-1 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-              onClick={() => onDelete(project.id)}
-            >
-              <Trash2 className="w-4 h-4" /> Delete
-            </button>
+       
+          
+
           </div>
-        )}
+          {/* //  Footer - OUTSIDE the Link so buttons work correctly */}
+          <div className="bg-[#e5e7eb] mb-0 text-gray-500 text-xs px-3 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-auto">
+            <span>
+                Listed {project?.created_at
+                  ? formatDistanceToNow(new Date(project.created_at), {addSuffix: true,})
+                  : "—"}
+            </span>
+
+
+           
+            <div className="flex gap-1">
+              <button
+                className="cursor-pointer flex-1 py-2 px-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center gap-1"
+                onClick={() => router.push(`/sa/new-project/${project.id}`)}
+              >
+                <Eye className="w-4 h-4 " />
+              </button>
+             {canEditProject() && ( 
+              <> 
+              <button
+                className="cursor-pointer flex-1 py-2 px-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center justify-center gap-1"
+                onClick={() => router.push(`/sa/new-project/${project.id}/edit`)}
+              >
+              <Edit3 className="w-4 h-4 " />
+              </button>
+              <button
+                className="cursor-pointer flex-1 py-2 px-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                onClick={() => onDelete(project.id)}
+              >
+                <Trash2 className="w-4 h-4 " />
+              </button>
+              </>)}
+            </div>
+        
       </div>
     </div>
   );

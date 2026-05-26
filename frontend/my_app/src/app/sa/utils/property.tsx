@@ -426,6 +426,31 @@ export const uploadPropertyImages = async (propertyId:string, formData:FormData)
 
 
 /////////////////////////////////[ New Project APIs] ///////////////////////////
+
+// List all property in saudi arabia only 
+export const listNewProjects  = async() => {
+    try {
+        const response = await axios.get(
+            `${API_URL}/property/list-new-projects/`,        // endpoint 
+            { withCredentials:true },                    // sending cookies          
+        )
+        console.log("listNewProjects-response.data=",response.data);
+        return response.data;
+
+    } catch (e) {
+        if (e) {
+            // Throw full error object for the component to handle
+            console.log('listNewProjects-e=',e)
+            throw e;
+        
+        } else {
+            throw { error: "Something went wrong." };
+        }
+    }
+}
+
+
+
 // addNewProject -- only data -NO images  - NO videos //
 export const addNewProject= async(formData) => {
     try {
